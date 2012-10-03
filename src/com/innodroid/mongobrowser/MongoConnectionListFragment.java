@@ -1,32 +1,30 @@
 package com.innodroid.mongobrowser;
 
-import com.innodroid.mongobrowser.dummy.DummyContent;
 
-import android.R;
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class MongoConnectionListFragment extends ListFragment {
+import com.innodroid.mongobrowser.data.MongoBrowserProvider;
+import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
+
+public class MongoConnectionListFragment extends ListFragment implements LoaderCallbacks<Cursor> {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
-    private Callbacks mCallbacks = sDummyCallbacks;
+    private MongoConnectionAdapter mAdapter;
+    private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     public interface Callbacks {
-
-        public void onItemSelected(String id);
+        public void onItemSelected(long id);
     }
-
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void onItemSelected(String id) {
-        }
-    };
 
     public MongoConnectionListFragment() {
     }
@@ -34,17 +32,17 @@ public class MongoConnectionListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                R.layout.simple_list_item_activated_1,
-                R.id.text1,
-                DummyContent.ITEMS));
+
+		mAdapter = new MongoConnectionAdapter(getActivity(), null, true);
+		setListAdapter(mAdapter);
+
+		getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState
-                .containsKey(STATE_ACTIVATED_POSITION)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
     }
@@ -62,13 +60,15 @@ public class MongoConnectionListFragment extends ListFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mCallbacks = sDummyCallbacks;
+        mCallbacks = null;
     }
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        
+        if (mCallbacks != null)
+        	mCallbacks.onItemSelected(mAdapter.getItemId(position));
     }
 
     @Override
@@ -94,4 +94,16 @@ public class MongoConnectionListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+    
+	public Loader<Cursor> onCreateLoader(int id, Bundle params) {
+	    return new CursorLoader(getActivity(), MongoBrowserProvider.CONNECTION_URI, null, null, null, MongoBrowserProvider.NAME_CONNECTION_NAME);
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		mAdapter.swapCursor(cursor);
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) {
+		mAdapter.swapCursor(null);
+	}
 }

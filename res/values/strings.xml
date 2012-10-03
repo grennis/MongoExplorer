@@ -2,6 +2,7 @@
 
     <string name="app_name">Mongo Browser</string>
     <string name="title_mongoconnection_detail">MongoConnection Detail</string>
-    <string name="title_mongoconnection_list">MongoConnection</string>
+    <string name="title_mongoconnection_list">Connections</string>
 
 </resources>
+

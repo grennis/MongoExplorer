@@ -1,20 +1,23 @@
 package com.innodroid.mongobrowser;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
 
-public class MongoConnectionListActivity extends FragmentActivity
-        implements MongoConnectionListFragment.Callbacks {
+public class MongoConnectionListActivity extends FragmentActivity implements MongoConnectionListFragment.Callbacks {
 
     private boolean mTwoPane;
 
-    @Override
+    @SuppressLint("NewApi")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mongoconnection_list);
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
+        	getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (findViewById(R.id.mongoconnection_detail_container) != null) {
             mTwoPane = true;
@@ -25,10 +28,10 @@ public class MongoConnectionListActivity extends FragmentActivity
     }
 
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(long id) {
         if (mTwoPane) {
             Bundle arguments = new Bundle();
-            arguments.putString(MongoConnectionDetailFragment.ARG_ITEM_ID, id);
+            arguments.putLong(MongoConnectionDetailFragment.ARG_ITEM_ID, id);
             MongoConnectionDetailFragment fragment = new MongoConnectionDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
