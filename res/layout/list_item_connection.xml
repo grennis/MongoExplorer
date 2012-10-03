@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+	android:descendantFocusability="blocksDescendants">
+
+	<CheckBox
+	    android:id="@+id/list_item_connection_checked"
+	    android:layout_alignParentLeft="true"
+	    android:layout_centerVertical="true" /> 
+
+	<TextView android:id="@+id/list_item_connection_name"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+	    android:layout_alignParentTop="true"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/list_item_connection_checked" />
+
+	<TextView android:id="@+id/list_item_connection_url"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textStyle="italic"
+        android:layout_toRightOf="@id/list_item_connection_checked"
+        android:layout_below="@id/list_item_connection_name" />
+		
+</RelativeLayout>
+
+
