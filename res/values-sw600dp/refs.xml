@@ -1,0 +1,3 @@
+<resources>
+    <item type="layout" name="activity_mongoconnection_list">@layout/activity_mongoconnection_twopane</item>
+</resources>
