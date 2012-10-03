@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MongoConnectionListActivity extends FragmentActivity implements MongoConnectionListFragment.Callbacks {
 
@@ -25,6 +29,27 @@ public class MongoConnectionListActivity extends FragmentActivity implements Mon
                     .findFragmentById(R.id.mongoconnection_list))
                     .setActivateOnItemClick(true);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuInflater mi = getMenuInflater();
+        mi.inflate(R.menu.connection_list_menu, menu);
+        return true;
+    }
+        
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.connection_list_menu_add:
+            	Toast.makeText(this, "Add Item", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.connection_list_menu_configure:
+            	Toast.makeText(this, "Configure", Toast.LENGTH_LONG).show();
+                return true;
+        }
+
+    	return super.onOptionsItemSelected(item);
     }
 
     @Override

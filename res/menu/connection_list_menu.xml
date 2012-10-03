@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/connection_list_menu_add"
+          android:icon="@android:drawable/ic_menu_add"
+          android:title="Add Connection"
+          android:showAsAction="withText|ifRoom"/>
+    <item android:id="@+id/connection_list_menu_configure"
+          android:icon="@android:drawable/ic_menu_preferences"
+          android:title="Settings"
+          android:showAsAction="withText|ifRoom"/>
+</menu>
+
