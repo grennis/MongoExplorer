@@ -1,23 +1,14 @@
 package com.innodroid.mongobrowser;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.ContentUris;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 
 public class ConnectionDetailActivity extends FragmentActivity {
 
@@ -48,12 +39,14 @@ public class ConnectionDetailActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	long id = getIntent().getLongExtra(ConnectionDetailFragment.ARG_CONNECTION_ID, 0);
+
     	switch (item.getItemId()) {
     		case R.id.connection_detail_menu_edit:
-    			editConnection();
+    			Utils.editConnection(this, id);
     			return true;
     		case R.id.connection_detail_menu_delete:
-    			deleteConnection();
+    			Utils.deleteConnection(this, id, true);
     			return true;
     		case android.R.id.home:
                 NavUtils.navigateUpTo(this, new Intent(this, ConnectionListActivity.class));
@@ -64,62 +57,4 @@ public class ConnectionDetailActivity extends FragmentActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    
-    private void editConnection() {
-    	long id = getIntent().getLongExtra(ConnectionDetailFragment.ARG_CONNECTION_ID, 0);
-        DialogFragment fragment = ConnectionSetupDialogFragment.create(id);
-        fragment.show(getSupportFragmentManager(), null);
-    }
-    
-    private void deleteConnection() {
-        new AlertDialog.Builder(this)
-	        .setIcon(android.R.drawable.ic_menu_delete)
-	        .setMessage(R.string.confirm_delete_connection)
-	        .setTitle(R.string.confirm_delete_title)
-	        .setCancelable(true)
-	        .setPositiveButton(android.R.string.ok,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                	doDeleteConnection();
-	                }
-	            }
-	        )
-	        .setNegativeButton(android.R.string.cancel,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                	//
-	                }
-	            }
-	        )
-	        .create().show();
-    }
-    
-    private void doDeleteConnection() {
-    	long id = getIntent().getLongExtra(ConnectionDetailFragment.ARG_CONNECTION_ID, 0);
-    	new DeleteConnectionTask(id).execute();
-    }
-    
-    private class DeleteConnectionTask extends AsyncTask<Void, Void, Boolean> {
-    	private long mID;
-    	
-    	public DeleteConnectionTask(long id) {
-    		mID = id;
-    	}
-    	
-		@Override
-		protected Boolean doInBackground(Void... arg0) {
-			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mID);
-			getContentResolver().delete(uri, null, null);
-			return true;
-		}
-		
-		@Override
-		protected void onPostExecute(Boolean result) {
-			super.onPostExecute(result);
-			
-	    	Intent intent = new Intent(Constants.MessageRefreshConnectionList);
-	    	LocalBroadcastManager.getInstance(ConnectionDetailActivity.this).sendBroadcast(intent);
-			finish();
-		}
-    }    
 }

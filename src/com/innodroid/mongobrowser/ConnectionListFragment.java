@@ -1,28 +1,21 @@
 package com.innodroid.mongobrowser;
 
 
-import android.annotation.TargetApi;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
@@ -58,63 +51,13 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-       
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-        	setupContextActionBar();
     }
     
-    @TargetApi(11)
-	private void setupContextActionBar() {
-        ListView listView = getListView();
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
-	        @Override
-	        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-	            // Here you can do something when items are selected/de-selected,
-	            // such as update the title in the CAB
-	        }
-	
-	        @Override
-	        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-	            // Respond to clicks on the actions in the CAB
-	            switch (item.getItemId()) {
-	                case R.id.connection_list_menu_delete:
-	                    Toast.makeText(getActivity(), "delete", Toast.LENGTH_SHORT).show();
-	                    mode.finish(); // Action picked, so close the CAB
-	                    return true;
-	                default:
-	                    return false;
-	            }
-	        }
-	
-	        @Override
-	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-	            // Inflate the menu for the CAB
-	            MenuInflater inflater = mode.getMenuInflater();
-	            inflater.inflate(R.menu.connection_list_context, menu);
-	            return true;
-	        }
-	
-	        @Override
-	        public void onDestroyActionMode(ActionMode mode) {
-	            // Here you can make any necessary updates to the activity when
-	            // the CAB is removed. By default, selected items are deselected/unchecked.
-	        }
-	
-	        @Override
-	        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-	            // Here you can perform updates to the CAB due to
-	            // an invalidate() request
-	            return false;
-	        }
-        });
-    };
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, new IntentFilter(Constants.MessageRefreshConnectionList));
+        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, new IntentFilter(Constants.MessageConnectionItemChanged));
 
         if (!(activity instanceof Callbacks)) {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
@@ -146,6 +89,11 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         }
     }
 
+    @SuppressLint("NewApi")
+	public boolean isItemSelected() {
+        return getListView().getCheckedItemCount() > 0;
+    }
+    
     public void setActivateOnItemClick(boolean activateOnItemClick) {
         getListView().setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE

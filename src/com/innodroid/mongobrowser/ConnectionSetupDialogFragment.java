@@ -101,11 +101,12 @@ public class ConnectionSetupDialogFragment extends DialogFragment implements Loa
     	MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
 
     	if (mID == 0)
-    		helper.addConnection(name, server, port, db, user, pass);
+    		mID = helper.addConnection(name, server, port, db, user, pass);
     	else
     		helper.updateConnection(mID, name, server, port, db, user, pass);
-    	
-    	Intent intent = new Intent(Constants.MessageRefreshConnectionList);
+
+    	Intent intent = new Intent(Constants.MessageConnectionItemChanged);
+    	intent.putExtra(Constants.MessageItemID, mID);
     	LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
     	return true;
     }

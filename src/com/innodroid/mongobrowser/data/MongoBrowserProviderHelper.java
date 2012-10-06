@@ -1,8 +1,10 @@
 package com.innodroid.mongobrowser.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -14,11 +16,12 @@ public class MongoBrowserProviderHelper {
 		mResolver = resolver;
 	}
 
-	public void addConnection(String name, String server, int port, String db, String user, String pass) {
+	public long addConnection(String name, String server, int port, String db, String user, String pass) {
 		Log.i(LOG_TAG, "Adding Connection");
 
 		ContentValues values = getContentValuesForConnection(name, server, port, db, user, pass);
-		mResolver.insert(MongoBrowserProvider.CONNECTION_URI, values);
+		Uri uri = mResolver.insert(MongoBrowserProvider.CONNECTION_URI, values);
+		return ContentUris.parseId(uri);
 	}
 	
 	public void updateConnection(long id, String name, String server, int port, String db, String user, String pass) {
