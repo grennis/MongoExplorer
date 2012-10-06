@@ -2,6 +2,7 @@ package com.innodroid.mongobrowser.data;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -15,7 +16,7 @@ public class MongoBrowserProviderHelper {
 
 	public void addConnection(String name, String server, int port, String db, String user, String pass) {
 		Log.i(LOG_TAG, "Adding Connection");
-		
+
 		ContentValues values = getContentValuesForConnection(name, server, port, db, user, pass);
 		mResolver.insert(MongoBrowserProvider.CONNECTION_URI, values);
 	}
@@ -47,6 +48,13 @@ public class MongoBrowserProviderHelper {
 		cv.put(MongoBrowserProvider.NAME_CONNECTION_USER, user);
 		cv.put(MongoBrowserProvider.NAME_CONNECTION_PASSWORD, pass);
 		return cv;
+	}
+
+	public int getConnectionCount() {
+		Cursor cursor = mResolver.query(MongoBrowserProvider.CONNECTION_URI, null, null, null, null);
+		int count = cursor.getCount();
+		cursor.close();
+		return count;
 	}
 }
 

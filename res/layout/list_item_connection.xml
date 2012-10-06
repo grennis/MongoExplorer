@@ -2,25 +2,34 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
 	android:descendantFocusability="blocksDescendants">
 
 	<CheckBox
 	    android:id="@+id/list_item_connection_checked"
-	    android:layout_alignParentLeft="true"
-	    android:layout_centerVertical="true" /> 
-
+	    android:layout_width="60dp"
+	    android:layout_height="60dp"
+	    android:layout_alignParentTop="true"
+	    android:layout_alignParentRight="true"
+	    android:button="@android:drawable/btn_star" 
+	    android:layout_alignParentBottom="true"
+	    android:layout_centerHorizontal="true" /> 
+		    
 	<TextView android:id="@+id/list_item_connection_name"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
 	    android:layout_alignParentTop="true"
         android:textStyle="bold"
-        android:layout_toRightOf="@id/list_item_connection_checked" />
+        android:textSize="24sp"
+        android:layout_toLeftOf="@id/list_item_connection_checked" />
 
-	<TextView android:id="@+id/list_item_connection_url"
+	<TextView android:id="@+id/list_item_connection_info"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:textStyle="italic"
-        android:layout_toRightOf="@id/list_item_connection_checked"
+        android:textSize="18sp"
+        android:layout_toLeftOf="@id/list_item_connection_checked"
         android:layout_below="@id/list_item_connection_name" />
 		
 </RelativeLayout>

@@ -18,7 +18,7 @@ public class MongoBrowserProvider extends ContentProvider {
 	private static final String LOG_TAG = "MongoBrowserProvider";
 	private static final String DATABASE_NAME = "mongobrowser.db";
 	public static final String TABLE_NAME_CONNECTIONS = "connections";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 3;
 
 	public static final int INDEX_CONNECTION_ID = 0;
 	public static final int INDEX_CONNECTION_NAME = 1;
@@ -27,6 +27,7 @@ public class MongoBrowserProvider extends ContentProvider {
     public static final int INDEX_CONNECTION_DB = 4; 
 	public static final int INDEX_CONNECTION_USER = 5;
 	public static final int INDEX_CONNECTION_PASSWORD = 6;
+	public static final int INDEX_CONNECTION_FLAGS = 7;
 	
 	public static final String NAME_CONNECTION_NAME = "name";
 	public static final String NAME_CONNECTION_SERVER = "server";
@@ -34,6 +35,7 @@ public class MongoBrowserProvider extends ContentProvider {
     public static final String NAME_CONNECTION_DB = "dbname"; 
 	public static final String NAME_CONNECTION_USER = "usernm";
 	public static final String NAME_CONNECTION_PASSWORD = "pass";
+	public static final String NAME_CONNECTION_FLAGS = "cflags";
 
 	//setup authority for provider
 	private static final String AUTHORITY = "com.innodroid.provider.mongobrowser";
@@ -176,8 +178,10 @@ public class MongoBrowserProvider extends ContentProvider {
 				 + NAME_CONNECTION_NAME + " TEXT, "
 				 + NAME_CONNECTION_SERVER + " TEXT, "
 				 + NAME_CONNECTION_PORT + " INTEGER, "
+				 + NAME_CONNECTION_DB + " TEXT, "
 				 + NAME_CONNECTION_USER + " TEXT, "
-				 + NAME_CONNECTION_PASSWORD + " TEXT"
+				 + NAME_CONNECTION_PASSWORD + " TEXT, "
+				 + NAME_CONNECTION_FLAGS + " INTEGER"
 				 + " );"
 			);
 		}

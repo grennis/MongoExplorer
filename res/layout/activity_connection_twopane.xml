@@ -9,13 +9,13 @@
     android:showDividers="middle"
     tools:context=".MongoConnectionListActivity">
 
-    <fragment android:name="com.innodroid.mongobrowser.MongoConnectionListFragment"
+    <fragment android:name="com.innodroid.mongobrowser.ConnectionListFragment"
         android:id="@+id/mongoconnection_list"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1" />
 
-    <FrameLayout android:id="@+id/mongoconnection_detail_container"
+    <FrameLayout android:id="@+id/connection_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3" />
