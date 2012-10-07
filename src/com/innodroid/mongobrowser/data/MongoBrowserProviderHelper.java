@@ -42,7 +42,7 @@ public class MongoBrowserProviderHelper {
 		return mResolver.delete(MongoBrowserProvider.CONNECTION_URI, null, null);
 	}
 
-	private ContentValues getContentValuesForConnection(String name, String server, int port, String db, String user, String pass) {
+	public static ContentValues getContentValuesForConnection(String name, String server, int port, String db, String user, String pass) {
 		ContentValues cv = new ContentValues();
 		cv.put(MongoBrowserProvider.NAME_CONNECTION_NAME, name);
 		cv.put(MongoBrowserProvider.NAME_CONNECTION_SERVER, server);

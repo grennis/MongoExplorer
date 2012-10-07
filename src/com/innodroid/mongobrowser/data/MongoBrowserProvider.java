@@ -18,7 +18,7 @@ public class MongoBrowserProvider extends ContentProvider {
 	private static final String LOG_TAG = "MongoBrowserProvider";
 	private static final String DATABASE_NAME = "mongobrowser.db";
 	public static final String TABLE_NAME_CONNECTIONS = "connections";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 5;
 
 	public static final int INDEX_CONNECTION_ID = 0;
 	public static final int INDEX_CONNECTION_NAME = 1;
@@ -28,6 +28,7 @@ public class MongoBrowserProvider extends ContentProvider {
 	public static final int INDEX_CONNECTION_USER = 5;
 	public static final int INDEX_CONNECTION_PASSWORD = 6;
 	public static final int INDEX_CONNECTION_FLAGS = 7;
+	public static final int INDEX_CONNECTION_LAST_CONNECT = 8;
 	
 	public static final String NAME_CONNECTION_NAME = "name";
 	public static final String NAME_CONNECTION_SERVER = "server";
@@ -36,6 +37,7 @@ public class MongoBrowserProvider extends ContentProvider {
 	public static final String NAME_CONNECTION_USER = "usernm";
 	public static final String NAME_CONNECTION_PASSWORD = "pass";
 	public static final String NAME_CONNECTION_FLAGS = "cflags";
+	public static final String NAME_CONNECTION_LAST_CONNECT = "lastconn";
 
 	//setup authority for provider
 	private static final String AUTHORITY = "com.innodroid.provider.mongobrowser";
@@ -181,9 +183,17 @@ public class MongoBrowserProvider extends ContentProvider {
 				 + NAME_CONNECTION_DB + " TEXT, "
 				 + NAME_CONNECTION_USER + " TEXT, "
 				 + NAME_CONNECTION_PASSWORD + " TEXT, "
-				 + NAME_CONNECTION_FLAGS + " INTEGER"
+				 + NAME_CONNECTION_FLAGS + " INTEGER, "
+				 + NAME_CONNECTION_LAST_CONNECT + " INTEGER"
 				 + " );"
 			);
+			
+			insertData(db, "guag", "alex.mongohq.com", 10053, "getupandgreen", "admin", "hello123");			
+		}
+
+		private void insertData(SQLiteDatabase dbx, String name, String server, int port, String db, String user, String pass) {
+			ContentValues cv = MongoBrowserProviderHelper.getContentValuesForConnection(name, server, port, db, user, pass);
+			dbx.insert(TABLE_NAME_CONNECTIONS, null, cv);
 		}
 
 		@Override
