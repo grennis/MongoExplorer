@@ -7,17 +7,17 @@
     android:layout_marginRight="16dp"
     android:divider="?android:attr/dividerHorizontal"
     android:showDividers="middle"
-    tools:context=".MongoConnectionListActivity">
+    tools:context=".MongoCollectionListActivity">
 
-    <fragment android:name="com.innodroid.mongobrowser.ConnectionListFragment"
-        android:id="@+id/connection_list"
+    <fragment android:name="com.innodroid.mongobrowser.CollectionListFragment"
+        android:id="@+id/collection_list"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <FrameLayout android:id="@+id/collection_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3" />
-
-    <FrameLayout android:id="@+id/connection_detail_container"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="5" />
 
 </LinearLayout>

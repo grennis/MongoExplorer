@@ -30,7 +30,7 @@ public class MongoHelper {
     	}
 	}
 
-	public String[] getCollectionNames() {
+	public static String[] getCollectionNames() {
     	Set<String> names = Database.getCollectionNames();
     	String[] namesArray = new String[names.size()];
     	names.toArray(namesArray);

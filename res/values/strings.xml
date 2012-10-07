@@ -15,5 +15,6 @@
     <string name="never_connected">Never Connected</string>
     <string name="last_connected">Last connected %s</string>
     <string name="connect_failed">Connect Failed</string>
+    <string name="title_collection_list">Collections</string>
 </resources>
 

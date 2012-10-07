@@ -1,14 +1,10 @@
 package com.innodroid.mongobrowser;
 
-import com.innodroid.mongo.MongoHelper;
-import com.innodroid.mongobrowser.data.MongoBrowserProvider;
-import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,9 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.innodroid.mongo.MongoHelper;
+import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 
 public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
@@ -122,19 +120,8 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			mDialog.dismiss();
 			
 			if (result) {
-		        new AlertDialog.Builder(getActivity())
-	                .setIcon(android.R.drawable.ic_menu_info_details)
-	                .setMessage("Connected!")
-	                .setTitle("Yay!")
-	                .setCancelable(true)
-	                .setPositiveButton(android.R.string.ok,
-	                    new DialogInterface.OnClickListener() {
-	                        public void onClick(DialogInterface dialog, int whichButton) {
-	                        	//
-	                        }
-	                    }
-	                )
-	                .create().show();
+				Intent intent = new Intent(getActivity(), CollectionListActivity.class);
+				startActivity(intent);
 			} else {
 		        new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_menu_delete)

@@ -1,3 +1,4 @@
 <resources>
     <item type="layout" name="activity_connection_list">@layout/activity_connection_twopane</item>
+    <item type="layout" name="activity_collection_list">@layout/activity_collection_twopane</item>
 </resources>

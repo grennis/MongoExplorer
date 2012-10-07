@@ -29,7 +29,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         if (findViewById(R.id.connection_detail_container) != null) {
             mTwoPane = true;
             ((ConnectionListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.mongoconnection_list))
+                    .findFragmentById(R.id.connection_list))
                     .setActivateOnItemClick(true);
         }
         

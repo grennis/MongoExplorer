@@ -94,5 +94,5 @@ public class MongoConnectionAdapter extends android.support.v4.widget.CursorAdap
 			mContext.getContentResolver().update(uri, cv, null, null);
 			return true;
 		}		
-    }    
+    }
 }
