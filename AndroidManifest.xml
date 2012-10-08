@@ -21,6 +21,10 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".ConnectionListActivity" />
         </activity>
         
+        <activity android:name=".PreferencesActivity" android:label="@string/title_preferences" >
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".ConnectionListActivity" />
+        </activity>
+        
         <provider android:name=".data.MongoBrowserProvider" android:authorities="com.innodroid.provider.mongobrowser" android:exported="false" />
 	</application>
 </manifest>

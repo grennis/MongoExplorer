@@ -4,6 +4,7 @@ package com.innodroid.mongobrowser;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
@@ -118,7 +119,8 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
     private class LoadNamesTask extends AsyncTask<Void, Void, String[]> {
 		@Override
 		protected String[] doInBackground(Void... arg0) {
-			return MongoHelper.getCollectionNames();
+			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
+			return MongoHelper.getCollectionNames(includeSystem);
 		}		
 		
 		@Override

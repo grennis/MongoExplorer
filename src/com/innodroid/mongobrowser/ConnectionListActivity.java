@@ -11,7 +11,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
@@ -75,7 +74,8 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     			Utils.deleteConnection(this, mSelectedID, false);
     			return true;
             case R.id.connection_list_menu_configure:
-            	Toast.makeText(this, "Configure", Toast.LENGTH_LONG).show();
+            	Intent intent = new Intent(this, PreferencesActivity.class);
+            	startActivity(intent);
                 return true;
         }
 

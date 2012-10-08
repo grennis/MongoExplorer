@@ -1,6 +1,7 @@
 package com.innodroid.mongo;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import com.mongodb.DB;
@@ -30,10 +31,16 @@ public class MongoHelper {
     	}
 	}
 
-	public static String[] getCollectionNames() {
+	public static String[] getCollectionNames(boolean includeSystemPrefs) {
     	Set<String> names = Database.getCollectionNames();
-    	String[] namesArray = new String[names.size()];
-    	names.toArray(namesArray);
+    	ArrayList<String> list = new ArrayList<String>();
+    	
+    	for (String str : names)
+    		if (includeSystemPrefs || !str.startsWith("system."))
+    			list.add(str);
+
+    	String[] namesArray = new String[list.size()];
+    	list.toArray(namesArray);
     	return namesArray;
     }
 }

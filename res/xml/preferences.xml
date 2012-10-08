@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Collections" android:key="first_category">        
+        <CheckBoxPreference 
+            android:key="show_system_collections"
+            android:title="Show System Collections" 
+            android:summary="Show collections named system.*"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+</PreferenceScreen>
+
