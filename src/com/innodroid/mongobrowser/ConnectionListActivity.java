@@ -6,19 +6,29 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
 public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, CollectionListFragment.Callbacks {
     private boolean mTwoPane;
+    private boolean mViewsShifted;
+    private FrameLayout mFrame1;
+    private FrameLayout mFrame2;
+    private FrameLayout mFrame3;
+    private FrameLayout mFrame4;
+    private FrameLayout mFrame5;
     private long mSelectedConnectionID;
 
 	@Override
@@ -28,10 +38,16 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         setTitle(R.string.title_connection_list);
         setContentView(R.layout.activity_connection_list);
 
-        if (findViewById(R.id.connection_detail_container) != null) {
+        mFrame1 = (FrameLayout)findViewById(R.id.frame_1);
+        mFrame2 = (FrameLayout)findViewById(R.id.frame_2);
+        mFrame3 = (FrameLayout)findViewById(R.id.frame_3);
+        mFrame4 = (FrameLayout)findViewById(R.id.frame_4);
+        mFrame5 = (FrameLayout)findViewById(R.id.frame_5);
+        
+        if (mFrame1 != null) {
             mTwoPane = true;
             ((ConnectionListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.connection_list))
+                    .findFragmentById(R.id.fragment_connection_list))
                     .setActivateOnItemClick(true);
         }
         
@@ -40,6 +56,18 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
         new AddConnectionIfNoneExistTask().execute();
     }
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			if (mViewsShifted) {
+				shiftViewsRight();
+				return true;
+			}
+		}
+		
+		return super.onKeyDown(keyCode, event);
+	}
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -105,23 +133,36 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         ConnectionDetailFragment fragment = new ConnectionDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.connection_detail_container, fragment)
+                .replace(R.id.frame_2, fragment)
                 .commit();
 	}
     
     private void loadCollectionListPane() {
-    	View listPane = findViewById(R.id.collection_list_container);
-    	listPane.setVisibility(View.VISIBLE);
-    	
         Bundle arguments = new Bundle();
         CollectionListFragment fragment = new CollectionListFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.collection_list_container, fragment)
+                .replace(R.id.frame_3, fragment)
                 .commit();
     }
 
-	private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
+    private void shiftViewsLeft() {
+    	mViewsShifted = true;
+    	mFrame1.setVisibility(View.GONE);
+    	mFrame2.setVisibility(View.GONE);
+    	mFrame4.setVisibility(View.VISIBLE);
+    	mFrame5.setVisibility(View.VISIBLE);
+    }
+
+    private void shiftViewsRight() {
+    	mViewsShifted = false;
+    	mFrame4.setVisibility(View.GONE);
+    	mFrame5.setVisibility(View.GONE);
+    	mFrame1.setVisibility(View.VISIBLE);
+    	mFrame2.setVisibility(View.VISIBLE);
+    }
+
+    private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... arg0) {
 			return new MongoBrowserProviderHelper(getContentResolver()).getConnectionCount() == 0;
@@ -152,20 +193,18 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (mTwoPane) {
-				loadCollectionListPane();
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						loadCollectionListPane();
+					}					
+				});
 			}
 	    }
 	};
 
 	@Override
 	public void onCollectionItemSelected(long id) {
-		FragmentManager fm = getSupportFragmentManager();
-		
-        fm.beginTransaction()
-        	.addToBackStack(null)
-        	.hide(fm.findFragmentById(R.id.connection_list))
-        	.hide(fm.findFragmentById(R.id.connection_detail_container))
-        	.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-	        .commit();
+		shiftViewsLeft();
 	}
 }

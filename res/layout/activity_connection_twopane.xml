@@ -9,20 +9,37 @@
     android:showDividers="middle"
     tools:context=".MongoConnectionListActivity">
 
-    <fragment android:name="com.innodroid.mongobrowser.ConnectionListFragment"
-        android:id="@+id/connection_list"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="3" />
+    <FrameLayout android:id="@+id/frame_1" 
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1">
+	    <fragment android:name="com.innodroid.mongobrowser.ConnectionListFragment"
+	        android:id="@+id/fragment_connection_list"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" />
+	</FrameLayout>
 
-    <FrameLayout android:id="@+id/connection_detail_container"
+    <FrameLayout android:id="@+id/frame_2"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="1" />
 
-	<FrameLayout android:id="@+id/collection_list_container"
+	<FrameLayout android:id="@+id/frame_3"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="1" />
+
+	<FrameLayout android:id="@+id/frame_4"
+	    android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+	<FrameLayout android:id="@+id/frame_5"
+	    android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
 </LinearLayout>
 
