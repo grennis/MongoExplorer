@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,8 +121,8 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			mDialog.dismiss();
 			
 			if (result) {
-				Intent intent = new Intent(getActivity(), CollectionListActivity.class);
-				startActivity(intent);
+		    	Intent intent = new Intent(Constants.MessageConnected);
+		    	LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 			} else {
 		        new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_menu_delete)

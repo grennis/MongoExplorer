@@ -1,11 +1,15 @@
 package com.innodroid.mongobrowser;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +25,8 @@ public class ConnectionDetailActivity extends FragmentActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
         	getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(mConnectedReceiver, new IntentFilter(Constants.MessageConnected));
+
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
             arguments.putLong(ConnectionDetailFragment.ARG_CONNECTION_ID, getIntent().getLongExtra(ConnectionDetailFragment.ARG_CONNECTION_ID, 0));
@@ -30,6 +36,14 @@ public class ConnectionDetailActivity extends FragmentActivity {
         }
     }
 
+	private BroadcastReceiver mConnectedReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Intent activ = new Intent(ConnectionDetailActivity.this, CollectionListActivity.class);
+			startActivity(activ);
+	    }
+	};
+	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	MenuInflater mi = getMenuInflater();

@@ -3,10 +3,10 @@ package com.innodroid.mongobrowser;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 
 public class CollectionListActivity extends FragmentActivity implements CollectionListFragment.Callbacks {
-    private boolean mTwoPane;
-    private long mSelectedID;
+    private long mSelectedCollectionID;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -14,13 +14,6 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
 
         setTitle(R.string.title_collection_list);
         setContentView(R.layout.activity_collection_list);
-
-        if (findViewById(R.id.collection_detail_container) != null) {
-            mTwoPane = true;
-//            ((ConnectionListFragment) getSupportFragmentManager()
-//                    .findFragmentById(R.id.collection_list))
-//                    .setActivateOnItemClick(true);
-        }
         
         //LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshReceiver, new IntentFilter(Constants.MessageConnectionItemChanged));
     }
@@ -36,18 +29,18 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
     	return super.onPrepareOptionsMenu(menu);
     }
     
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//    	MenuInflater mi = getMenuInflater();
-//        mi.inflate(R.menu.connection_list_menu, menu);
-//        
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuInflater mi = getMenuInflater();
+        mi.inflate(R.menu.collection_list_menu, menu);
+        
 //    	if (!mTwoPane) {
 //    		menu.getItem(1).setVisible(false);
 //    		menu.getItem(2).setVisible(false);
 //    	}
-//    	
-//        return true;
-//    }
+    	
+        return true;
+    }
         
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
@@ -70,7 +63,7 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
 //    }
 
 	@Override
-    public void onItemSelected(long id) {
+    public void onCollectionItemSelected(long id) {
 //        if (mTwoPane) {
 //        	loadDetailsPane(id);
 //        	invalidateOptionsMenu();

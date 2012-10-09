@@ -7,16 +7,19 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
-public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks {
+public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, CollectionListFragment.Callbacks {
     private boolean mTwoPane;
-    private long mSelectedID;
+    private long mSelectedConnectionID;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         }
         
         LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshReceiver, new IntentFilter(Constants.MessageConnectionItemChanged));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mConnectedReceiver, new IntentFilter(Constants.MessageConnected));
 
         new AddConnectionIfNoneExistTask().execute();
     }
@@ -40,7 +44,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
     	if (mTwoPane) {
-    		boolean enable = mSelectedID != 0;
+    		boolean enable = mSelectedConnectionID != 0;
     		menu.getItem(1).setEnabled(enable);
     		menu.getItem(2).setEnabled(enable);
     	}
@@ -68,10 +72,10 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
             	Utils.addConnection(this);
                 return true;
     		case R.id.connection_detail_menu_edit:
-    			Utils.editConnection(this, mSelectedID);
+    			Utils.editConnection(this, mSelectedConnectionID);
     			return true;
     		case R.id.connection_detail_menu_delete:
-    			Utils.deleteConnection(this, mSelectedID, false);
+    			Utils.deleteConnection(this, mSelectedConnectionID, false);
     			return true;
             case R.id.connection_list_menu_configure:
             	Intent intent = new Intent(this, PreferencesActivity.class);
@@ -83,7 +87,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 
 	@Override
-    public void onItemSelected(long id) {
+    public void onConnectionItemSelected(long id) {
         if (mTwoPane) {
         	loadDetailsPane(id);
         	invalidateOptionsMenu();
@@ -95,7 +99,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 	
     private void loadDetailsPane(long id) {
-    	mSelectedID = id;
+    	mSelectedConnectionID = id;
         Bundle arguments = new Bundle();
         arguments.putLong(ConnectionDetailFragment.ARG_CONNECTION_ID, id);
         ConnectionDetailFragment fragment = new ConnectionDetailFragment();
@@ -104,6 +108,18 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
                 .replace(R.id.connection_detail_container, fragment)
                 .commit();
 	}
+    
+    private void loadCollectionListPane() {
+    	View listPane = findViewById(R.id.collection_list_container);
+    	listPane.setVisibility(View.VISIBLE);
+    	
+        Bundle arguments = new Bundle();
+        CollectionListFragment fragment = new CollectionListFragment();
+        fragment.setArguments(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.collection_list_container, fragment)
+                .commit();
+    }
 
 	private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
@@ -125,10 +141,31 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 		public void onReceive(Context context, Intent intent) {
 			
 			if (mTwoPane) {
-				mSelectedID = intent.getLongExtra(Constants.MessageItemID, 0);
-				loadDetailsPane(mSelectedID);
+				mSelectedConnectionID = intent.getLongExtra(Constants.MessageItemID, 0);
+				loadDetailsPane(mSelectedConnectionID);
 			}
 			invalidateOptionsMenu();
 		}
 	};
+	
+	private BroadcastReceiver mConnectedReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (mTwoPane) {
+				loadCollectionListPane();
+			}
+	    }
+	};
+
+	@Override
+	public void onCollectionItemSelected(long id) {
+		FragmentManager fm = getSupportFragmentManager();
+		
+        fm.beginTransaction()
+        	.addToBackStack(null)
+        	.hide(fm.findFragmentById(R.id.connection_list))
+        	.hide(fm.findFragmentById(R.id.connection_detail_container))
+        	.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+	        .commit();
+	}
 }

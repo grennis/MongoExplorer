@@ -29,7 +29,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     public interface Callbacks {
-        public void onItemSelected(long id);
+        public void onConnectionItemSelected(long id);
     }
 
     public ConnectionListFragment() {
@@ -78,7 +78,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         super.onListItemClick(listView, view, position, id);
         
         if (mCallbacks != null)
-        	mCallbacks.onItemSelected(mAdapter.getItemId(position));
+        	mCallbacks.onConnectionItemSelected(mAdapter.getItemId(position));
     }
 
     @Override

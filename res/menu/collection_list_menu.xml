@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/collection_list_menu_add"
+          android:icon="@android:drawable/ic_menu_add"
+          android:title="Add Collection"
+          android:showAsAction="withText|ifRoom"/>
+    <item android:id="@+id/collection_detail_menu_edit"
+          android:icon="@android:drawable/ic_menu_edit"
+          android:title="Edit"
+          android:showAsAction="withText|ifRoom"/>
+    <item android:id="@+id/collection_detail_menu_delete"
+          android:icon="@android:drawable/ic_menu_delete"
+          android:title="Delete"
+          android:showAsAction="withText|ifRoom"/>
+	<item android:id="@+id/collection_list_menu_configure"
+          android:icon="@android:drawable/ic_menu_preferences"
+          android:title="Settings"
+          android:showAsAction="withText|ifRoom"/>
+</menu>
+
