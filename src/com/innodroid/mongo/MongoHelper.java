@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 
 public class MongoHelper {
@@ -43,4 +45,22 @@ public class MongoHelper {
     	list.toArray(namesArray);
     	return namesArray;
     }
+
+	public static long getCollectionCount(String name) {
+		return Database.getCollection(name).getCount();
+	}
+	
+	public static String[] getPageOfDocuments(String collection, int start, int take) {
+		DBCollection coll = Database.getCollection(collection);
+		DBCursor cursor = coll.find().skip(start).limit(take);		
+		ArrayList<String> results = new ArrayList<String>();
+		
+		while (cursor.hasNext()) {
+			results.add(cursor.curr().toString());
+		}
+		
+		String[] res = new String[results.size()];
+		results.toArray(res);
+		return res;
+	}
 }

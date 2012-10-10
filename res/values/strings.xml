@@ -3,6 +3,7 @@
     <string name="title_connection_detail">Connection</string>
     <string name="title_connection_list">Connections</string>
     <string name="title_setup_connection">Setup Connection</string>
+    <string name="title_document_list">Documents</string>
     <string name="setup_connection_name">Name</string>
     <string name="setup_connection_server">Server</string>
     <string name="setup_connection_port">Port</string>

@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="6dp"
-    android:paddingBottom="6dp">
+    android:paddingBottom="6dp" 
+    android:background="@drawable/list_item_background"
+    >
 
    	<ImageView android:id="@+id/list_item_collection_icon"
    	    android:contentDescription="@string/title_connection_list"
@@ -13,15 +15,25 @@
 	    android:layout_alignParentLeft="true"
 	    android:layout_centerVertical="true" />
     
+	<TextView android:id="@+id/list_item_collection_count"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginRight="6dp"
+        android:layout_alignParentRight="true"
+	    android:layout_centerVertical="true"
+        android:textStyle="bold"
+        android:textSize="24sp" />
+   	
 	<TextView android:id="@+id/list_item_collection_name"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginLeft="6dp"
         android:layout_toRightOf="@id/list_item_collection_icon"
+        android:layout_toLeftOf="@id/list_item_collection_count"
 	    android:layout_centerVertical="true"
         android:textStyle="bold"
         android:textSize="24sp" />
-		
+			
 </RelativeLayout>
 
 

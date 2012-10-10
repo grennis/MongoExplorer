@@ -12,20 +12,19 @@ import android.widget.ListView;
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 
-public class CollectionListFragment extends ListFragment { //implements LoaderCallbacks<Cursor> {
+public class DocumentListFragment extends ListFragment { //implements LoaderCallbacks<Cursor> {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
-    private boolean mActivateOnItemClick;
     private MongoCollectionAdapter mAdapter;
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     public interface Callbacks {
-        public void onCollectionItemSelected(long id);
+        public void onDocumentItemSelected(long id);
     }
 
-    public CollectionListFragment() {
+    public DocumentListFragment() {
     }
 
     @Override
@@ -35,7 +34,7 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
 		mAdapter = new MongoCollectionAdapter(getActivity());
 		setListAdapter(mAdapter);
 
-		new LoadNamesTask().execute();
+		//new LoadNamesTask().execute();
     }
 
     @Override
@@ -44,10 +43,6 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-        
-        getListView().setChoiceMode(mActivateOnItemClick
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
     }
     
     @Override
@@ -75,7 +70,7 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
         super.onListItemClick(listView, view, position, id);
         
         if (mCallbacks != null)
-        	mCallbacks.onCollectionItemSelected(mAdapter.getItemId(position));
+        	mCallbacks.onDocumentItemSelected(mAdapter.getItemId(position));
     }
 
     @Override
@@ -87,7 +82,9 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
     }
     
     public void setActivateOnItemClick(boolean activateOnItemClick) {
-    	mActivateOnItemClick = true;
+        getListView().setChoiceMode(activateOnItemClick
+                ? ListView.CHOICE_MODE_SINGLE
+                : ListView.CHOICE_MODE_NONE);
     }
 
     public void setActivatedPosition(int position) {
@@ -131,28 +128,6 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
 			super.onPostExecute(result);
 
 			mAdapter.loadItems(result);
-			
-			new LoadCountsTask().execute(result);
-		}
-    }
-
-    private class LoadCountsTask extends AsyncTask<String, Long, Void> {
-    	private int mIndex;
-    	
-		@Override
-		protected Void doInBackground(String... arg0) {
-			for (mIndex = 0; mIndex<arg0.length; mIndex++) {
-				publishProgress(MongoHelper.getCollectionCount(arg0[mIndex]));
-			}
-			
-			return null;
-		}
-		
-		@Override
-		protected void onProgressUpdate(Long... values) {
-			super.onProgressUpdate(values);
-			
-			mAdapter.setItemCount(mIndex, values[0]);
 		}
     }
 }

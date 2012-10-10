@@ -1,9 +1,9 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:name="com.innodroid.mongobrowser.ConnectionListFragment"
-    android:id="@+id/fragment_connection_list"
+    android:name="com.innodroid.mongobrowser.DocumentListFragment"
+    android:id="@+id/document_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    tools:context=".ConnectionListActivity" />
+    tools:context=".CollectionListActivity" />
