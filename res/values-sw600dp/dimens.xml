@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="connection_detail_header_size">24sp</dimen>
-    <dimen name="connection_detail_info_size">16sp</dimen>
+    <dimen name="connection_detail_header_size">34sp</dimen>
+    <dimen name="connection_detail_info_size">20sp</dimen>
     <dimen name="connection_detail_text_size">16sp</dimen>
 </resources>
 

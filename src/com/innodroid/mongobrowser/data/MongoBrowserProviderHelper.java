@@ -31,6 +31,15 @@ public class MongoBrowserProviderHelper {
 		mResolver.update(MongoBrowserProvider.CONNECTION_URI, values, BaseColumns._ID + " = ?", new String[] { Long.toString(id) });
 	}
 
+	public void updateConnectionLastConnect(long id) {
+		Log.i(LOG_TAG, "Updating Connection");
+		long lastConnect = System.currentTimeMillis();
+
+		ContentValues cv = new ContentValues();
+		cv.put(MongoBrowserProvider.NAME_CONNECTION_LAST_CONNECT, lastConnect);
+		mResolver.update(MongoBrowserProvider.CONNECTION_URI, cv, BaseColumns._ID + " = ?", new String[] { Long.toString(id) });
+	}
+
 	public void deleteConnection(long id) {
 		Log.i(LOG_TAG, "Deleting Connection");
 

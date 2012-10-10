@@ -5,37 +5,43 @@
 	android:padding="16dp"
 	tools:context=".ConnectionDetailFragment">
 
-   	<ImageView 
-	    android:id="@+id/connection_detail_image"
-	    android:contentDescription="@string/title_connection_detail"
-	    android:src="@drawable/database"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content" />
-
-	<TextView 
-	    android:id="@+id/connection_detail_title"
-	    android:textSize="@dimen/connection_detail_header_size"
-	    android:layout_marginLeft="12dp"
-	    android:layout_toRightOf="@id/connection_detail_image"
+	<RelativeLayout android:id="@+id/connection_detail_header"
 	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content" />
-
-	<TextView 
-	    android:id="@+id/connection_detail_info"
-	    android:textSize="@dimen/connection_detail_info_size"
-	    android:layout_marginLeft="12dp"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content" 
-	    android:layout_toRightOf="@id/connection_detail_image"
-	    android:layout_below="@id/connection_detail_title" />
+	    android:layout_height="wrap_content">
+    
+	   	<ImageView 
+		    android:id="@+id/connection_detail_image"
+		    android:contentDescription="@string/title_connection_detail"
+		    android:src="@drawable/database"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content" />
+	
+		<TextView 
+		    android:id="@+id/connection_detail_title"
+		    android:textSize="@dimen/connection_detail_header_size"
+		    android:layout_marginLeft="12dp"
+		    android:layout_toRightOf="@id/connection_detail_image"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" />
+	
+		<TextView 
+		    android:id="@+id/connection_detail_info"
+		    android:textSize="@dimen/connection_detail_info_size"
+		    android:layout_marginLeft="12dp"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" 
+		    android:layout_toRightOf="@id/connection_detail_image"
+		    android:layout_below="@id/connection_detail_title" />
+		
+	</RelativeLayout>
 	
 	<TextView 
 	    android:id="@+id/connection_detail_last_connect"
 	    android:textSize="@dimen/connection_detail_text_size"
-	    android:layout_marginTop="20dp"
+	    android:layout_marginTop="12dp"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_below="@id/connection_detail_image" />
+	    android:layout_below="@id/connection_detail_header" />
 		
 	<Button
 	    android:id="@+id/connection_detail_connect"

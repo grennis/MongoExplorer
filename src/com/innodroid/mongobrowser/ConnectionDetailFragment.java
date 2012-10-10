@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
+import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
 public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, ConnectionSetupDialogFragment.Callbacks {
 
@@ -47,12 +48,19 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_connection_detail, container, false);
-        mTitle = (TextView) rootView.findViewById(R.id.connection_detail_title);
-        mInfo = (TextView) rootView.findViewById(R.id.connection_detail_info);
-        mLastConnect = (TextView) rootView.findViewById(R.id.connection_detail_last_connect);
+        setHasOptionsMenu(true);
+        return inflater.inflate(R.layout.fragment_connection_detail, container, false);
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+
+        mTitle = (TextView) getActivity().findViewById(R.id.connection_detail_title);
+        mInfo = (TextView) getActivity().findViewById(R.id.connection_detail_info);
+        mLastConnect = (TextView) getActivity().findViewById(R.id.connection_detail_last_connect);
         
-        Button button = (Button)rootView.findViewById(R.id.connection_detail_connect);
+        Button button = (Button) getActivity().findViewById(R.id.connection_detail_connect);
         button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -61,8 +69,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
         });
         
         getLoaderManager().initLoader(0, getArguments(), this);
-        setHasOptionsMenu(true);
-        return rootView;
     }
     
     @Override
@@ -152,6 +158,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		    	String password = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PASSWORD); 
 				
 		    	MongoHelper.connect(server, port, database, user, password);
+		    	new MongoBrowserProviderHelper(getActivity().getContentResolver()).updateConnectionLastConnect(mID);
 		    	
 				return true;
 			} catch (Exception ex) {

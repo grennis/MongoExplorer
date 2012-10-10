@@ -9,8 +9,8 @@
 
 	<CheckBox
 	    android:id="@+id/list_item_connection_checked"
-	    android:layout_width="60dp"
-	    android:layout_height="60dp"
+	    android:layout_width="40dp"
+	    android:layout_height="40dp"
 	    android:layout_alignParentTop="true"
 	    android:layout_alignParentRight="true"
 	    android:button="@android:drawable/btn_star" 
@@ -30,6 +30,8 @@
         android:layout_width="match_parent"
         android:textStyle="italic"
         android:textSize="18sp"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:layout_toLeftOf="@id/list_item_connection_checked"
         android:layout_below="@id/list_item_connection_name" />
 		
