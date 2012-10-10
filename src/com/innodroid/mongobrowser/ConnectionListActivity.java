@@ -1,30 +1,23 @@
 package com.innodroid.mongobrowser;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
-public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks {
+public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionSetupDialogFragment.Callbacks {
     private boolean mTwoPane;
     private boolean mViewsShifted;
     private FrameLayout mFrame1;
     private FrameLayout mFrame2;
     private FrameLayout mFrame3;
     private FrameLayout mFrame4;
-    private long mSelectedConnectionID;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,9 +37,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
                     .findFragmentById(R.id.fragment_connection_list))
                     .setActivateOnItemClick(true);
         }
-        
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshReceiver, new IntentFilter(Constants.MessageConnectionItemChanged));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mConnectedReceiver, new IntentFilter(Constants.MessageConnected));
 
         new AddConnectionIfNoneExistTask().execute();
     }
@@ -63,51 +53,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 		return super.onKeyDown(keyCode, event);
 	}
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    	if (mTwoPane) {
-    		boolean enable = mSelectedConnectionID != 0;
-    		menu.getItem(1).setEnabled(enable);
-    		menu.getItem(2).setEnabled(enable);
-    	}
-    	
-    	return super.onPrepareOptionsMenu(menu);
-    }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	MenuInflater mi = getMenuInflater();
-        mi.inflate(R.menu.connection_list_menu, menu);
-        
-    	if (!mTwoPane) {
-    		menu.getItem(1).setVisible(false);
-    		menu.getItem(2).setVisible(false);
-    	}
-    	
-        return true;
-    }
-        
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.connection_list_menu_add:
-            	Utils.addConnection(this);
-                return true;
-    		case R.id.connection_detail_menu_edit:
-    			Utils.editConnection(this, mSelectedConnectionID);
-    			return true;
-    		case R.id.connection_detail_menu_delete:
-    			Utils.deleteConnection(this, mSelectedConnectionID, false);
-    			return true;
-            case R.id.connection_list_menu_configure:
-            	Intent intent = new Intent(this, PreferencesActivity.class);
-            	startActivity(intent);
-                return true;
-        }
-
-    	return super.onOptionsItemSelected(item);
-    }
-
 	@Override
     public void onConnectionItemSelected(long id) {
         if (mTwoPane) {
@@ -121,7 +66,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 	
     private void loadDetailsPane(long id) {
-    	mSelectedConnectionID = id;
         Bundle arguments = new Bundle();
         arguments.putLong(ConnectionDetailFragment.ARG_CONNECTION_ID, id);
         ConnectionDetailFragment fragment = new ConnectionDetailFragment();
@@ -173,35 +117,19 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 			super.onPostExecute(res);
 			
 			if (res)
-				Utils.addConnection(ConnectionListActivity.this);
+				addConnection();
 		}
     }
     
-	private BroadcastReceiver mRefreshReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			
-			if (mTwoPane) {
-				mSelectedConnectionID = intent.getLongExtra(Constants.MessageItemID, 0);
-				loadDetailsPane(mSelectedConnectionID);
-			}
-			invalidateOptionsMenu();
-		}
-	};
-	
-	private BroadcastReceiver mConnectedReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (mTwoPane) {
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						loadCollectionListPane();
-					}					
-				});
-			}
-	    }
-	};
+    @Override
+    public void onAddConnection() {
+    	addConnection();
+    }
+
+    private void addConnection() {
+        DialogFragment fragment = ConnectionSetupDialogFragment.create(0, this);
+        fragment.show(getSupportFragmentManager(), null);
+    }
 
 	@Override
 	public void onCollectionItemSelected(long id) {
@@ -211,5 +139,27 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
 	@Override
 	public void onDocumentItemSelected(long id) {
+	}
+
+	@Override
+	public void onConnected() {
+		loadCollectionListPane();
+	}
+
+	@Override
+	public void onConnectionDeleted() {
+        getSupportFragmentManager().beginTransaction()
+	        .remove(getSupportFragmentManager().findFragmentById(R.id.frame_2))
+	        .commit();
+	}
+
+	@Override
+	public void onConnectionSaved(long id) {
+		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connection_list);
+        fragment.refreshList(id);
+        invalidateOptionsMenu();
+        
+        if (mTwoPane)
+        	loadDetailsPane(id);
 	}
 }

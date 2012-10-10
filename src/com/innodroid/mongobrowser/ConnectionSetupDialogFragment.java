@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,12 +28,18 @@ public class ConnectionSetupDialogFragment extends DialogFragment implements Loa
 	private TextView mDatabaseView;
 	private TextView mUserView;
 	private TextView mPasswordView;
+	private static Callbacks mCallbacks;
 
-    static ConnectionSetupDialogFragment create(long id) {
+	public interface Callbacks {
+		void onConnectionSaved(long id);
+	}
+	
+    static ConnectionSetupDialogFragment create(long id, Callbacks callbacks) {
     	ConnectionSetupDialogFragment fragment = new ConnectionSetupDialogFragment();
     	Bundle args = new Bundle();
     	args.putLong(ARG_CONNECTION_ID, id);
     	fragment.setArguments(args);
+    	ConnectionSetupDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
@@ -105,9 +109,8 @@ public class ConnectionSetupDialogFragment extends DialogFragment implements Loa
     	else
     		helper.updateConnection(mID, name, server, port, db, user, pass);
 
-    	Intent intent = new Intent(Constants.MessageConnectionItemChanged);
-    	intent.putExtra(Constants.MessageItemID, mID);
-    	LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+    	mCallbacks.onConnectionSaved(mID);
+
     	return true;
     }
     

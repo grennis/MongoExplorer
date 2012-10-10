@@ -1,21 +1,25 @@
 package com.innodroid.mongobrowser;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -25,12 +29,18 @@ import android.widget.TextView;
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 
-public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
+public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, ConnectionSetupDialogFragment.Callbacks {
 
 	private TextView mTitle;
 	private TextView mInfo;
 	private TextView mLastConnect;
+	private Callbacks mCallbacks;
     public static final String ARG_CONNECTION_ID = "item_id";
+
+    public interface Callbacks {
+    	public void onConnectionDeleted();
+        public void onConnected();
+    }
 
     public ConnectionDetailFragment() {
     }
@@ -51,10 +61,45 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
         });
         
         getLoaderManager().initLoader(0, getArguments(), this);
-        
+        setHasOptionsMenu(true);
         return rootView;
     }
     
+    @Override
+    public void onAttach(Activity activity) {
+    	super.onAttach(activity);
+    	
+    	mCallbacks = (Callbacks)activity;
+    }
+    
+    @Override
+    public void onDetach() {
+    	super.onDetach();
+    	
+    	mCallbacks = null;
+    }
+    
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    	inflater.inflate(R.menu.connection_detail_menu, menu);
+    }    
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	long id = getArguments().getLong(ARG_CONNECTION_ID);
+    	
+        switch (item.getItemId()) {
+    		case R.id.connection_detail_menu_edit:
+    			editConnection(getActivity(), id);
+    			return true;
+    		case R.id.connection_detail_menu_delete:
+    			deleteConnection(getActivity(), id);
+    			return true;
+        }
+
+    	return super.onOptionsItemSelected(item);
+    }
+
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle args) {
 		Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, args.getLong(ARG_CONNECTION_ID));
 	    return new CursorLoader(getActivity(), uri, null, null, null, null);
@@ -121,8 +166,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			mDialog.dismiss();
 			
 			if (result) {
-		    	Intent intent = new Intent(Constants.MessageConnected);
-		    	LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+				mCallbacks.onConnected();
 			} else {
 		        new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_menu_delete)
@@ -139,5 +183,61 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
                 .create().show();
 			}
 		}
+	}
+	
+    private void editConnection(FragmentActivity activity, long id) {
+        DialogFragment fragment = ConnectionSetupDialogFragment.create(id, this);
+        fragment.show(activity.getSupportFragmentManager(), null);
+    }
+
+    private void deleteConnection(final FragmentActivity activity, final long id) {
+        new AlertDialog.Builder(activity)
+	        .setIcon(android.R.drawable.ic_menu_delete)
+	        .setMessage(R.string.confirm_delete_connection)
+	        .setTitle(R.string.confirm_delete_title)
+	        .setCancelable(true)
+	        .setPositiveButton(android.R.string.ok,
+	            new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                	new DeleteConnectionTask(activity, id).execute();
+	                }
+	            }
+	        )
+	        .setNegativeButton(android.R.string.cancel,
+	            new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                	//
+	                }
+	            }
+	        )
+	        .create().show();
+    }
+    
+    private class DeleteConnectionTask extends AsyncTask<Void, Void, Boolean> {
+    	private long mID;
+    	private FragmentActivity mActivity;
+    	
+    	public DeleteConnectionTask(FragmentActivity activity, long id) {
+    		mActivity = activity;
+    		mID = id;
+    	}
+    	
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mID);
+			mActivity.getContentResolver().delete(uri, null, null);
+			return true;
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+
+			mCallbacks.onConnectionDeleted();
+		}
+    }
+
+	@Override
+	public void onConnectionSaved(long id) {
 	}
 }

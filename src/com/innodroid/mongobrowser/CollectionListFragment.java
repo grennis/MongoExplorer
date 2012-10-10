@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ListView;
 
@@ -34,10 +36,16 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
 
 		mAdapter = new MongoCollectionAdapter(getActivity());
 		setListAdapter(mAdapter);
+		setHasOptionsMenu(true);
 
 		new LoadNamesTask().execute();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    	inflater.inflate(R.menu.collection_list_menu, menu);
+    }
+    
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -137,12 +145,10 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
     }
 
     private class LoadCountsTask extends AsyncTask<String, Long, Void> {
-    	private int mIndex;
-    	
 		@Override
 		protected Void doInBackground(String... arg0) {
-			for (mIndex = 0; mIndex<arg0.length; mIndex++) {
-				publishProgress(MongoHelper.getCollectionCount(arg0[mIndex]));
+			for (int i = 0; i<arg0.length; i++) {
+				publishProgress(new Long[] { (long)i, MongoHelper.getCollectionCount(arg0[i])});
 			}
 			
 			return null;
@@ -152,7 +158,8 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
 		protected void onProgressUpdate(Long... values) {
 			super.onProgressUpdate(values);
 			
-			mAdapter.setItemCount(mIndex, values[0]);
+			int index = (int)(long)values[0];
+			mAdapter.setItemCount(index, values[1]);
 		}
     }
 }

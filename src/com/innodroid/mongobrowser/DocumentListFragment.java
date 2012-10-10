@@ -2,14 +2,11 @@ package com.innodroid.mongobrowser;
 
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
-import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 
 public class DocumentListFragment extends ListFragment { //implements LoaderCallbacks<Cursor> {
@@ -50,10 +47,6 @@ public class DocumentListFragment extends ListFragment { //implements LoaderCall
         super.onAttach(activity);
 
         //LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, new IntentFilter(Constants.MessageConnectionItemChanged));
-
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
 
         mCallbacks = (Callbacks) activity;
     }
@@ -96,38 +89,19 @@ public class DocumentListFragment extends ListFragment { //implements LoaderCall
 
         mActivatedPosition = position;
     }
-    
-//	public Loader<Cursor> onCreateLoader(int id, Bundle params) {
-//	    return new CursorLoader(getActivity(), MongoBrowserProvider.CONNECTION_URI, null, null, null, MongoBrowserProvider.NAME_CONNECTION_NAME);
-//	}
-//
-//	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-//		mAdapter.swapCursor(cursor);
-//	}
-//
-//	public void onLoaderReset(Loader<Cursor> loader) {
-//		mAdapter.swapCursor(null);
-//	}
 
-//	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+//    private class LoadNamesTask extends AsyncTask<Void, Void, String[]> {
 //		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			getLoaderManager().initLoader(0, null, CollectionListFragment.this);
+//		protected String[] doInBackground(Void... arg0) {
+//			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
+//			return MongoHelper.getCollectionNames(includeSystem);
+//		}		
+//		
+//		@Override
+//		protected void onPostExecute(String[] result) {
+//			super.onPostExecute(result);
+//
+//			mAdapter.loadItems(result);
 //		}
-//	};
-    
-    private class LoadNamesTask extends AsyncTask<Void, Void, String[]> {
-		@Override
-		protected String[] doInBackground(Void... arg0) {
-			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
-			return MongoHelper.getCollectionNames(includeSystem);
-		}		
-		
-		@Override
-		protected void onPostExecute(String[] result) {
-			super.onPostExecute(result);
-
-			mAdapter.loadItems(result);
-		}
-    }
+//    }
 }

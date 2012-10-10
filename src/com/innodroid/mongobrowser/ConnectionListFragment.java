@@ -3,17 +3,16 @@ package com.innodroid.mongobrowser;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -27,8 +26,10 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     private MongoConnectionAdapter mAdapter;
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    private long mSelectAfterLoad;
 
     public interface Callbacks {
+    	public void onAddConnection();
         public void onConnectionItemSelected(long id);
     }
 
@@ -41,8 +42,35 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 
 		mAdapter = new MongoConnectionAdapter(getActivity(), null, true);
 		setListAdapter(mAdapter);
+		
+		setHasOptionsMenu(true);
+    }
 
-		getLoaderManager().initLoader(0, null, this);
+    @Override
+    public void onResume() {
+    	super.onResume();
+
+    	refreshList(-1);
+    }
+    
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    	inflater.inflate(R.menu.connection_list_menu, menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.connection_list_menu_add:
+            	mCallbacks.onAddConnection();
+                return true;
+            case R.id.connection_list_menu_configure:
+            	Intent intent = new Intent(getActivity(), PreferencesActivity.class);
+            	startActivity(intent);
+                return true;
+        }
+
+    	return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -57,18 +85,11 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, new IntentFilter(Constants.MessageConnectionItemChanged));
-
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
-
         mCallbacks = (Callbacks) activity;
     }
 
     @Override
     public void onDetach() {
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
         mCallbacks = null;
         super.onDetach();
     }
@@ -89,6 +110,11 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         }
     }
 
+    public void refreshList(long selectAfterLoad) {
+    	mSelectAfterLoad = selectAfterLoad;
+		getLoaderManager().initLoader(0, null, this);
+    }
+    
     @SuppressLint("NewApi")
 	public boolean isItemSelected() {
         return getListView().getCheckedItemCount() > 0;
@@ -116,16 +142,29 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		mAdapter.swapCursor(cursor);
+		
+		if (mSelectAfterLoad > 0)
+			selectItem(mSelectAfterLoad);
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
 		mAdapter.swapCursor(null);
 	}
 
-	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			getLoaderManager().initLoader(0, null, ConnectionListFragment.this);
-		}
-	};
+	private void selectItem(long id) {
+		int pos = 0;
+		Cursor cursor = mAdapter.getCursor();
+		int original = cursor.getPosition();
+		cursor.moveToFirst();
+		do {
+			if (cursor.getLong(MongoBrowserProvider.INDEX_CONNECTION_ID) == id)
+				break;
+			pos++;
+		} while (cursor.moveToNext());
+		
+		cursor.moveToPosition(original);
+		
+		setActivatedPosition(pos);
+		
+	}
 }
