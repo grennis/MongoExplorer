@@ -18,7 +18,9 @@ public class MongoHelper {
 		
 		Connection = new Mongo(server, port);
     	Database = Connection.getDB(dbname);
-    	Database.authenticate(user, pass.toCharArray());		
+    	
+    	if (user != null && user.length() > 0)
+    		Database.authenticate(user, pass.toCharArray());		
 	}
 	
     private static void disconnect() {
