@@ -8,14 +8,14 @@
           android:icon="@android:drawable/ic_menu_add"
           android:title="Add Document"
           android:showAsAction="withText|ifRoom"/>
+    <item android:id="@+id/document_list_menu_delete"
+          android:icon="@android:drawable/ic_menu_delete"
+          android:title="Drop Collection"
+          android:showAsAction="withText|ifRoom"/>
     <!-- 
     <item android:id="@+id/collection_detail_menu_edit"
           android:icon="@android:drawable/ic_menu_edit"
           android:title="Edit"
-          android:showAsAction="withText|ifRoom"/>
-    <item android:id="@+id/collection_detail_menu_delete"
-          android:icon="@android:drawable/ic_menu_delete"
-          android:title="Delete"
           android:showAsAction="withText|ifRoom"/>
            -->
 </menu>

@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
+import com.innodroid.mongobrowser.UiUtils.AlertDialogCallbacks;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
@@ -141,26 +142,13 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     }
 
     private void deleteConnection() {
-        new AlertDialog.Builder(getActivity())
-	        .setIcon(android.R.drawable.ic_menu_delete)
-	        .setMessage(R.string.confirm_delete_connection)
-	        .setTitle(R.string.confirm_delete_title)
-	        .setCancelable(true)
-	        .setPositiveButton(android.R.string.ok,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                	new DeleteConnectionTask().execute();
-	                }
-	            }
-	        )
-	        .setNegativeButton(android.R.string.cancel,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                	//
-	                }
-	            }
-	        )
-	        .create().show();
+    	UiUtils.confirm(getActivity(), R.string.confirm_delete_connection, new AlertDialogCallbacks() {
+			@Override
+			public boolean onOK() {
+            	new DeleteConnectionTask().execute();
+				return true;
+			}
+    	});
     }
     
 	@Override

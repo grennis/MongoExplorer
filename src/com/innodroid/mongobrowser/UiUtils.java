@@ -2,6 +2,7 @@ package com.innodroid.mongobrowser;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 import android.widget.Button;
@@ -46,5 +47,27 @@ public class UiUtils {
         });     
         
         return dialog;
+	}
+
+	public static void confirm(Context context, int message, final AlertDialogCallbacks callbacks) {
+        new AlertDialog.Builder(context)
+	        .setIcon(android.R.drawable.ic_dialog_alert)
+	        .setMessage(message)
+	        .setTitle(R.string.title_confirm)
+	        .setCancelable(true)
+	        .setPositiveButton(android.R.string.ok,
+	            new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                	callbacks.onOK();
+	                }
+	            }
+	        )
+	        .setNegativeButton(android.R.string.cancel,
+	            new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                }
+	            }
+	        )
+	        .create().show();
 	}
 }

@@ -154,6 +154,10 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	public void onCollectionEdited(String name) {
 	}
 	
+	@Override
+	public void onCollectionDropped(String name) {
+	}
+
     private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... arg0) {

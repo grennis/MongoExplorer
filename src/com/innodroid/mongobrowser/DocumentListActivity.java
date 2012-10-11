@@ -1,9 +1,6 @@
 package com.innodroid.mongobrowser;
 
-import com.innodroid.mongo.MongoHelper;
-
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
@@ -45,5 +42,10 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	@Override
 	public void onCollectionEdited(String name) {
 		setTitle(name);
+	}
+
+	@Override
+	public void onCollectionDropped(String name) {
+		finish();
 	}
 }

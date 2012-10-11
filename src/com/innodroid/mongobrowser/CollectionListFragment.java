@@ -40,10 +40,15 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
 		mAdapter = new MongoCollectionAdapter(getActivity());
 		setListAdapter(mAdapter);
 		setHasOptionsMenu(true);
-
-		new LoadNamesTask().execute();
     }
 
+    @Override
+    public void onResume() {
+    	super.onResume();
+
+    	new LoadNamesTask().execute();
+    }
+    
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.collection_list_menu, menu);
@@ -133,15 +138,19 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
 	}
 
     private class AddCollectionTask extends AsyncTask<String, Void, String> {
-    	private Exception mException;
+    	private String mError;
 
     	@Override
 		protected String doInBackground(String... args) {
     		try {
-    			MongoHelper.createCollection(args[0]);
+    			if (!MongoHelper.createCollection(args[0])) {
+    				mError = "Collection already exists";
+    				return null;
+    			}
+    				
     			return args[0];
     		} catch (Exception ex) {
-    			mException = ex;
+    			mError = ex.getMessage();
     			return null;
     		}
 		}
@@ -150,10 +159,10 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 
-			if (mException == null)
+			if (mError == null)
 				mAdapter.add(result);
 			else
-				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), mError, Toast.LENGTH_SHORT).show();
 		}		
     }
 	

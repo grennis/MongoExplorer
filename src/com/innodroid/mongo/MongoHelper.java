@@ -54,10 +54,14 @@ public class MongoHelper {
 		return Database.getCollection(name).getCount();
 	}
 	
-	public static void createCollection(String name) {
-		DBObject dbo = new BasicDBObject();
-		dbo.put("size", 1);
-		Database.createCollection(name, null);
+	public static boolean createCollection(String name) {
+		if (Database.collectionExists(name))
+			return false;
+		DBObject obj = new BasicDBObject();
+		obj.put("_id", "1");
+		Database.getCollection(name).save(obj);
+		Database.getCollection(name).remove(obj);
+		return true;
 	}
 	
 	public static void renameCollection(String oldName, String newName) {
@@ -76,5 +80,9 @@ public class MongoHelper {
 		String[] res = new String[results.size()];
 		results.toArray(res);
 		return res;
+	}
+
+	public static void dropCollection(String name) {
+		Database.getCollection(name).drop();
 	}
 }

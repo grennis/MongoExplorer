@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
+import com.innodroid.mongobrowser.UiUtils.AlertDialogCallbacks;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 
 public class DocumentListFragment extends ListFragment implements EditCollectionDialogFragment.Callbacks {
@@ -27,6 +28,7 @@ public class DocumentListFragment extends ListFragment implements EditCollection
     public interface Callbacks {
         public void onDocumentItemSelected(long id);
         public void onCollectionEdited(String name);
+        public void onCollectionDropped(String name);
     }
 
     public DocumentListFragment() {
@@ -81,15 +83,28 @@ public class DocumentListFragment extends ListFragment implements EditCollection
     		case R.id.document_list_menu_edit:
     			editCollection();
     			return true;
+    		case R.id.document_list_menu_delete:
+    			dropCollection();
+    			return true;
+    		default:
+    	    	return super.onOptionsItemSelected(item);
         }
-
-    	return super.onOptionsItemSelected(item);
     }
 
     
-    private void editCollection() {
+	private void editCollection() {
         DialogFragment fragment = EditCollectionDialogFragment.create(mCollectionName, this);
         fragment.show(getFragmentManager(), null);
+	}
+
+    private void dropCollection() {
+    	UiUtils.confirm(getActivity(), R.string.confirm_drop_collection, new AlertDialogCallbacks() {
+			@Override
+			public boolean onOK() {
+            	new DropCollectionTask().execute();
+				return true;
+			}
+    	});
 	}
 
 	@Override
@@ -150,6 +165,32 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 			if (mException == null) {
 				mCollectionName = result;
 				mCallbacks.onCollectionEdited(result);
+			} else {
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}		
+    }
+
+    private class DropCollectionTask extends AsyncTask<Void, Void, Void> {
+    	private Exception mException;
+    	
+		@Override
+		protected Void doInBackground(Void... args) {
+			try {
+				MongoHelper.dropCollection(mCollectionName);
+			} catch (Exception ex) {
+				mException = ex;
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+
+			if (mException == null) {
+				mCallbacks.onCollectionDropped(mCollectionName);
 			} else {
 				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
 			}
