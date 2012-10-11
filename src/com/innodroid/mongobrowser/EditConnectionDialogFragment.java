@@ -1,9 +1,7 @@
 package com.innodroid.mongobrowser;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentUris;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -57,27 +55,12 @@ public class EditConnectionDialogFragment extends DialogFragment implements Load
     	if (id != 0)
     		getLoaderManager().initLoader(0, getArguments(), this);
 
-        return new AlertDialog.Builder(getActivity())
-                .setIcon(android.R.drawable.ic_menu_edit)
-                .setView(view)
-                .setTitle(R.string.title_edit_connection)
-                .setCancelable(true)
-                .setPositiveButton(android.R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        	if (save())
-                        		dialog.dismiss();
-                        }
-                    }
-                )
-                .setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        	//
-                        }
-                    }
-                )
-                .create();
+    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, R.string.title_edit_connection, new UiUtils.AlertDialogCallbacks() {			
+			@Override
+			public boolean onOK() {
+				return save();
+			}
+		});    	
     }
 
     private boolean save() {    	

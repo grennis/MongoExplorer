@@ -1,8 +1,6 @@
 package com.innodroid.mongobrowser;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
@@ -35,26 +33,12 @@ public class EditCollectionDialogFragment extends DialogFragment {
     	mNameView = (TextView)view.findViewById(R.id.edit_collection_name);
     	mNameView.setText(mName);
     	
-        return new AlertDialog.Builder(getActivity())
-                .setIcon(android.R.drawable.ic_menu_edit)
-                .setView(view)
-                .setTitle(R.string.title_edit_collection)
-                .setCancelable(true)
-                .setPositiveButton(android.R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        	save();
-                        }
-                    }
-                )
-                .setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        	//
-                        }
-                    }
-                )
-                .create();
+    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, R.string.title_edit_collection, new UiUtils.AlertDialogCallbacks() {			
+			@Override
+			public boolean onOK() {
+				return save();
+			}
+		});    	
     }
 
     private boolean save() {

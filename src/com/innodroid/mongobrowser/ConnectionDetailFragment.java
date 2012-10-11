@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
@@ -100,7 +101,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	
         switch (item.getItemId()) {
     		case R.id.connection_detail_menu_edit:
     			editConnection();
@@ -135,65 +135,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	public void onLoaderReset(Loader<Cursor> arg0) {
 	}
 	
-	private class ConnectTask extends AsyncTask<Void, Void, Boolean>{
-		private String mError;
-		private ProgressDialog mDialog;
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			
-			mDialog = ProgressDialog.show(getActivity(), null, "Connecting...", true, false);		
-		}
-		
-		@Override
-		protected Boolean doInBackground(Void... arg0) {
-			try {
-				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
-				Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-				cursor.moveToFirst();
-				
-		    	String server = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_SERVER);
-		    	int port = cursor.getInt(MongoBrowserProvider.INDEX_CONNECTION_PORT);
-		    	String database = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_DB);
-		    	String user = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_USER);
-		    	String password = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PASSWORD); 
-				
-		    	MongoHelper.connect(server, port, database, user, password);
-		    	new MongoBrowserProviderHelper(getActivity().getContentResolver()).updateConnectionLastConnect(mConnectionID);
-		    	
-				return true;
-			} catch (Exception ex) {
-				mError = ex.getMessage();
-				return false;
-			}
-		}
-		
-		@Override
-		protected void onPostExecute(Boolean result) {
-			super.onPostExecute(result);
-			mDialog.dismiss();
-			
-			if (result) {
-				mCallbacks.onConnected();
-			} else {
-		        new AlertDialog.Builder(getActivity())
-                .setIcon(android.R.drawable.ic_menu_delete)
-                .setMessage(mError)
-                .setTitle(R.string.connect_failed)
-                .setCancelable(true)
-                .setPositiveButton(android.R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        	//
-                        }
-                    }
-                )
-                .create().show();
-			}
-		}
-	}
-	
     private void editConnection() {
         DialogFragment fragment = EditConnectionDialogFragment.create(mConnectionID, this);
         fragment.show(getActivity().getSupportFragmentManager(), null);
@@ -226,19 +167,89 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	public void onConnectionEdited(long id) {
 	}
 
-    private class DeleteConnectionTask extends AsyncTask<Void, Void, Boolean> {
+	private class ConnectTask extends AsyncTask<Void, Void, Boolean>{
+		private String mException;
+		private ProgressDialog mDialog;
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			
+			mDialog = ProgressDialog.show(getActivity(), null, "Connecting...", true, false);		
+		}
+		
 		@Override
 		protected Boolean doInBackground(Void... arg0) {
-			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
-			getActivity().getContentResolver().delete(uri, null, null);
-			return true;
+			try {
+				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
+				Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+				cursor.moveToFirst();
+				
+		    	String server = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_SERVER);
+		    	int port = cursor.getInt(MongoBrowserProvider.INDEX_CONNECTION_PORT);
+		    	String database = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_DB);
+		    	String user = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_USER);
+		    	String password = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PASSWORD); 
+				
+		    	MongoHelper.connect(server, port, database, user, password);
+		    	new MongoBrowserProviderHelper(getActivity().getContentResolver()).updateConnectionLastConnect(mConnectionID);
+		    	
+				return true;
+			} catch (Exception ex) {
+				mException = ex.getMessage();
+				return false;
+			}
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			mDialog.dismiss();
+			
+			if (result) {
+				mCallbacks.onConnected();
+			} else {
+		        new AlertDialog.Builder(getActivity())
+	                .setIcon(android.R.drawable.ic_menu_delete)
+	                .setMessage(mException)
+	                .setTitle(R.string.connect_failed)
+	                .setCancelable(true)
+	                .setPositiveButton(android.R.string.ok,
+	                    new DialogInterface.OnClickListener() {
+	                        public void onClick(DialogInterface dialog, int whichButton) {
+	                        	//
+	                        }
+	                    }
+	                )
+	                .create().show();
+			}
+		}
+	}
+	
+    private class DeleteConnectionTask extends AsyncTask<Void, Void, Boolean> {
+    	private Exception mException;
+    	
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			try {
+				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
+				getActivity().getContentResolver().delete(uri, null, null);
+				return true;
+			} catch (Exception ex) {
+				mException = ex;
+				return false;
+			}
 		}
 		
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
 
-			mCallbacks.onConnectionDeleted();
+			if (mException == null) {
+				mCallbacks.onConnectionDeleted();
+			} else {
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
+			}
 		}
     }
 }

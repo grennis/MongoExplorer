@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
@@ -129,18 +130,29 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 	}
 	
     private class RenameCollectionTask extends AsyncTask<String, Void, String> {
+    	private Exception mException;
+    	
 		@Override
 		protected String doInBackground(String... args) {
-	    	MongoHelper.renameCollection(mCollectionName, args[0]);
-	    	return args[1];
+			try {
+				MongoHelper.renameCollection(mCollectionName, args[0]);
+				return args[0];
+			} catch (Exception ex) {
+				mException = ex;
+				return null;
+			}
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 
-			mCollectionName = result;
-			mCallbacks.onCollectionEdited(result);
-		}
+			if (mException == null) {
+				mCollectionName = result;
+				mCallbacks.onCollectionEdited(result);
+			} else {
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}		
     }
 }

@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
@@ -132,62 +133,69 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
 	}
 
     private class AddCollectionTask extends AsyncTask<String, Void, String> {
-		@Override
+    	private Exception mException;
+
+    	@Override
 		protected String doInBackground(String... args) {
-	    	MongoHelper.createCollection(args[0]);
-	    	return args[0];
+    		try {
+    			MongoHelper.createCollection(args[0]);
+    			return args[0];
+    		} catch (Exception ex) {
+    			mException = ex;
+    			return null;
+    		}
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 
-			mAdapter.add(result);
+			if (mException == null)
+				mAdapter.add(result);
+			else
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
 		}		
     }
 	
-//	public Loader<Cursor> onCreateLoader(int id, Bundle params) {
-//	    return new CursorLoader(getActivity(), MongoBrowserProvider.CONNECTION_URI, null, null, null, MongoBrowserProvider.NAME_CONNECTION_NAME);
-//	}
-//
-//	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-//		mAdapter.swapCursor(cursor);
-//	}
-//
-//	public void onLoaderReset(Loader<Cursor> loader) {
-//		mAdapter.swapCursor(null);
-//	}
-
-//	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			getLoaderManager().initLoader(0, null, CollectionListFragment.this);
-//		}
-//	};
-    
     private class LoadNamesTask extends AsyncTask<Void, Void, String[]> {
-		@Override
+    	private Exception mException;
+
+    	@Override
 		protected String[] doInBackground(Void... arg0) {
-			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
-			return MongoHelper.getCollectionNames(includeSystem);
+    		try {
+    			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
+    			return MongoHelper.getCollectionNames(includeSystem);
+    		} catch (Exception ex) {
+    			mException = ex;
+    			return null;
+    		}
 		}		
 		
 		@Override
 		protected void onPostExecute(String[] result) {
 			super.onPostExecute(result);
 
-			mAdapter.loadItems(result);
-			
-			new LoadCountsTask().execute(result);
+			if (mException == null) {
+				mAdapter.loadItems(result);
+				new LoadCountsTask().execute(result);
+			} else {
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
+			}
 		}
     }
 
     private class LoadCountsTask extends AsyncTask<String, Long, Void> {
-		@Override
+    	private Exception mException;
+
+    	@Override
 		protected Void doInBackground(String... arg0) {
-			for (int i = 0; i<arg0.length; i++) {
-				publishProgress(new Long[] { (long)i, MongoHelper.getCollectionCount(arg0[i])});
-			}
+    		try {
+				for (int i = 0; i<arg0.length; i++) {
+					publishProgress(new Long[] { (long)i, MongoHelper.getCollectionCount(arg0[i])});
+				}
+    		} catch (Exception ex) {
+    			mException = ex;
+    		}
 			
 			return null;
 		}
@@ -198,6 +206,14 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
 			
 			int index = (int)(long)values[0];
 			mAdapter.setItemCount(index, values[1]);
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			
+			if (mException != null)
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
 		}
     }
 }
