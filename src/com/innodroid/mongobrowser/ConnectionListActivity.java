@@ -57,23 +57,26 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     public void onConnectionItemSelected(long id) {
         if (mTwoPane) {
         	loadDetailsPane(id);
-        	invalidateOptionsMenu();
         } else {
-            Intent detailIntent = new Intent(this, ConnectionDetailActivity.class);
-            detailIntent.putExtra(ConnectionDetailFragment.ARG_CONNECTION_ID, id);
-            startActivity(detailIntent);
+        	showDetailsActivity(id);
         }
     }
 	
     private void loadDetailsPane(long id) {
         Bundle arguments = new Bundle();
-        arguments.putLong(ConnectionDetailFragment.ARG_CONNECTION_ID, id);
+        arguments.putLong(Constants.ARG_CONNECTION_ID, id);
         ConnectionDetailFragment fragment = new ConnectionDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_2, fragment)
                 .commit();
 	}
+    
+    private void showDetailsActivity(long id) {
+        Intent detailIntent = new Intent(this, ConnectionDetailActivity.class);
+        detailIntent.putExtra(Constants.ARG_CONNECTION_ID, id);
+        startActivity(detailIntent);
+    }
     
     private void loadCollectionListPane() {
         Bundle arguments = new Bundle();
@@ -106,21 +109,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	mFrame1.setVisibility(View.VISIBLE);
     }
 
-    private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
-		@Override
-		protected Boolean doInBackground(Void... arg0) {
-			return new MongoBrowserProviderHelper(getContentResolver()).getConnectionCount() == 0;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean res) {
-			super.onPostExecute(res);
-			
-			if (res)
-				addConnection();
-		}
-    }
-    
     @Override
     public void onAddConnection() {
     	addConnection();
@@ -157,7 +145,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	public void onConnectionEdited(long id) {
 		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connection_list);
         fragment.refreshList(id);
-        invalidateOptionsMenu();
         
         if (mTwoPane)
         	loadDetailsPane(id);
@@ -166,4 +153,19 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	@Override
 	public void onCollectionEdited(String name) {
 	}
+	
+    private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			return new MongoBrowserProviderHelper(getContentResolver()).getConnectionCount() == 0;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean res) {
+			super.onPostExecute(res);
+			
+			if (res)
+				addConnection();
+		}
+    }
 }

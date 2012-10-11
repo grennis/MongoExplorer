@@ -9,24 +9,19 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.innodroid.mongo.MongoHelper;
-
 public class EditCollectionDialogFragment extends DialogFragment {
-	private static String ARG_COLLECTION_POS = "collpos";
-	private static String ARG_COLLECTION_NAME = "collname";
-	
 	private TextView mNameView;
+	private String mName;
 	private static Callbacks mCallbacks;
 
 	public interface Callbacks {
 		void onCollectionEdited(int pos, String name);
 	}
 	
-    static EditCollectionDialogFragment create(int pos, String name, Callbacks callbacks) {
+    static EditCollectionDialogFragment create(String name, Callbacks callbacks) {
     	EditCollectionDialogFragment fragment = new EditCollectionDialogFragment();
     	Bundle args = new Bundle();
-    	args.putLong(ARG_COLLECTION_POS, pos);
-    	args.putString(ARG_COLLECTION_NAME, name);
+    	args.putString(Constants.ARG_COLLECTION_NAME, name);
     	fragment.setArguments(args);
     	EditCollectionDialogFragment.mCallbacks = callbacks;
     	return fragment;
@@ -36,8 +31,9 @@ public class EditCollectionDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_collection, null);
 
+    	mName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
     	mNameView = (TextView)view.findViewById(R.id.edit_collection_name);
-    	mNameView.setText(getArguments().getString(ARG_COLLECTION_NAME));
+    	mNameView.setText(mName);
     	
         return new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_menu_edit)
@@ -47,8 +43,7 @@ public class EditCollectionDialogFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok,
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                        	if (save())
-                        		dialog.dismiss();
+                        	save();
                         }
                     }
                 )
@@ -63,17 +58,14 @@ public class EditCollectionDialogFragment extends DialogFragment {
     }
 
     private boolean save() {
-    	int pos = getArguments().getInt(ARG_COLLECTION_POS);
-    	String oldName = getArguments().getString(ARG_COLLECTION_NAME);
     	String name = mNameView.getText().toString();
 
     	if (name.length() == 0) {
     		Toast.makeText(getActivity(), "Required values not provided", Toast.LENGTH_SHORT).show();
     		return false;
     	}
-    	
-    	MongoHelper.renameCollection(oldName, name);
-    	mCallbacks.onCollectionEdited(pos, name);
+
+    	mCallbacks.onCollectionEdited(0, name);
 
     	return true;
     }

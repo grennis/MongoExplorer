@@ -5,16 +5,18 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 
-public class CollectionListFragment extends ListFragment { //implements LoaderCallbacks<Cursor> {
+public class CollectionListFragment extends ListFragment implements EditCollectionDialogFragment.Callbacks {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
@@ -45,6 +47,22 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.collection_list_menu, menu);
     }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.collection_list_menu_add:
+            	addCollection();
+                return true;
+        }
+
+    	return super.onOptionsItemSelected(item);
+    }
+    
+    private void addCollection() {
+        DialogFragment fragment = EditCollectionDialogFragment.create("", this);
+        fragment.show(getFragmentManager(), null);
+	}
     
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -108,6 +126,26 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
         mActivatedPosition = position;
     }
     
+	@Override
+	public void onCollectionEdited(int pos, String name) {
+		new AddCollectionTask().execute(name);
+	}
+
+    private class AddCollectionTask extends AsyncTask<String, Void, String> {
+		@Override
+		protected String doInBackground(String... args) {
+	    	MongoHelper.createCollection(args[0]);
+	    	return args[0];
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+
+			mAdapter.add(result);
+		}		
+    }
+	
 //	public Loader<Cursor> onCreateLoader(int id, Bundle params) {
 //	    return new CursorLoader(getActivity(), MongoBrowserProvider.CONNECTION_URI, null, null, null, MongoBrowserProvider.NAME_CONNECTION_NAME);
 //	}

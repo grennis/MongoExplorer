@@ -60,6 +60,14 @@ public class MongoCollectionAdapter extends ArrayAdapter<NameAndCount> {
 		notifyDataSetChanged();
 	}
 	
+	public void add(String name) {
+		NameAndCount item = new NameAndCount();
+		item.Name = name;
+		item.Count = 0;
+		add(item);
+		notifyDataSetChanged();		
+	}
+	
 	private class ViewHolder 
 	{
 		public TextView NameView;

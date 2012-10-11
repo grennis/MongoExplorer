@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -32,11 +31,11 @@ import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
 public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, EditConnectionDialogFragment.Callbacks {
 
+	private long mConnectionID;
 	private TextView mTitle;
 	private TextView mInfo;
 	private TextView mLastConnect;
 	private Callbacks mCallbacks;
-    public static final String ARG_CONNECTION_ID = "item_id";
 
     public interface Callbacks {
     	public void onConnectionDeleted();
@@ -47,26 +46,35 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+    	super.onCreate(savedInstanceState);
+    	setHasOptionsMenu(true);
+    	
+    	mConnectionID = getArguments().getLong(Constants.ARG_CONNECTION_ID);
+    }
+    
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.fragment_connection_detail, container, false);
+    	View view = inflater.inflate(R.layout.fragment_connection_detail, container, false);
+    	
+        mTitle = (TextView) view.findViewById(R.id.connection_detail_title);
+        mInfo = (TextView) view.findViewById(R.id.connection_detail_info);
+        mLastConnect = (TextView) view.findViewById(R.id.connection_detail_last_connect);
+        
+        Button button = (Button) view.findViewById(R.id.connection_detail_connect);
+        button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				new ConnectTask().execute();
+			}        	
+        });
+
+        return view;
     }
     
     @Override
     public void onResume() {
     	super.onResume();
-
-        mTitle = (TextView) getActivity().findViewById(R.id.connection_detail_title);
-        mInfo = (TextView) getActivity().findViewById(R.id.connection_detail_info);
-        mLastConnect = (TextView) getActivity().findViewById(R.id.connection_detail_last_connect);
-        
-        Button button = (Button) getActivity().findViewById(R.id.connection_detail_connect);
-        button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				new ConnectTask(getArguments().getLong(ARG_CONNECTION_ID)).execute();
-			}        	
-        });
         
         getLoaderManager().initLoader(0, getArguments(), this);
     }
@@ -92,14 +100,13 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	long id = getArguments().getLong(ARG_CONNECTION_ID);
     	
         switch (item.getItemId()) {
     		case R.id.connection_detail_menu_edit:
-    			editConnection(getActivity(), id);
+    			editConnection();
     			return true;
     		case R.id.connection_detail_menu_delete:
-    			deleteConnection(getActivity(), id);
+    			deleteConnection();
     			return true;
         }
 
@@ -107,7 +114,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     }
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle args) {
-		Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, args.getLong(ARG_CONNECTION_ID));
+		Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
 	    return new CursorLoader(getActivity(), uri, null, null, null, null);
 	}
 
@@ -129,14 +136,9 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	}
 	
 	private class ConnectTask extends AsyncTask<Void, Void, Boolean>{
-		private long mID;
 		private String mError;
 		private ProgressDialog mDialog;
 
-		public ConnectTask(long id) {
-			mID = id;
-		}
-		
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -147,7 +149,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		@Override
 		protected Boolean doInBackground(Void... arg0) {
 			try {
-				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mID);
+				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
 				Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
 				cursor.moveToFirst();
 				
@@ -158,7 +160,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		    	String password = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PASSWORD); 
 				
 		    	MongoHelper.connect(server, port, database, user, password);
-		    	new MongoBrowserProviderHelper(getActivity().getContentResolver()).updateConnectionLastConnect(mID);
+		    	new MongoBrowserProviderHelper(getActivity().getContentResolver()).updateConnectionLastConnect(mConnectionID);
 		    	
 				return true;
 			} catch (Exception ex) {
@@ -192,13 +194,13 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		}
 	}
 	
-    private void editConnection(FragmentActivity activity, long id) {
-        DialogFragment fragment = EditConnectionDialogFragment.create(id, this);
-        fragment.show(activity.getSupportFragmentManager(), null);
+    private void editConnection() {
+        DialogFragment fragment = EditConnectionDialogFragment.create(mConnectionID, this);
+        fragment.show(getActivity().getSupportFragmentManager(), null);
     }
 
-    private void deleteConnection(final FragmentActivity activity, final long id) {
-        new AlertDialog.Builder(activity)
+    private void deleteConnection() {
+        new AlertDialog.Builder(getActivity())
 	        .setIcon(android.R.drawable.ic_menu_delete)
 	        .setMessage(R.string.confirm_delete_connection)
 	        .setTitle(R.string.confirm_delete_title)
@@ -206,7 +208,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	        .setPositiveButton(android.R.string.ok,
 	            new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int whichButton) {
-	                	new DeleteConnectionTask(activity, id).execute();
+	                	new DeleteConnectionTask().execute();
 	                }
 	            }
 	        )
@@ -220,19 +222,15 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	        .create().show();
     }
     
+	@Override
+	public void onConnectionEdited(long id) {
+	}
+
     private class DeleteConnectionTask extends AsyncTask<Void, Void, Boolean> {
-    	private long mID;
-    	private FragmentActivity mActivity;
-    	
-    	public DeleteConnectionTask(FragmentActivity activity, long id) {
-    		mActivity = activity;
-    		mID = id;
-    	}
-    	
 		@Override
 		protected Boolean doInBackground(Void... arg0) {
-			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mID);
-			mActivity.getContentResolver().delete(uri, null, null);
+			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
+			getActivity().getContentResolver().delete(uri, null, null);
 			return true;
 		}
 		
@@ -243,8 +241,4 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			mCallbacks.onConnectionDeleted();
 		}
     }
-
-	@Override
-	public void onConnectionEdited(long id) {
-	}
 }

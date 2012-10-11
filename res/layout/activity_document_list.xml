@@ -1,9 +1,8 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:name="com.innodroid.mongobrowser.DocumentListFragment"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/document_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    tools:context=".CollectionListActivity" />
+    android:layout_marginRight="16dp">
+    
+</FrameLayout>

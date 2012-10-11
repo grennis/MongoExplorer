@@ -20,10 +20,8 @@ public class ConnectionDetailActivity extends FragmentActivity implements Connec
         	getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
-            Bundle arguments = new Bundle();
-            arguments.putLong(ConnectionDetailFragment.ARG_CONNECTION_ID, getIntent().getLongExtra(ConnectionDetailFragment.ARG_CONNECTION_ID, 0));
             ConnectionDetailFragment fragment = new ConnectionDetailFragment();
-            fragment.setArguments(arguments);
+            fragment.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction().add(R.id.connection_detail_container, fragment).commit();
         }
     }

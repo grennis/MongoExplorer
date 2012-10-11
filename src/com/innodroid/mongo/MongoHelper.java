@@ -4,9 +4,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
 public class MongoHelper {
@@ -50,6 +52,12 @@ public class MongoHelper {
 
 	public static long getCollectionCount(String name) {
 		return Database.getCollection(name).getCount();
+	}
+	
+	public static void createCollection(String name) {
+		DBObject dbo = new BasicDBObject();
+		dbo.put("size", 1);
+		Database.createCollection(name, null);
 	}
 	
 	public static void renameCollection(String oldName, String newName) {

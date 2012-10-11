@@ -2,6 +2,7 @@ package com.innodroid.mongobrowser;
 
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
@@ -11,16 +12,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 
 public class DocumentListFragment extends ListFragment implements EditCollectionDialogFragment.Callbacks {
-
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
+    private String mCollectionName;
     private MongoCollectionAdapter mAdapter;
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
-    public static final String ARG_COLLECTION_NAME = "coll_name";
 
     public interface Callbacks {
         public void onDocumentItemSelected(long id);
@@ -38,6 +39,8 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 		setListAdapter(mAdapter);
 		
 		setHasOptionsMenu(true);
+
+    	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
 
 		//new LoadNamesTask().execute();
     }
@@ -84,8 +87,7 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 
     
     private void editCollection() {
-    	String name = getArguments().getString(ARG_COLLECTION_NAME);
-        DialogFragment fragment = EditCollectionDialogFragment.create(-1, name, this);
+        DialogFragment fragment = EditCollectionDialogFragment.create(mCollectionName, this);
         fragment.show(getFragmentManager(), null);
 	}
 
@@ -123,21 +125,22 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 
 	@Override
 	public void onCollectionEdited(int pos, String name) {
-		mCallbacks.onCollectionEdited(name);
+		new RenameCollectionTask().execute(name);
 	}
+	
+    private class RenameCollectionTask extends AsyncTask<String, Void, String> {
+		@Override
+		protected String doInBackground(String... args) {
+	    	MongoHelper.renameCollection(mCollectionName, args[0]);
+	    	return args[1];
+		}
 
-//    private class LoadNamesTask extends AsyncTask<Void, Void, String[]> {
-//		@Override
-//		protected String[] doInBackground(Void... arg0) {
-//			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
-//			return MongoHelper.getCollectionNames(includeSystem);
-//		}		
-//		
-//		@Override
-//		protected void onPostExecute(String[] result) {
-//			super.onPostExecute(result);
-//
-//			mAdapter.loadItems(result);
-//		}
-//    }
+		@Override
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+
+			mCollectionName = result;
+			mCallbacks.onCollectionEdited(result);
+		}
+    }
 }
