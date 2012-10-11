@@ -24,7 +24,7 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     public interface Callbacks {
-        public void onCollectionItemSelected(long id);
+        public void onCollectionItemSelected(String name);
     }
 
     public CollectionListFragment() {
@@ -83,7 +83,7 @@ public class CollectionListFragment extends ListFragment { //implements LoaderCa
         super.onListItemClick(listView, view, position, id);
         
         if (mCallbacks != null)
-        	mCallbacks.onCollectionItemSelected(mAdapter.getItemId(position));
+        	mCallbacks.onCollectionItemSelected(mAdapter.getCollectionName(position));
     }
 
     @Override

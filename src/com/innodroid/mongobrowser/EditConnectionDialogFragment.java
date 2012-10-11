@@ -18,10 +18,9 @@ import android.widget.Toast;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
-public class ConnectionSetupDialogFragment extends DialogFragment implements LoaderCallbacks<Cursor> {
+public class EditConnectionDialogFragment extends DialogFragment implements LoaderCallbacks<Cursor> {
 	private static String ARG_CONNECTION_ID = "connid";
 	
-	private long mID;
 	private TextView mNameView;
 	private TextView mServerView;
 	private TextView mPortView;
@@ -31,42 +30,42 @@ public class ConnectionSetupDialogFragment extends DialogFragment implements Loa
 	private static Callbacks mCallbacks;
 
 	public interface Callbacks {
-		void onConnectionSaved(long id);
+		void onConnectionEdited(long id);
 	}
 	
-    static ConnectionSetupDialogFragment create(long id, Callbacks callbacks) {
-    	ConnectionSetupDialogFragment fragment = new ConnectionSetupDialogFragment();
+    static EditConnectionDialogFragment create(long id, Callbacks callbacks) {
+    	EditConnectionDialogFragment fragment = new EditConnectionDialogFragment();
     	Bundle args = new Bundle();
     	args.putLong(ARG_CONNECTION_ID, id);
     	fragment.setArguments(args);
-    	ConnectionSetupDialogFragment.mCallbacks = callbacks;
+    	EditConnectionDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_setup_connection, null);
+    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_connection, null);
 
-    	mID = getArguments().getLong(ARG_CONNECTION_ID, 0);
-    	mNameView = (TextView)view.findViewById(R.id.setup_connection_name);
-    	mServerView = (TextView)view.findViewById(R.id.setup_connection_server);
-    	mPortView = (TextView)view.findViewById(R.id.setup_connection_port);
-    	mDatabaseView = (TextView)view.findViewById(R.id.setup_connection_db);
-    	mUserView = (TextView)view.findViewById(R.id.setup_connection_user);
-    	mPasswordView = (TextView)view.findViewById(R.id.setup_connection_pass);
+    	long id = getArguments().getLong(ARG_CONNECTION_ID, 0);
+    	mNameView = (TextView)view.findViewById(R.id.edit_connection_name);
+    	mServerView = (TextView)view.findViewById(R.id.edit_connection_server);
+    	mPortView = (TextView)view.findViewById(R.id.edit_connection_port);
+    	mDatabaseView = (TextView)view.findViewById(R.id.edit_connection_db);
+    	mUserView = (TextView)view.findViewById(R.id.edit_connection_user);
+    	mPasswordView = (TextView)view.findViewById(R.id.edit_connection_pass);
     	
-    	if (mID != 0)
+    	if (id != 0)
     		getLoaderManager().initLoader(0, getArguments(), this);
 
         return new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_menu_edit)
                 .setView(view)
-                .setTitle(R.string.title_setup_connection)
+                .setTitle(R.string.title_edit_connection)
                 .setCancelable(true)
                 .setPositiveButton(android.R.string.ok,
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                        	if (saveConnection())
+                        	if (save())
                         		dialog.dismiss();
                         }
                     }
@@ -81,7 +80,7 @@ public class ConnectionSetupDialogFragment extends DialogFragment implements Loa
                 .create();
     }
 
-    private boolean saveConnection() {    	
+    private boolean save() {    	
     	String name = mNameView.getText().toString();
     	String server = mServerView.getText().toString();
     	String porttxt = mPortView.getText().toString();
@@ -104,12 +103,14 @@ public class ConnectionSetupDialogFragment extends DialogFragment implements Loa
 
     	MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
 
-    	if (mID == 0)
-    		mID = helper.addConnection(name, server, port, db, user, pass);
-    	else
-    		helper.updateConnection(mID, name, server, port, db, user, pass);
+    	long id = getArguments().getLong(ARG_CONNECTION_ID, 0);
 
-    	mCallbacks.onConnectionSaved(mID);
+    	if (id == 0)
+    		id = helper.addConnection(name, server, port, db, user, pass);
+    	else
+    		helper.updateConnection(id, name, server, port, db, user, pass);
+
+    	mCallbacks.onConnectionEdited(id);
 
     	return true;
     }

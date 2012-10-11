@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
-public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionSetupDialogFragment.Callbacks {
+public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, EditConnectionDialogFragment.Callbacks {
     private boolean mTwoPane;
     private boolean mViewsShifted;
     private FrameLayout mFrame1;
@@ -127,12 +127,12 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 
     private void addConnection() {
-        DialogFragment fragment = ConnectionSetupDialogFragment.create(0, this);
+        DialogFragment fragment = EditConnectionDialogFragment.create(0, this);
         fragment.show(getSupportFragmentManager(), null);
     }
 
 	@Override
-	public void onCollectionItemSelected(long id) {
+	public void onCollectionItemSelected(String name) {
 		shiftViewsLeft();
 		loadDocumentListPane();
 	}
@@ -154,12 +154,16 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	}
 
 	@Override
-	public void onConnectionSaved(long id) {
+	public void onConnectionEdited(long id) {
 		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connection_list);
         fragment.refreshList(id);
         invalidateOptionsMenu();
         
         if (mTwoPane)
         	loadDetailsPane(id);
+	}
+
+	@Override
+	public void onCollectionEdited(String name) {
 	}
 }

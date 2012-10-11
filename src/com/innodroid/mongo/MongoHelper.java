@@ -52,6 +52,10 @@ public class MongoHelper {
 		return Database.getCollection(name).getCount();
 	}
 	
+	public static void renameCollection(String oldName, String newName) {
+		Database.getCollection(oldName).rename(newName, false);
+	}
+
 	public static String[] getPageOfDocuments(String collection, int start, int take) {
 		DBCollection coll = Database.getCollection(collection);
 		DBCursor cursor = coll.find().skip(start).limit(take);		

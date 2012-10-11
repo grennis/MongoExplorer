@@ -7,12 +7,22 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 public class DocumentListActivity extends FragmentActivity implements DocumentListFragment.Callbacks {
-	@Override
+    public static final String EXTRA_COLLECTION_NAME = "coll_name";
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.title_document_list);
-        setContentView(R.layout.activity_document_list);        
+        String name = getIntent().getStringExtra(DocumentListActivity.EXTRA_COLLECTION_NAME);
+        setTitle(name);
+        setContentView(R.layout.activity_document_list);
+        
+        if (savedInstanceState == null) {
+	        Bundle args = new Bundle();
+	        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
+	        args.putString(DocumentListFragment.ARG_COLLECTION_NAME, name);   
+	        fragment.setArguments(args);
+        }
     }
 
     @Override
@@ -31,4 +41,9 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	@Override
     public void onDocumentItemSelected(long id) {
     }
+
+	@Override
+	public void onCollectionEdited(String name) {
+		setTitle(name);
+	}
 }

@@ -50,6 +50,10 @@ public class MongoCollectionAdapter extends ArrayAdapter<NameAndCount> {
 		return view;
 	}
 	
+	public String getCollectionName(int position) {
+		return getItem(position).Name;
+	}
+	
 	public void setItemCount(int position, long count) {
 		NameAndCount item = getItem(position);
 		item.Count = count;

@@ -30,7 +30,7 @@ import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
-public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, ConnectionSetupDialogFragment.Callbacks {
+public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, EditConnectionDialogFragment.Callbacks {
 
 	private TextView mTitle;
 	private TextView mInfo;
@@ -193,7 +193,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	}
 	
     private void editConnection(FragmentActivity activity, long id) {
-        DialogFragment fragment = ConnectionSetupDialogFragment.create(id, this);
+        DialogFragment fragment = EditConnectionDialogFragment.create(id, this);
         fragment.show(activity.getSupportFragmentManager(), null);
     }
 
@@ -245,6 +245,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     }
 
 	@Override
-	public void onConnectionSaved(long id) {
+	public void onConnectionEdited(long id) {
 	}
 }

@@ -29,6 +29,11 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
     }
     
 	@Override
-    public void onCollectionItemSelected(long id) {
+    public void onCollectionItemSelected(String name) {
+        Intent intent = new Intent(this, DocumentListActivity.class);
+        intent.putExtra(DocumentListActivity.EXTRA_COLLECTION_NAME, name);
+        startActivity(intent);
     }
 }
+
+

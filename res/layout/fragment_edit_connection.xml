@@ -10,10 +10,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_connection_name" />
+        android:text="@string/edit_connection_name" />
 
     <EditText
-        android:id="@+id/setup_connection_name"
+        android:id="@+id/edit_connection_name"
         android:inputType="textCapWords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -21,10 +21,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_connection_server" />
+        android:text="@string/edit_connection_server" />
 
     <EditText
-        android:id="@+id/setup_connection_server"
+        android:id="@+id/edit_connection_server"
         android:inputType="textCapWords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -32,10 +32,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_connection_port" />
+        android:text="@string/edit_connection_port" />
 
     <EditText
-        android:id="@+id/setup_connection_port"
+        android:id="@+id/edit_connection_port"
         android:inputType="numberDecimal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -43,10 +43,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_connection_db" />
+        android:text="@string/edit_connection_db" />
 
     <EditText
-        android:id="@+id/setup_connection_db"
+        android:id="@+id/edit_connection_db"
         android:inputType="textNoSuggestions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -54,10 +54,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_connection_user" />
+        android:text="@string/edit_connection_user" />
 
     <EditText
-        android:id="@+id/setup_connection_user"
+        android:id="@+id/edit_connection_user"
         android:inputType="textNoSuggestions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -65,10 +65,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_connection_pass" />
+        android:text="@string/edit_connection_pass" />
 
     <EditText
-        android:id="@+id/setup_connection_pass"
+        android:id="@+id/edit_connection_pass"
         android:inputType="textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
