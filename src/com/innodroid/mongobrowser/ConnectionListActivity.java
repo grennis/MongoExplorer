@@ -15,8 +15,8 @@ import android.widget.FrameLayout;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
 public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, EditConnectionDialogFragment.Callbacks {
-    private boolean mTwoPane;
-    private boolean mViewsShifted;
+	private static final String STATE_NAV_DEPTH = "navdepth";
+	private boolean mTwoPane;
     private FrameLayout mFrame1;
     private FrameLayout mFrame2;
     private FrameLayout mFrame3;
@@ -34,24 +34,39 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         mFrame3 = (FrameLayout)findViewById(R.id.frame_3);
         mFrame4 = (FrameLayout)findViewById(R.id.frame_4);
 
-        ConnectionListFragment fragment = new ConnectionListFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_1, fragment)
-                .commit();
-
-        if (mFrame2 != null) {
+        if (mFrame2 != null)
             mTwoPane = true;
-            fragment.setActivateOnItemClick(true);
+
+        if (savedInstanceState == null) {
+        	Bundle args = new Bundle();
+	        ConnectionListFragment fragment = new ConnectionListFragment();
+	        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
+	        fragment.setArguments(args);
+	        getSupportFragmentManager().beginTransaction()
+	                .replace(R.id.frame_1, fragment)
+	                .commit();
+        } else {
+        	if (savedInstanceState.getInt(STATE_NAV_DEPTH) > 0) {
+            	mFrame1.setVisibility(View.GONE);
+            	mFrame4.setVisibility(View.VISIBLE);
+        	}
         }
 
         new AddConnectionIfNoneExistTask().execute();
     }
 	
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putInt(STATE_NAV_DEPTH, getSupportFragmentManager().getBackStackEntryCount());
+	}
+	
+	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			if (mViewsShifted) {
-				shiftViewsRight();
+			if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+				hideDocumentListPane();
 				return true;
 			}
 		}
@@ -87,38 +102,41 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     private void loadCollectionListPane() {
         Bundle arguments = new Bundle();
         CollectionListFragment fragment = new CollectionListFragment();
+        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
         fragment.setArguments(arguments);
-        fragment.setActivateOnItemClick(true);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_2, fragment)
                 .commit();
     }
 
     private void loadDocumentListPane(String collection) {
-    	mViewsShifted = true;
+        FragmentManager fm = getSupportFragmentManager();
+    	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 0;
+
     	mFrame1.setVisibility(View.GONE);
     	mFrame4.setVisibility(View.VISIBLE);
 
     	Bundle arguments = new Bundle();
         DocumentListFragment fragment = new DocumentListFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
+        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
         fragment.setArguments(arguments);
 
-        FragmentManager fm = getSupportFragmentManager();
-    	Fragment connectionList = fm.findFragmentById(R.id.fragment_connection_list);
+    	Fragment connectionList = fm.findFragmentById(R.id.frame_1);
     	FragmentTransaction ft = fm.beginTransaction();
-    
-    	if (connectionList != null) {
+
+    	if (!alreadyShiftedFrames) {
         	ft.addToBackStack("");
     		ft.remove(connectionList);
     	}
     	
-    	ft.replace(R.id.frame_4, fragment);
-    	ft.commit();
+    	ft.replace(R.id.frame_3, fragment);
+    	ft.commit();    	
+    	
+    	//invalidateOptionsMenu();
     }
 
-    private void shiftViewsRight() {
-    	mViewsShifted = false;
+    private void hideDocumentListPane() {
     	mFrame4.setVisibility(View.GONE);
     	mFrame1.setVisibility(View.VISIBLE);
     	
@@ -158,7 +176,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
 	@Override
 	public void onConnectionEdited(long id) {
-		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connection_list);
+		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
         fragment.refreshList(id);
         
         if (mTwoPane)
@@ -172,7 +190,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	@Override
 	public void onCollectionDropped(String name) {
         FragmentManager fm = getSupportFragmentManager();
-    	fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_4)).commit();
+    	fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_3)).commit();
 
     	CollectionListFragment fragment = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
         fragment.refreshList();

@@ -16,8 +16,10 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
         setContentView(R.layout.activity_document_list);
         
         if (savedInstanceState == null) {
+        	Bundle args = getIntent().getExtras();
 	        DocumentListFragment fragment = new DocumentListFragment();
-	        fragment.setArguments(getIntent().getExtras());
+	        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, false);
+	        fragment.setArguments(args);
 	        getSupportFragmentManager().beginTransaction().add(R.id.document_list, fragment).commit();
         }
     }

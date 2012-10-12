@@ -13,7 +13,17 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
 
         setTitle(R.string.title_collection_list);
         setContentView(R.layout.activity_collection_list);        
-    }
+
+        if (savedInstanceState == null) {
+        	Bundle args = new Bundle();
+	        CollectionListFragment fragment = new CollectionListFragment();
+	        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, false);
+	        fragment.setArguments(args);
+	        getSupportFragmentManager().beginTransaction()
+	                .replace(R.id.collection_list, fragment)
+	                .commit();	        
+        }
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

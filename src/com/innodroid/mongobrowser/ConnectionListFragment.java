@@ -10,12 +10,10 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
@@ -29,7 +27,6 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private long mSelectAfterLoad;
-    private boolean mActivateOnItemClick;
 
     public interface Callbacks {
     	public void onAddConnection();
@@ -80,13 +77,13 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        getListView().setChoiceMode(mActivateOnItemClick
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
-
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+
+        getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
+                ? ListView.CHOICE_MODE_SINGLE
+                : ListView.CHOICE_MODE_NONE);
     }
     
     @Override
@@ -128,10 +125,6 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         return getListView().getCheckedItemCount() > 0;
     }
     
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
-    	mActivateOnItemClick = activateOnItemClick;
-    }
-
     public void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);

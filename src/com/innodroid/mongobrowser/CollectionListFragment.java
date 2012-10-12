@@ -21,7 +21,6 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
-    private boolean mActivateOnItemClick;
     private MongoCollectionAdapter mAdapter;
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
@@ -82,7 +81,7 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
         
-        getListView().setChoiceMode(mActivateOnItemClick
+        getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
     }
@@ -123,10 +122,6 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
         }
     }
     
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
-    	mActivateOnItemClick = true;
-    }
-
     public void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);
