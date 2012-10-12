@@ -1,8 +1,9 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
 	android:padding="16dp"
+	android:orientation="vertical"
 	tools:context=".ConnectionDetailFragment">
 
 	<RelativeLayout android:id="@+id/connection_detail_header"
@@ -21,18 +22,10 @@
 		    android:textSize="@dimen/connection_detail_header_size"
 		    android:layout_marginLeft="12dp"
 		    android:layout_toRightOf="@id/connection_detail_image"
+		    android:layout_centerVertical="true"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content" />
 	
-		<TextView 
-		    android:id="@+id/connection_detail_info"
-		    android:textSize="@dimen/connection_detail_info_size"
-		    android:layout_marginLeft="12dp"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content" 
-		    android:layout_toRightOf="@id/connection_detail_image"
-		    android:layout_below="@id/connection_detail_title" />
-		
 	</RelativeLayout>
 	
 	<TextView 
@@ -40,18 +33,43 @@
 	    android:textSize="@dimen/connection_detail_text_size"
 	    android:layout_marginTop="12dp"
 	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_below="@id/connection_detail_header" />
-		
+	    android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/connection_detail_server"
+	    android:textSize="@dimen/connection_detail_text_size"
+	    android:layout_marginTop="@dimen/connection_detail_vert_spacing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/connection_detail_port"
+	    android:textSize="@dimen/connection_detail_text_size"
+	    android:layout_marginTop="@dimen/connection_detail_vert_spacing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/connection_detail_db"
+	    android:textSize="@dimen/connection_detail_text_size"
+	    android:layout_marginTop="@dimen/connection_detail_vert_spacing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    <TextView
+        android:id="@+id/connection_detail_user"
+	    android:textSize="@dimen/connection_detail_text_size"
+	    android:layout_marginTop="@dimen/connection_detail_vert_spacing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 	<Button
 	    android:id="@+id/connection_detail_connect"
+	    android:textSize="@dimen/connection_detail_text_size"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_below="@id/connection_detail_last_connect"
-	    android:layout_centerHorizontal="true"
 	    android:layout_marginTop="20dp"
 	    android:padding="15dp"
 	    android:text="@string/connect" />
-
-</RelativeLayout>    
+</LinearLayout>    
 

@@ -10,10 +10,12 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
@@ -27,6 +29,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private long mSelectAfterLoad;
+    private boolean mActivateOnItemClick;
 
     public interface Callbacks {
     	public void onAddConnection();
@@ -45,7 +48,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 		
 		setHasOptionsMenu(true);
     }
-
+    
     @Override
     public void onResume() {
     	super.onResume();
@@ -76,6 +79,11 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        getListView().setChoiceMode(mActivateOnItemClick
+                ? ListView.CHOICE_MODE_SINGLE
+                : ListView.CHOICE_MODE_NONE);
+
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
@@ -121,9 +129,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     }
     
     public void setActivateOnItemClick(boolean activateOnItemClick) {
-        getListView().setChoiceMode(activateOnItemClick
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
+    	mActivateOnItemClick = activateOnItemClick;
     }
 
     public void setActivatedPosition(int position) {

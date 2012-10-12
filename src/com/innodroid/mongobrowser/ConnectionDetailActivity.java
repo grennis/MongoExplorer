@@ -43,6 +43,7 @@ public class ConnectionDetailActivity extends FragmentActivity implements Connec
 	public void onConnected() {
 		Intent activ = new Intent(ConnectionDetailActivity.this, CollectionListActivity.class);
 		startActivity(activ);
+		finish();
 	}
 
 	@Override

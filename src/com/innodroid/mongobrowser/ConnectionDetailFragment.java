@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -35,7 +36,10 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
 	private long mConnectionID;
 	private TextView mTitle;
-	private TextView mInfo;
+	private TextView mServer;
+	private TextView mPort;
+	private TextView mDB;
+	private TextView mUser;
 	private TextView mLastConnect;
 	private Callbacks mCallbacks;
 
@@ -60,7 +64,10 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     	View view = inflater.inflate(R.layout.fragment_connection_detail, container, false);
     	
         mTitle = (TextView) view.findViewById(R.id.connection_detail_title);
-        mInfo = (TextView) view.findViewById(R.id.connection_detail_info);
+        mServer = (TextView) view.findViewById(R.id.connection_detail_server);
+        mPort = (TextView) view.findViewById(R.id.connection_detail_port);
+        mDB = (TextView) view.findViewById(R.id.connection_detail_db);
+        mUser = (TextView) view.findViewById(R.id.connection_detail_user);
         mLastConnect = (TextView) view.findViewById(R.id.connection_detail_last_connect);
         
         Button button = (Button) view.findViewById(R.id.connection_detail_connect);
@@ -120,11 +127,16 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		Resources res = getResources();
+		
 		if (!cursor.moveToFirst())
 			return;
 		
 		mTitle.setText(cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_NAME));
-		mInfo.setText(cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_DB) + " on " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_SERVER));
+		mServer.setText(res.getString(R.string.server) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_NAME));
+		mPort.setText(res.getString(R.string.port) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PORT));
+		mDB.setText(res.getString(R.string.database) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_DB));
+		mUser.setText(res.getString(R.string.user) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_USER));
 		
 		long lastConnect = cursor.getLong(MongoBrowserProvider.INDEX_CONNECTION_LAST_CONNECT);
 		if (lastConnect == 0)

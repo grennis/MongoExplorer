@@ -3,37 +3,34 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     android:divider="?android:attr/dividerHorizontal"
     android:showDividers="middle"
     tools:context=".MongoConnectionListActivity">
 
     <FrameLayout android:id="@+id/frame_1" 
-	        android:layout_width="0dp"
-	        android:layout_height="match_parent"
-	        android:layout_weight="1">
-	    <fragment android:name="com.innodroid.mongobrowser.ConnectionListFragment"
-	        android:id="@+id/fragment_connection_list"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent" />
-	</FrameLayout>
+	    android:paddingLeft="16dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3" />
 
     <FrameLayout android:id="@+id/frame_2"
+        android:paddingLeft="16dp"        
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="5" />
 
 	<FrameLayout android:id="@+id/frame_3"
+	    android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="7" />
 
 	<FrameLayout android:id="@+id/frame_4"
 	    android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="9" />
 
 </LinearLayout>
 

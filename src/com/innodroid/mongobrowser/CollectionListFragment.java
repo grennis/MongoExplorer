@@ -46,9 +46,14 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
     public void onResume() {
     	super.onResume();
 
-    	new LoadNamesTask().execute();
+    	refreshList();
     }
     
+	public void refreshList() {
+    	//mSelectAfterLoad = selectAfterLoad;
+    	new LoadNamesTask().execute();
+	}
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.collection_list_menu, menu);

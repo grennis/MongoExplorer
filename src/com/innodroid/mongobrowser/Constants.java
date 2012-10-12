@@ -5,5 +5,6 @@ public class Constants {
 	
 	public static final String ARG_CONNECTION_ID = "connid";
 	public static final String ARG_COLLECTION_NAME = "collname";
+	public static final String ARG_POSITION = "pos";
 }
 

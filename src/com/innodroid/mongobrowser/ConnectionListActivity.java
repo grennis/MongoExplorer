@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -30,12 +33,15 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         mFrame2 = (FrameLayout)findViewById(R.id.frame_2);
         mFrame3 = (FrameLayout)findViewById(R.id.frame_3);
         mFrame4 = (FrameLayout)findViewById(R.id.frame_4);
-        
-        if (mFrame1 != null) {
+
+        ConnectionListFragment fragment = new ConnectionListFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_1, fragment)
+                .commit();
+
+        if (mFrame2 != null) {
             mTwoPane = true;
-            ((ConnectionListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.fragment_connection_list))
-                    .setActivateOnItemClick(true);
+            fragment.setActivateOnItemClick(true);
         }
 
         new AddConnectionIfNoneExistTask().execute();
@@ -88,25 +94,35 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
                 .commit();
     }
 
-    private void loadDocumentListPane() {
-        Bundle arguments = new Bundle();
-        DocumentListFragment fragment = new DocumentListFragment();
-        fragment.setArguments(arguments);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_4, fragment)
-                .commit();
-    }
-
-    private void shiftViewsLeft() {
+    private void loadDocumentListPane(String collection) {
     	mViewsShifted = true;
     	mFrame1.setVisibility(View.GONE);
     	mFrame4.setVisibility(View.VISIBLE);
+
+    	Bundle arguments = new Bundle();
+        DocumentListFragment fragment = new DocumentListFragment();
+        arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
+        fragment.setArguments(arguments);
+
+        FragmentManager fm = getSupportFragmentManager();
+    	Fragment connectionList = fm.findFragmentById(R.id.fragment_connection_list);
+    	FragmentTransaction ft = fm.beginTransaction();
+    
+    	if (connectionList != null) {
+        	ft.addToBackStack("");
+    		ft.remove(connectionList);
+    	}
+    	
+    	ft.replace(R.id.frame_4, fragment);
+    	ft.commit();
     }
 
     private void shiftViewsRight() {
     	mViewsShifted = false;
     	mFrame4.setVisibility(View.GONE);
     	mFrame1.setVisibility(View.VISIBLE);
+    	
+    	getSupportFragmentManager().popBackStack();
     }
 
     @Override
@@ -121,8 +137,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
 	@Override
 	public void onCollectionItemSelected(String name) {
-		shiftViewsLeft();
-		loadDocumentListPane();
+		loadDocumentListPane(name);
 	}
 
 	@Override
@@ -156,6 +171,11 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	
 	@Override
 	public void onCollectionDropped(String name) {
+        FragmentManager fm = getSupportFragmentManager();
+    	fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_4)).commit();
+
+    	CollectionListFragment fragment = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
+        fragment.refreshList();
 	}
 
     private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
