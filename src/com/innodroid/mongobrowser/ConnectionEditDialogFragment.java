@@ -17,7 +17,7 @@ import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.UiUtils;
 
-public class EditConnectionDialogFragment extends DialogFragment implements LoaderCallbacks<Cursor> {
+public class ConnectionEditDialogFragment extends DialogFragment implements LoaderCallbacks<Cursor> {
 	private static String ARG_CONNECTION_ID = "connid";
 	
 	private TextView mNameView;
@@ -32,18 +32,18 @@ public class EditConnectionDialogFragment extends DialogFragment implements Load
 		void onConnectionEdited(long id);
 	}
 	
-    static EditConnectionDialogFragment create(long id, Callbacks callbacks) {
-    	EditConnectionDialogFragment fragment = new EditConnectionDialogFragment();
+    static ConnectionEditDialogFragment create(long id, Callbacks callbacks) {
+    	ConnectionEditDialogFragment fragment = new ConnectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putLong(ARG_CONNECTION_ID, id);
     	fragment.setArguments(args);
-    	EditConnectionDialogFragment.mCallbacks = callbacks;
+    	ConnectionEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_connection, null);
+    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_connection_edit, null);
 
     	long id = getArguments().getLong(ARG_CONNECTION_ID, 0);
     	mNameView = (TextView)view.findViewById(R.id.edit_connection_name);

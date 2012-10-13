@@ -81,7 +81,7 @@ public class DocumentDetailFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
-    		case R.id.document_detail_menu_edit:
+    		case R.id.menu_document_detail_edit:
     			editDocument();
     		default:
     	    	return super.onOptionsItemSelected(item);

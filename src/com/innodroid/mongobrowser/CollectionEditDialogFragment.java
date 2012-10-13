@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class EditCollectionDialogFragment extends DialogFragment {
+public class CollectionEditDialogFragment extends DialogFragment {
 	private TextView mNameView;
 	private String mName;
 	private static Callbacks mCallbacks;
@@ -18,18 +18,18 @@ public class EditCollectionDialogFragment extends DialogFragment {
 		void onCollectionEdited(int pos, String name);
 	}
 	
-    static EditCollectionDialogFragment create(String name, Callbacks callbacks) {
-    	EditCollectionDialogFragment fragment = new EditCollectionDialogFragment();
+    static CollectionEditDialogFragment create(String name, Callbacks callbacks) {
+    	CollectionEditDialogFragment fragment = new CollectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_COLLECTION_NAME, name);
     	fragment.setArguments(args);
-    	EditCollectionDialogFragment.mCallbacks = callbacks;
+    	CollectionEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_collection, null);
+    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_collection_edit, null);
 
     	mName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
     	mNameView = (TextView)view.findViewById(R.id.edit_collection_name);

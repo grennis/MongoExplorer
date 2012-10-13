@@ -6,7 +6,7 @@
 	tools:context=".DocumentEditFragment">
    	<EditText
 	    android:id="@+id/document_edit_content"
-	    android:inputType="textNoSuggestions"
+	    android:inputType="textNoSuggestions|textMultiLine"
 	    android:layout_weight="1"
 	    android:singleLine="false"
 	    android:gravity="top|left"

@@ -33,7 +33,7 @@ import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
-public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, EditConnectionDialogFragment.Callbacks {
+public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, ConnectionEditDialogFragment.Callbacks {
 
 	private long mConnectionID;
 	private TextView mTitle;
@@ -111,10 +111,10 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-    		case R.id.connection_detail_menu_edit:
+    		case R.id.menu_connection_detail_edit:
     			editConnection();
     			return true;
-    		case R.id.connection_detail_menu_delete:
+    		case R.id.menu_connection_detail_delete:
     			deleteConnection();
     			return true;
         }
@@ -150,7 +150,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	}
 	
     private void editConnection() {
-        DialogFragment fragment = EditConnectionDialogFragment.create(mConnectionID, this);
+        DialogFragment fragment = ConnectionEditDialogFragment.create(mConnectionID, this);
         fragment.show(getActivity().getSupportFragmentManager(), null);
     }
 

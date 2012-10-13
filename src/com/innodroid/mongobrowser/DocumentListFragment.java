@@ -19,7 +19,7 @@ import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
-public class DocumentListFragment extends ListFragment implements EditCollectionDialogFragment.Callbacks {
+public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private String mCollectionName;
@@ -87,12 +87,12 @@ public class DocumentListFragment extends ListFragment implements EditCollection
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {    	
         switch (item.getItemId()) {
-    		case R.id.document_list_menu_add:
+    		case R.id.menu_document_list_add:
     			return true;
-    		case R.id.document_list_menu_edit:
+    		case R.id.menu_document_list_edit:
     			editCollection();
     			return true;
-    		case R.id.document_list_menu_delete:
+    		case R.id.menu_document_list_delete:
     			dropCollection();
     			return true;
     		default:
@@ -102,7 +102,7 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 
     
 	private void editCollection() {
-        DialogFragment fragment = EditCollectionDialogFragment.create(mCollectionName, this);
+        DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, this);
         fragment.show(getFragmentManager(), null);
 	}
 

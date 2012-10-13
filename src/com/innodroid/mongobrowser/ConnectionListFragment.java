@@ -61,10 +61,10 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.connection_list_menu_add:
+            case R.id.menu_connection_list_add:
             	mCallbacks.onAddConnection();
                 return true;
-            case R.id.connection_list_menu_configure:
+            case R.id.menu_connection_list_configure:
             	Intent intent = new Intent(getActivity(), PreferencesActivity.class);
             	startActivity(intent);
                 return true;

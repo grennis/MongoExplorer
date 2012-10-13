@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 
-public class CollectionListFragment extends ListFragment implements EditCollectionDialogFragment.Callbacks {
+public class CollectionListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
@@ -61,7 +61,7 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.collection_list_menu_add:
+            case R.id.menu_collection_list_add:
             	addCollection();
                 return true;
         }
@@ -70,7 +70,7 @@ public class CollectionListFragment extends ListFragment implements EditCollecti
     }
     
     private void addCollection() {
-        DialogFragment fragment = EditCollectionDialogFragment.create("", this);
+        DialogFragment fragment = CollectionEditDialogFragment.create("", this);
         fragment.show(getFragmentManager(), null);
 	}
     

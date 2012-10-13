@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/collection_list_menu_add"
+    <item android:id="@+id/menu_collection_list_add"
           android:icon="@android:drawable/ic_menu_add"
           android:title="Add Collection"
           android:showAsAction="withText|ifRoom"/>
