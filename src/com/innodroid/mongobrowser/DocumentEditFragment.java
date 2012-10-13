@@ -91,8 +91,7 @@ public class DocumentEditFragment extends Fragment {
 		@Override
 		protected String doInBackground(String... content) {
 			try {
-				MongoHelper.saveDocument(mCollectionName, content[0]);
-				return content[0];
+				return MongoHelper.saveDocument(mCollectionName, content[0]);
 			} catch (Exception ex) {
 				mException = ex;
 			}

@@ -12,6 +12,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 public class MongoHelper {
 	private static Mongo Connection;
@@ -109,8 +110,9 @@ public class MongoHelper {
 		Database.getCollection(name).drop();
 	}
 
-	public static void saveDocument(String collectionName, String content) {
+	public static String saveDocument(String collectionName, String content) {
 		Object obj = com.mongodb.util.JSON.parse(content);
-		Database.getCollection(collectionName).save((DBObject) obj);
+		WriteResult result = Database.getCollection(collectionName).save((DBObject) obj);
+		return obj.toString();
 	}
 }
