@@ -1,7 +1,6 @@
 package com.innodroid.mongobrowser;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
+import com.innodroid.mongobrowser.util.SafeAsyncTask;
 
 public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditFragment.Callbacks {
 	private static final String STATE_NAV_DEPTH = "navdepth";
@@ -196,18 +196,27 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         fragment.refreshList();
 	}
 
-    private class AddConnectionIfNoneExistTask extends AsyncTask<Void, Void, Boolean> {
+    private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {
+		public AddConnectionIfNoneExistTask() {
+			super(getSupportFragmentManager());
+		}
+
 		@Override
-		protected Boolean doInBackground(Void... arg0) {
+		protected Boolean safeDoInBackground(Void... arg0) {
 			return new MongoBrowserProviderHelper(getContentResolver()).getConnectionCount() == 0;
 		}
 
 		@Override
-		protected void onPostExecute(Boolean res) {
+		protected void safeOnPostExecute(Boolean res) {
 			super.onPostExecute(res);
 			
 			if (res)
 				addConnection();
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Check Connections";
 		}
     }
 

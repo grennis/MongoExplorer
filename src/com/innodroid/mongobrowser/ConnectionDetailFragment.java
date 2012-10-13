@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -30,6 +29,7 @@ import android.widget.Toast;
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
+import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
@@ -151,7 +151,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	
     private void editConnection() {
         DialogFragment fragment = ConnectionEditDialogFragment.create(mConnectionID, this);
-        fragment.show(getActivity().getSupportFragmentManager(), null);
+        fragment.show(getFragmentManager(), null);
     }
 
     private void deleteConnection() {
@@ -168,7 +168,11 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	public void onConnectionEdited(long id) {
 	}
 
-	private class ConnectTask extends AsyncTask<Void, Void, Boolean>{
+	private class ConnectTask extends SafeAsyncTask<Void, Void, Boolean>{
+		public ConnectTask() {
+			super(getFragmentManager());
+		}
+
 		private String mException;
 		private ProgressDialog mDialog;
 
@@ -180,7 +184,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		}
 		
 		@Override
-		protected Boolean doInBackground(Void... arg0) {
+		protected Boolean safeDoInBackground(Void... arg0) {
 			try {
 				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
 				Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
@@ -203,7 +207,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		}
 		
 		@Override
-		protected void onPostExecute(Boolean result) {
+		protected void safeOnPostExecute(Boolean result) {
 			super.onPostExecute(result);
 			mDialog.dismiss();
 			
@@ -225,13 +229,22 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	                .create().show();
 			}
 		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Connect";
+		}
 	}
 	
-    private class DeleteConnectionTask extends AsyncTask<Void, Void, Boolean> {
-    	private Exception mException;
+    private class DeleteConnectionTask extends SafeAsyncTask<Void, Void, Boolean> {
+    	public DeleteConnectionTask() {
+			super(getFragmentManager());
+		}
+
+		private Exception mException;
     	
 		@Override
-		protected Boolean doInBackground(Void... arg0) {
+		protected Boolean safeDoInBackground(Void... arg0) {
 			try {
 				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
 				getActivity().getContentResolver().delete(uri, null, null);
@@ -243,7 +256,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		}
 		
 		@Override
-		protected void onPostExecute(Boolean result) {
+		protected void safeOnPostExecute(Boolean result) {
 			super.onPostExecute(result);
 
 			if (mException == null) {
@@ -251,6 +264,11 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			} else {
 				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
 			}
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Delete";
 		}
     }
 }

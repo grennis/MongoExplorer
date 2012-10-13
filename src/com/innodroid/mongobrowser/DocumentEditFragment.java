@@ -1,11 +1,9 @@
 package com.innodroid.mongobrowser;
 
-import com.innodroid.mongo.MongoHelper;
-
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,7 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import com.innodroid.mongo.MongoHelper;
+import com.innodroid.mongobrowser.util.SafeAsyncTask;
 
 public class DocumentEditFragment extends Fragment {
 
@@ -78,37 +78,32 @@ public class DocumentEditFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.menu_document_edit_save:
-    			new SaveDocumentTask().execute(mContentEdit.getText().toString());
+    			new SaveDocumentTask(getFragmentManager()).execute(mContentEdit.getText().toString());
     			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);    		
     	}
     }
     
-    public class SaveDocumentTask extends AsyncTask<String, Void, String> {
-    	private Exception mException;
+    public class SaveDocumentTask extends SafeAsyncTask<String, Void, String> {
+    	public SaveDocumentTask(FragmentManager fm) {
+			super(fm);
+		}
 
 		@Override
-		protected String doInBackground(String... content) {
-			try {
-				return MongoHelper.saveDocument(mCollectionName, content[0]);
-			} catch (Exception ex) {
-				mException = ex;
-			}
-			
-			return null;
+		protected String safeDoInBackground(String... content) {
+			return MongoHelper.saveDocument(mCollectionName, content[0]);
 		}
 		
 		@Override
-		protected void onPostExecute(String result) {
-			super.onPostExecute(result);
-			
-			if (mException == null) {
-    			int position = getArguments().getInt(Constants.ARG_POSITION);
-				mCallbacks.onDocumentSaved(position, result);
-			} else {			
-				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
-			}			
+		protected void safeOnPostExecute(String result) {			
+			int position = getArguments().getInt(Constants.ARG_POSITION);
+			mCallbacks.onDocumentSaved(position, result);
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Save";
 		}
     }
 }

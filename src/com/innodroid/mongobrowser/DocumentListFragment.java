@@ -1,8 +1,9 @@
 package com.innodroid.mongobrowser;
 
 
+import java.net.UnknownHostException;
+
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -12,10 +13,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
+import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
@@ -160,83 +161,76 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		new RenameCollectionTask().execute(name);
 	}
 	
-    private class RenameCollectionTask extends AsyncTask<String, Void, String> {
-    	private Exception mException;
+    private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {
+    	public RenameCollectionTask() {
+			super(getFragmentManager());
+		}
+
+		private Exception mException;
     	
 		@Override
-		protected String doInBackground(String... args) {
-			try {
-				MongoHelper.renameCollection(mCollectionName, args[0]);
-				return args[0];
-			} catch (Exception ex) {
-				mException = ex;
-				return null;
-			}
+		protected String safeDoInBackground(String... args) throws UnknownHostException {
+			MongoHelper.renameCollection(mCollectionName, args[0]);
+			return args[0];
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
-			super.onPostExecute(result);
+		protected void safeOnPostExecute(String result) {
+			mCollectionName = result;
+			mCallbacks.onCollectionEdited(result);
+		}
 
-			if (mException == null) {
-				mCollectionName = result;
-				mCallbacks.onCollectionEdited(result);
-			} else {
-				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_LONG).show();
-			}
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Rename";
 		}		
     }
 
-    private class DropCollectionTask extends AsyncTask<Void, Void, Void> {
-    	private Exception mException;
+    private class DropCollectionTask extends SafeAsyncTask<Void, Void, Void> {
+    	public DropCollectionTask() {
+			super(getFragmentManager());
+		}
+
+		private Exception mException;
     	
 		@Override
-		protected Void doInBackground(Void... args) {
-			try {
-				MongoHelper.dropCollection(mCollectionName);
-			} catch (Exception ex) {
-				mException = ex;
-			}
-
+		protected Void safeDoInBackground(Void... args) {
+			MongoHelper.dropCollection(mCollectionName);
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
-			super.onPostExecute(result);
-
-			if (mException == null) {
-				mCallbacks.onCollectionDropped(mCollectionName);
-			} else {
-				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-		}		
-    }
-
-    private class LoadNextDocumentsTask extends AsyncTask<Void, Void, String[]> {
-    	private Exception mException;
-    	
-		@Override
-		protected String[] doInBackground(Void... args) {
-			try {
-				String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mStart, mTake);
-				return docs;
-			} catch (Exception ex) {
-				mException = ex;
-			}
-
-			return null;
+		protected void safeOnPostExecute(Void result) {
+			mCallbacks.onCollectionDropped(mCollectionName);
 		}
 
 		@Override
-		protected void onPostExecute(String[] results) {
-			super.onPostExecute(results);
+		protected String getErrorTitle() {
+			return "Failed to Drop";
+		}		
+    }
 
-			if (mException == null) {
-				mAdapter.addAll(results);
-			} else {
-				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
-			}
+    private class LoadNextDocumentsTask extends SafeAsyncTask<Void, Void, String[]> {
+    	public LoadNextDocumentsTask() {
+			super(getFragmentManager());
+		}
+
+		private Exception mException;
+    	
+		@Override
+		protected String[] safeDoInBackground(Void... args) {
+			String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mStart, mTake);
+			return docs;
+		}
+
+		@Override
+		protected void safeOnPostExecute(String[] results) {
+			mAdapter.addAll(results);
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Load";
 		}		
     }
 }

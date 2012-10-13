@@ -13,26 +13,44 @@ public class UiUtils {
 	public interface AlertDialogCallbacks {
 		boolean onOK();
 	}
+
+	private static AlertDialogCallbacks mEmptyCallbacks = new AlertDialogCallbacks() {
+		@Override
+		public boolean onOK() {
+			return true;
+		}		
+	};
 	
+	public static Dialog buildAlertDialog(View view, int icon, int title) {
+		return buildAlertDialog(view, icon, title, false, mEmptyCallbacks);
+	}
+
 	public static Dialog buildAlertDialog(View view, int icon, int title, final AlertDialogCallbacks callbacks) {
-        final AlertDialog dialog = new AlertDialog.Builder(view.getContext())
+		return buildAlertDialog(view, icon, title, true, callbacks);
+	}
+	
+	public static Dialog buildAlertDialog(View view, int icon, int title, boolean hasCancel, final AlertDialogCallbacks callbacks) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext())
 	        .setIcon(icon)
 	        .setView(view)
 	        .setTitle(title)
-	        .setCancelable(true)
 	        .setPositiveButton(android.R.string.ok,
 	            new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int whichButton) {
 	                }
 	            }
-	        )
-	        .setNegativeButton(android.R.string.cancel,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                }
-	            }
-	        )
-	        .create();
+	        );
+        
+        if (hasCancel) {
+	        builder.setCancelable(true).setNegativeButton(android.R.string.cancel,
+		            new DialogInterface.OnClickListener() {
+		                public void onClick(DialogInterface dialog, int whichButton) {
+		                }
+		            }
+		        );   	
+        }
+
+        final AlertDialog dialog = builder.create();
 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override

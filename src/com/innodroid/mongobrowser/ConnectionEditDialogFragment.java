@@ -18,8 +18,6 @@ import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.UiUtils;
 
 public class ConnectionEditDialogFragment extends DialogFragment implements LoaderCallbacks<Cursor> {
-	private static String ARG_CONNECTION_ID = "connid";
-	
 	private TextView mNameView;
 	private TextView mServerView;
 	private TextView mPortView;
@@ -35,7 +33,7 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
     static ConnectionEditDialogFragment create(long id, Callbacks callbacks) {
     	ConnectionEditDialogFragment fragment = new ConnectionEditDialogFragment();
     	Bundle args = new Bundle();
-    	args.putLong(ARG_CONNECTION_ID, id);
+    	args.putLong(Constants.ARG_CONNECTION_ID, id);
     	fragment.setArguments(args);
     	ConnectionEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
@@ -45,7 +43,7 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_connection_edit, null);
 
-    	long id = getArguments().getLong(ARG_CONNECTION_ID, 0);
+    	long id = getArguments().getLong(Constants.ARG_CONNECTION_ID, 0);
     	mNameView = (TextView)view.findViewById(R.id.edit_connection_name);
     	mServerView = (TextView)view.findViewById(R.id.edit_connection_server);
     	mPortView = (TextView)view.findViewById(R.id.edit_connection_port);
@@ -87,7 +85,7 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 
     	MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
 
-    	long id = getArguments().getLong(ARG_CONNECTION_ID, 0);
+    	long id = getArguments().getLong(Constants.ARG_CONNECTION_ID, 0);
 
     	if (id == 0)
     		id = helper.addConnection(name, server, port, db, user, pass);
@@ -100,7 +98,7 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
     }
     
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle args) {
-		Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, args.getLong(ARG_CONNECTION_ID));
+		Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, args.getLong(Constants.ARG_CONNECTION_ID));
 	    return new CursorLoader(getActivity(), uri, null, null, null, null);
 	}
 

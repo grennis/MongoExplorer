@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+	android:padding="16dp"
+	android:orientation="vertical"
+	tools:context=".ExceptionDetailFragment">
+
+	<TextView 
+	    android:id="@+id/exception_detail_title"
+	    android:textSize="@dimen/exception_detail_text_size"
+	    android:textStyle="bold"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" />
+
+    <ScrollView
+	    android:layout_marginTop="@dimen/exception_detail_vert_spacing"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content">
+		<TextView
+	        android:id="@+id/exception_detail_text"
+		    android:textSize="@dimen/exception_detail_text_size"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+	</ScrollView>
+</LinearLayout>    
+
