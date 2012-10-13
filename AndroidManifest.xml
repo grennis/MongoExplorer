@@ -13,20 +13,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ConnectionDetailActivity" android:label="@string/title_connection_detail" >
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".ConnectionListActivity" />
         </activity>
         
         <activity android:name=".CollectionListActivity" android:label="@string/title_collection_list" >
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".ConnectionListActivity" />
         </activity>
         
         <activity android:name=".DocumentListActivity" android:label="@string/title_document_list" >
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".CollectionListActivity" />
         </activity>
         
         <activity android:name=".DocumentDetailActivity" android:label="@string/document" >
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".DocumentListActivity" />
+        </activity>
+        
+        <activity android:name=".DocumentEditActivity" android:label="@string/document" >
         </activity>
         
         <activity android:name=".PreferencesActivity" android:label="@string/title_preferences" >

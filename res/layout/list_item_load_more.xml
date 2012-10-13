@@ -21,7 +21,7 @@
 	    android:layout_centerVertical="true"
 	    android:text="@string/load_more"
         android:textStyle="bold"
-        android:textSize="@dimen/document_text_size" />
+        android:textSize="@dimen/document_list_item_text_size" />
 			
 </RelativeLayout>
 

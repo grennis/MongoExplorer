@@ -30,7 +30,7 @@ public class DocumentListFragment extends ListFragment implements EditCollection
     private int mTake = 5;
 
     public interface Callbacks {
-        public void onDocumentItemSelected(long id);
+        public void onDocumentItemSelected(int position, String content);
         public void onCollectionEdited(String name);
         public void onCollectionDropped(String name);
     }
@@ -125,7 +125,7 @@ public class DocumentListFragment extends ListFragment implements EditCollection
         	new LoadNextDocumentsTask().execute();
         } else {
         	if (mCallbacks != null)
-        		mCallbacks.onDocumentItemSelected(mAdapter.getItemId(position));
+        		mCallbacks.onDocumentItemSelected(position, mAdapter.getItem(position));
         }
     }
 

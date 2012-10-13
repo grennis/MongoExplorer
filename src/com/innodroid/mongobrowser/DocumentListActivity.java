@@ -38,7 +38,10 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
     }
     
 	@Override
-    public void onDocumentItemSelected(long id) {
+    public void onDocumentItemSelected(int position, String content) {
+		Intent intent = new Intent(this, DocumentDetailActivity.class);
+		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
+		startActivity(intent);
     }
 
 	@Override

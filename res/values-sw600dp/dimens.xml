@@ -3,7 +3,7 @@
     <dimen name="connection_detail_vert_spacing">8dp</dimen>
     <dimen name="connection_detail_header_size">34sp</dimen>
     <dimen name="connection_detail_text_size">24sp</dimen>
-    <dimen name="document_text_size">24sp</dimen>
+    <dimen name="document_list_item_text_size">24sp</dimen>
     <item name="document_lines" type="integer">2</item>
     <item name="default_document_page_size" type="integer">12</item>
 </resources>

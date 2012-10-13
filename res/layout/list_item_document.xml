@@ -7,7 +7,7 @@
 
    	<ImageView android:id="@+id/list_item_document_icon"
    	    android:contentDescription="@string/title_document_list"
-   	    android:src="@drawable/collection"
+   	    android:src="@drawable/document"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
 	    android:layout_alignParentLeft="true"
@@ -22,7 +22,7 @@
         android:ellipsize="end"
         android:layout_toRightOf="@id/list_item_document_icon"
 	    android:layout_centerVertical="true"
-        android:textSize="@dimen/document_text_size" />
+        android:textSize="@dimen/document_list_item_text_size" />
 			
 </RelativeLayout>
 

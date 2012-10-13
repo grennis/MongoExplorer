@@ -14,7 +14,7 @@ import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 
-public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, EditConnectionDialogFragment.Callbacks, DocumentDetailFragment.Callbacks {
+public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, EditConnectionDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditFragment.Callbacks {
 	private static final String STATE_NAV_DEPTH = "navdepth";
 	private boolean mTwoPane;
     private FrameLayout mFrame1;
@@ -159,7 +159,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	}
 
 	@Override
-	public void onDocumentItemSelected(long id) {
+	public void onDocumentItemSelected(int position, String content) {
 	}
 
 	@Override

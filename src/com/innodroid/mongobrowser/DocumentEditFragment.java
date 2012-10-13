@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,18 +14,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
-public class DocumentDetailFragment extends Fragment {
+public class DocumentEditFragment extends Fragment {
 
-	private String mFormattedText;
-	private TextView mContentText;
+	private EditText mContentEdit;
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
     }
 
-    public DocumentDetailFragment() {
+    public DocumentEditFragment() {
     }
 
     @Override
@@ -37,17 +36,12 @@ public class DocumentDetailFragment extends Fragment {
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	View view = inflater.inflate(R.layout.fragment_document_detail, container, false);
+    	View view = inflater.inflate(R.layout.fragment_document_edit, container, false);
     	
-    	mContentText = (TextView) view.findViewById(R.id.document_detail_content);
+    	mContentEdit = (EditText) view.findViewById(R.id.document_edit_content);
     	
-    	String ugly = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
-    	Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    	JsonParser jp = new JsonParser();
-    	JsonElement je = jp.parse(ugly);
-    	mFormattedText = gson.toJson(je);
-    	
-    	mContentText.setText(mFormattedText);
+    	String json = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
+    	mContentEdit.setText(json);
     	
         return view;
     }
@@ -75,22 +69,11 @@ public class DocumentDetailFragment extends Fragment {
     
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    	inflater.inflate(R.menu.document_detail_menu, menu);
+    	inflater.inflate(R.menu.document_edit_menu, menu);
     }    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-    		case R.id.document_detail_menu_edit:
-    			editDocument();
-    		default:
-    	    	return super.onOptionsItemSelected(item);
-    	}
-    }
-    
-    private void editDocument() {
-    	Intent intent = new Intent(getActivity(), DocumentEditActivity.class);
-    	intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, mFormattedText);
-    	startActivity(intent);
+    	return super.onOptionsItemSelected(item);
     }
 }

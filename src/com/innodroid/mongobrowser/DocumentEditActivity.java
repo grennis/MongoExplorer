@@ -8,21 +8,21 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
-public class DocumentDetailActivity extends FragmentActivity implements DocumentDetailFragment.Callbacks {
+public class DocumentEditActivity extends FragmentActivity implements DocumentEditFragment.Callbacks {
     @SuppressLint("NewApi")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_document_detail);
+        setContentView(R.layout.activity_document_edit);
         setTitle(getIntent().getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
         	getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
-            DocumentDetailFragment fragment = new DocumentDetailFragment();
+        	DocumentEditFragment fragment = new DocumentEditFragment();
             fragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.document_detail_container, fragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.document_edit_container, fragment).commit();
         }
     }
 
@@ -30,7 +30,7 @@ public class DocumentDetailActivity extends FragmentActivity implements Document
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case android.R.id.home:
-                NavUtils.navigateUpTo(this, new Intent(this, DocumentListActivity.class));
+                NavUtils.navigateUpTo(this, new Intent(this, DocumentDetailActivity.class));
                 return true;
     		default:
                	break;

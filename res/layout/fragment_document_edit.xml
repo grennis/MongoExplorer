@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   	xmlns:tools="http://schemas.android.com/tools"
+   	android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	tools:context=".DocumentEditFragment">
+   	<EditText
+	    android:id="@+id/document_edit_content"
+	    android:inputType="textNoSuggestions"
+	    android:layout_weight="1"
+	    android:singleLine="false"
+	    android:gravity="top|left"
+	    android:minLines="5"
+	    android:maxLines="9999"
+	    android:textSize="@dimen/document_edit_text_size"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp" />
+</LinearLayout>
+
