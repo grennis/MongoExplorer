@@ -1,10 +1,5 @@
 package com.innodroid.mongobrowser;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.innodroid.mongobrowser.util.JsonUtils;
 
 public class DocumentDetailFragment extends Fragment {
 
@@ -39,14 +36,8 @@ public class DocumentDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	View view = inflater.inflate(R.layout.fragment_document_detail, container, false);
     	
-    	mContentText = (TextView) view.findViewById(R.id.document_detail_content);
-    	
-    	String ugly = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
-    	Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    	JsonParser jp = new JsonParser();
-    	JsonElement je = jp.parse(ugly);
-    	mFormattedText = gson.toJson(je);
-    	
+    	mContentText = (TextView) view.findViewById(R.id.document_detail_content);    	
+    	mFormattedText = JsonUtils.prettyPrint(getArguments().getString(Constants.ARG_DOCUMENT_CONTENT));    	
     	mContentText.setText(mFormattedText);
     	
         return view;

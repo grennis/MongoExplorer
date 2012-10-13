@@ -9,12 +9,20 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 public class DocumentEditActivity extends FragmentActivity implements DocumentEditFragment.Callbacks {
+	private int mPosition;
+	
     @SuppressLint("NewApi")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document_edit);
-        setTitle(getIntent().getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
+        
+        mPosition = getIntent().getIntExtra(Constants.ARG_POSITION, -1);
+        
+        if (mPosition >= 0)
+        	setTitle(R.string.edit_document);
+        else
+        	setTitle(R.string.add_document);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
         	getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -26,6 +34,15 @@ public class DocumentEditActivity extends FragmentActivity implements DocumentEd
         }
     }
 
+    @Override
+    public void onDocumentSaved(int position, String content) {
+    	Intent data = new Intent();
+    	data.putExtra(Constants.ARG_POSITION, position);
+    	data.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
+    	setResult(RESULT_OK, data);
+    	finish();
+    }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {

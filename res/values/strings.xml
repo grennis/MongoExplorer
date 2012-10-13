@@ -22,5 +22,7 @@
     <string name="title_preferences">Preferences</string>
     <string name="load_more">Load More &#8230;</string>
     <string name="document">Document</string>
+    <string name="edit_document">Edit Document</string>
+    <string name="add_document">Add Document</string>
 </resources>
 

@@ -9,5 +9,7 @@ public class Constants {
 	public static final String ARG_POSITION = "pos";
 	public static final String ARG_ACTIVATE_ON_CLICK = "actonclick";
 	public static final String ARG_DOCUMENT_CONTENT = "doccontent";
+	
+	public static final String NEW_DOCUMENT_CONTENT = "{\n    \n}\n";
 }
 

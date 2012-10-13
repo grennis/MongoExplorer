@@ -30,6 +30,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     private int mTake = 5;
 
     public interface Callbacks {
+    	public void onAddDocument();
         public void onDocumentItemSelected(int position, String content);
         public void onCollectionEdited(String name);
         public void onCollectionDropped(String name);
@@ -88,6 +89,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     public boolean onOptionsItemSelected(MenuItem item) {    	
         switch (item.getItemId()) {
     		case R.id.menu_document_list_add:
+    			mCallbacks.onAddDocument();
     			return true;
     		case R.id.menu_document_list_edit:
     			editCollection();
@@ -100,7 +102,13 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         }
     }
 
-    
+	public void onDocumentSaved(int position, String content) {
+		if (position < 0)
+			mAdapter.insert(content, 0);
+//		else
+//			mAdapter.update(position, content);
+	}
+
 	private void editCollection() {
         DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, this);
         fragment.show(getFragmentManager(), null);

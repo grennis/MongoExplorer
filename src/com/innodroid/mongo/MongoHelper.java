@@ -108,4 +108,9 @@ public class MongoHelper {
 	public static void dropCollection(String name) {
 		Database.getCollection(name).drop();
 	}
+
+	public static void saveDocument(String collectionName, String content) {
+		Object obj = com.mongodb.util.JSON.parse(content);
+		Database.getCollection(collectionName).save((DBObject) obj);
+	}
 }

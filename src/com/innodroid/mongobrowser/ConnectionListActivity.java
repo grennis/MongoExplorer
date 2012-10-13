@@ -210,4 +210,16 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 				addConnection();
 		}
     }
+
+	@Override
+	public void onDocumentSaved(int position, String content) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAddDocument() {
+		// TODO Auto-generated method stub
+		
+	}
 }
