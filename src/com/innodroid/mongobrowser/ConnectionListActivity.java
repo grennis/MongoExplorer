@@ -208,8 +208,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
 		@Override
 		protected void safeOnPostExecute(Boolean res) {
-			super.onPostExecute(res);
-			
 			if (res)
 				addConnection();
 		}

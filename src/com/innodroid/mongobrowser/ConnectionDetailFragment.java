@@ -1,5 +1,7 @@
 package com.innodroid.mongobrowser;
 
+import java.net.UnknownHostException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -173,7 +175,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			super(getFragmentManager());
 		}
 
-		private String mException;
 		private ProgressDialog mDialog;
 
 		@Override
@@ -184,50 +185,28 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		}
 		
 		@Override
-		protected Boolean safeDoInBackground(Void... arg0) {
-			try {
-				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
-				Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-				cursor.moveToFirst();
-				
-		    	String server = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_SERVER);
-		    	int port = cursor.getInt(MongoBrowserProvider.INDEX_CONNECTION_PORT);
-		    	String database = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_DB);
-		    	String user = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_USER);
-		    	String password = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PASSWORD); 
-				
-		    	MongoHelper.connect(server, port, database, user, password);
-		    	new MongoBrowserProviderHelper(getActivity().getContentResolver()).updateConnectionLastConnect(mConnectionID);
-		    	
-				return true;
-			} catch (Exception ex) {
-				mException = ex.getMessage();
-				return false;
-			}
+		protected Boolean safeDoInBackground(Void... arg0) throws UnknownHostException {
+			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
+			Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+			cursor.moveToFirst();
+			
+	    	String server = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_SERVER);
+	    	int port = cursor.getInt(MongoBrowserProvider.INDEX_CONNECTION_PORT);
+	    	String database = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_DB);
+	    	String user = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_USER);
+	    	String password = cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PASSWORD); 
+			
+	    	MongoHelper.connect(server, port, database, user, password);
+	    	new MongoBrowserProviderHelper(getActivity().getContentResolver()).updateConnectionLastConnect(mConnectionID);
+	    	
+			return true;
 		}
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			super.onPostExecute(result);
 			mDialog.dismiss();
 			
-			if (result) {
-				mCallbacks.onConnected();
-			} else {
-		        new AlertDialog.Builder(getActivity())
-	                .setIcon(android.R.drawable.ic_menu_delete)
-	                .setMessage(mException)
-	                .setTitle(R.string.connect_failed)
-	                .setCancelable(true)
-	                .setPositiveButton(android.R.string.ok,
-	                    new DialogInterface.OnClickListener() {
-	                        public void onClick(DialogInterface dialog, int whichButton) {
-	                        	//
-	                        }
-	                    }
-	                )
-	                .create().show();
-			}
+			mCallbacks.onConnected();
 		}
 
 		@Override
@@ -241,29 +220,16 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			super(getFragmentManager());
 		}
 
-		private Exception mException;
-    	
 		@Override
 		protected Boolean safeDoInBackground(Void... arg0) {
-			try {
-				Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
-				getActivity().getContentResolver().delete(uri, null, null);
-				return true;
-			} catch (Exception ex) {
-				mException = ex;
-				return false;
-			}
+			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
+			getActivity().getContentResolver().delete(uri, null, null);
+			return true;
 		}
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			super.onPostExecute(result);
-
-			if (mException == null) {
-				mCallbacks.onConnectionDeleted();
-			} else {
-				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
-			}
+			mCallbacks.onConnectionDeleted();
 		}
 
 		@Override

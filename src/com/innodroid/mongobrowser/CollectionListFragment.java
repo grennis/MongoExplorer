@@ -142,31 +142,15 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 			super(getFragmentManager());
 		}
 
-		private String mError;
-
     	@Override
-		protected String safeDoInBackground(String... args) {
-    		try {
-    			if (!MongoHelper.createCollection(args[0])) {
-    				mError = "Collection already exists";
-    				return null;
-    			}
-    				
-    			return args[0];
-    		} catch (Exception ex) {
-    			mError = ex.getMessage();
-    			return null;
-    		}
+		protected String safeDoInBackground(String... args) throws Exception {
+			MongoHelper.createCollection(args[0]);
+			return args[0];
 		}
 
 		@Override
 		protected void safeOnPostExecute(String result) {
-			super.onPostExecute(result);
-
-			if (mError == null)
-				mAdapter.add(result);
-			else
-				Toast.makeText(getActivity(), mError, Toast.LENGTH_SHORT).show();
+			mAdapter.add(result);
 		}
 
 		@Override
@@ -179,8 +163,6 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
     	public LoadNamesTask() {
 			super(getFragmentManager());
 		}
-
-		private Exception mException;
 
     	@Override
 		protected String[] safeDoInBackground(Void... arg0) {
@@ -205,8 +187,6 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 			super(getFragmentManager());
 		}
 
-		private Exception mException;
-
     	@Override
 		protected Void safeDoInBackground(String... arg0) {
 			for (int i = 0; i<arg0.length; i++) {
@@ -226,7 +206,6 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		
 		@Override
 		protected void safeOnPostExecute(Void result) {
-			super.onPostExecute(result);			
 		}
 
 		@Override

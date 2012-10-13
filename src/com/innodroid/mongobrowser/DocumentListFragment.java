@@ -166,8 +166,6 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			super(getFragmentManager());
 		}
 
-		private Exception mException;
-    	
 		@Override
 		protected String safeDoInBackground(String... args) throws UnknownHostException {
 			MongoHelper.renameCollection(mCollectionName, args[0]);
@@ -191,8 +189,6 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			super(getFragmentManager());
 		}
 
-		private Exception mException;
-    	
 		@Override
 		protected Void safeDoInBackground(Void... args) {
 			MongoHelper.dropCollection(mCollectionName);
@@ -215,8 +211,6 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			super(getFragmentManager());
 		}
 
-		private Exception mException;
-    	
 		@Override
 		protected String[] safeDoInBackground(Void... args) {
 			String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mStart, mTake);

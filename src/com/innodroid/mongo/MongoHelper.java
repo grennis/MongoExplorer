@@ -76,14 +76,13 @@ public class MongoHelper {
 		return Database.getCollection(name).getCount();
 	}
 	
-	public static boolean createCollection(String name) {
+	public static void createCollection(String name) throws Exception {
 		if (Database.collectionExists(name))
-			return false;
+			throw new Exception ("Collection already exists");
 		DBObject obj = new BasicDBObject();
 		obj.put("_id", "1");
 		Database.getCollection(name).save(obj);
 		Database.getCollection(name).remove(obj);
-		return true;
 	}
 	
 	public static void renameCollection(String oldName, String newName) throws UnknownHostException {
