@@ -5,24 +5,40 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.WriteConcern;
 
 public class MongoHelper {
-	public static Mongo Connection;
-	public static DB Database;
+	private static Mongo Connection;
+	private static DB Database;
+	private static String DatabaseName;
+	private static String Server;
+	private static int Port;
+	private static String User;
+	private static String Password;
 	
 	public static void connect(String server, int port, String dbname, String user, String pass) throws UnknownHostException {
 		disconnect();
 		
 		Connection = new Mongo(server, port);
     	Database = Connection.getDB(dbname);
+    	Server = server;
+    	Port = port;
+    	DatabaseName = dbname;
     	
-    	if (user != null && user.length() > 0)
-    		Database.authenticate(user, pass.toCharArray());		
+    	User = user;
+    	Password = pass;
+    	
+    	if (user != null && user.length() > 0) {
+    		Database.authenticate(user, pass.toCharArray());
+    	} 
+    	
+    	Connection.setWriteConcern(WriteConcern.SAFE);
 	}
 	
     private static void disconnect() {
@@ -36,6 +52,11 @@ public class MongoHelper {
     		ex.printStackTrace();
     	}
 	}
+    
+    private static void reconnect() throws UnknownHostException {
+    	disconnect();
+    	connect(Server, Port, DatabaseName, User, Password);
+    }
 
 	public static String[] getCollectionNames(boolean includeSystemPrefs) {
     	Set<String> names = Database.getCollectionNames();
@@ -64,8 +85,9 @@ public class MongoHelper {
 		return true;
 	}
 	
-	public static void renameCollection(String oldName, String newName) {
-		Database.getCollection(oldName).rename(newName, false);
+	public static void renameCollection(String oldName, String newName) throws UnknownHostException {
+		reconnect();
+		Database.getCollection(oldName).rename(newName);
 	}
 
 	public static String[] getPageOfDocuments(String collection, int start, int take) {

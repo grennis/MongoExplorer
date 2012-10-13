@@ -164,7 +164,7 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 				mCollectionName = result;
 				mCallbacks.onCollectionEdited(result);
 			} else {
-				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_LONG).show();
 			}
 		}		
     }
