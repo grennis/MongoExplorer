@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
+import com.innodroid.mongobrowser.util.UiUtils;
 
 public class EditConnectionDialogFragment extends DialogFragment implements LoaderCallbacks<Cursor> {
 	private static String ARG_CONNECTION_ID = "connid";

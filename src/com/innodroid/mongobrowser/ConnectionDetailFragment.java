@@ -28,9 +28,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
-import com.innodroid.mongobrowser.UiUtils.AlertDialogCallbacks;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
+import com.innodroid.mongobrowser.util.UiUtils;
+import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
 public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, EditConnectionDialogFragment.Callbacks {
 

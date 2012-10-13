@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.util;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 import android.widget.Button;
+
+import com.innodroid.mongobrowser.R;
 
 public class UiUtils {
 	public interface AlertDialogCallbacks {

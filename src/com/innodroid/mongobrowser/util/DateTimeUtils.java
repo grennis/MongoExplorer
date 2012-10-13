@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

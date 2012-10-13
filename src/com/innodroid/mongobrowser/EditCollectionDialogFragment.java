@@ -1,5 +1,7 @@
 package com.innodroid.mongobrowser;
 
+import com.innodroid.mongobrowser.util.UiUtils;
+
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;

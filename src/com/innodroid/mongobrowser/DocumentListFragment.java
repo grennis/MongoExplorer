@@ -15,8 +15,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
-import com.innodroid.mongobrowser.UiUtils.AlertDialogCallbacks;
 import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
+import com.innodroid.mongobrowser.util.UiUtils;
+import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
 public class DocumentListFragment extends ListFragment implements EditCollectionDialogFragment.Callbacks {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
