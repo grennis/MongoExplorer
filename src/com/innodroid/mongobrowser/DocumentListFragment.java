@@ -4,6 +4,7 @@ package com.innodroid.mongobrowser;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.view.Menu;
@@ -15,15 +16,17 @@ import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.UiUtils.AlertDialogCallbacks;
-import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
+import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
 
 public class DocumentListFragment extends ListFragment implements EditCollectionDialogFragment.Callbacks {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private String mCollectionName;
-    private MongoCollectionAdapter mAdapter;
+    private MongoDocumentAdapter mAdapter;
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    private int mStart = 0;
+    private int mTake = 5;
 
     public interface Callbacks {
         public void onDocumentItemSelected(long id);
@@ -38,14 +41,16 @@ public class DocumentListFragment extends ListFragment implements EditCollection
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		mAdapter = new MongoCollectionAdapter(getActivity());
+		mAdapter = new MongoDocumentAdapter(getActivity());
 		setListAdapter(mAdapter);
 		
 		setHasOptionsMenu(true);
 
+		int take = getResources().getInteger(R.integer.default_document_page_size);
+		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
 
-		//new LoadNamesTask().execute();
+		new LoadNextDocumentsTask().execute();
     }
 
     @Override
@@ -69,7 +74,6 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 
     @Override
     public void onDetach() {
-        //LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
         mCallbacks = null;
         super.onDetach();
     }
@@ -115,8 +119,13 @@ public class DocumentListFragment extends ListFragment implements EditCollection
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         
-        if (mCallbacks != null)
-        	mCallbacks.onDocumentItemSelected(mAdapter.getItemId(position));
+        if (position == mAdapter.getCount()-1) {
+        	mStart += mTake;
+        	new LoadNextDocumentsTask().execute();
+        } else {
+        	if (mCallbacks != null)
+        		mCallbacks.onDocumentItemSelected(mAdapter.getItemId(position));
+        }
     }
 
     @Override
@@ -189,6 +198,33 @@ public class DocumentListFragment extends ListFragment implements EditCollection
 
 			if (mException == null) {
 				mCallbacks.onCollectionDropped(mCollectionName);
+			} else {
+				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}		
+    }
+
+    private class LoadNextDocumentsTask extends AsyncTask<Void, Void, String[]> {
+    	private Exception mException;
+    	
+		@Override
+		protected String[] doInBackground(Void... args) {
+			try {
+				String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mStart, mTake);
+				return docs;
+			} catch (Exception ex) {
+				mException = ex;
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String[] results) {
+			super.onPostExecute(results);
+
+			if (mException == null) {
+				mAdapter.addAll(results);
 			} else {
 				Toast.makeText(getActivity(), mException.getMessage(), Toast.LENGTH_SHORT).show();
 			}

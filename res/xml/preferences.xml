@@ -6,6 +6,12 @@
             android:title="Show System Collections" 
             android:summary="Show collections named system.*"
             android:defaultValue="false" />
+		<com.innodroid.mongobrowser.util.IntEditTextPreference
+		    android:key="document_page_size"
+            android:title="Document Load Size"
+            android:summary="Number of documents to load each time"
+            android:numeric="integer"
+            android:defaultValue="@integer/default_document_page_size" />
     </PreferenceCategory>
 </PreferenceScreen>
 

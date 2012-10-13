@@ -48,7 +48,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         } else {
         	if (savedInstanceState.getInt(STATE_NAV_DEPTH) > 0) {
             	mFrame1.setVisibility(View.GONE);
-            	mFrame4.setVisibility(View.VISIBLE);
+            	mFrame3.setVisibility(View.VISIBLE);
         	}
         }
 
@@ -114,7 +114,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 0;
 
     	mFrame1.setVisibility(View.GONE);
-    	mFrame4.setVisibility(View.VISIBLE);
+    	mFrame3.setVisibility(View.VISIBLE);
 
     	Bundle arguments = new Bundle();
         DocumentListFragment fragment = new DocumentListFragment();
@@ -137,7 +137,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 
     private void hideDocumentListPane() {
-    	mFrame4.setVisibility(View.GONE);
+    	mFrame3.setVisibility(View.GONE);
     	mFrame1.setVisibility(View.VISIBLE);
     	
     	getSupportFragmentManager().popBackStack();

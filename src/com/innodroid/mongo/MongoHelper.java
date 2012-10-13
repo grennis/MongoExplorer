@@ -96,6 +96,7 @@ public class MongoHelper {
 		ArrayList<String> results = new ArrayList<String>();
 		
 		while (cursor.hasNext()) {
+			cursor.next();
 			results.add(cursor.curr().toString());
 		}
 		
