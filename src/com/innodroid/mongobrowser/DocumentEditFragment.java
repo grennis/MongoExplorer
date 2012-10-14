@@ -3,7 +3,6 @@ package com.innodroid.mongobrowser;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -78,7 +77,7 @@ public class DocumentEditFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.menu_document_edit_save:
-    			new SaveDocumentTask(getFragmentManager()).execute(mContentEdit.getText().toString());
+    			new SaveDocumentTask().execute(mContentEdit.getText().toString());
     			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);    		
@@ -86,8 +85,8 @@ public class DocumentEditFragment extends Fragment {
     }
     
     public class SaveDocumentTask extends SafeAsyncTask<String, Void, String> {
-    	public SaveDocumentTask(FragmentManager fm) {
-			super(fm);
+    	public SaveDocumentTask() {
+			super(getActivity());
 		}
 
 		@Override
@@ -104,6 +103,11 @@ public class DocumentEditFragment extends Fragment {
 		@Override
 		protected String getErrorTitle() {
 			return "Failed to Save";
+		}
+		
+		@Override
+		protected String getProgressMessage() {
+			return "Saving";
 		}
     }
 }

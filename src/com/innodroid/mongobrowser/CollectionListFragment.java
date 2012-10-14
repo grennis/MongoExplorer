@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
@@ -139,7 +138,7 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 
     private class AddCollectionTask extends SafeAsyncTask<String, Void, String> {
     	public AddCollectionTask() {
-			super(getFragmentManager());
+			super(getActivity());
 		}
 
     	@Override
@@ -161,7 +160,7 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 	
     private class LoadNamesTask extends SafeAsyncTask<Void, Void, String[]> {
     	public LoadNamesTask() {
-			super(getFragmentManager());
+			super(getActivity());
 		}
 
     	@Override
@@ -180,11 +179,16 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		protected String getErrorTitle() {
 			return "Failed to Get Names";
 		}
+		
+		@Override
+		protected String getProgressMessage() {
+			return "Loading";
+		}		
     }
 
     private class LoadCountsTask extends SafeAsyncTask<String, Long, Void> {
     	public LoadCountsTask() {
-			super(getFragmentManager());
+			super(getActivity());
 		}
 
     	@Override

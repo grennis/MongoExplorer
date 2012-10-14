@@ -3,10 +3,7 @@ package com.innodroid.mongobrowser;
 import java.net.UnknownHostException;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ContentUris;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,7 +23,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
@@ -172,16 +168,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
 	private class ConnectTask extends SafeAsyncTask<Void, Void, Boolean>{
 		public ConnectTask() {
-			super(getFragmentManager());
-		}
-
-		private ProgressDialog mDialog;
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			
-			mDialog = ProgressDialog.show(getActivity(), null, "Connecting...", true, false);		
+			super(getActivity());
 		}
 		
 		@Override
@@ -204,8 +191,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			mDialog.dismiss();
-			
 			mCallbacks.onConnected();
 		}
 
@@ -213,11 +198,16 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		protected String getErrorTitle() {
 			return "Failed to Connect";
 		}
+		
+		@Override
+		protected String getProgressMessage() {
+			return "Connecting";
+		}
 	}
 	
     private class DeleteConnectionTask extends SafeAsyncTask<Void, Void, Boolean> {
     	public DeleteConnectionTask() {
-			super(getFragmentManager());
+			super(getActivity());
 		}
 
 		@Override

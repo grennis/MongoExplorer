@@ -198,7 +198,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
     private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {
 		public AddConnectionIfNoneExistTask() {
-			super(getSupportFragmentManager());
+			super(ConnectionListActivity.this);
 		}
 
 		@Override

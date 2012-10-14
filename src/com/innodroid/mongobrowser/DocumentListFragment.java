@@ -163,7 +163,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {
     	public RenameCollectionTask() {
-			super(getFragmentManager());
+			super(getActivity());
 		}
 
 		@Override
@@ -186,7 +186,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
     private class DropCollectionTask extends SafeAsyncTask<Void, Void, Void> {
     	public DropCollectionTask() {
-			super(getFragmentManager());
+			super(getActivity());
 		}
 
 		@Override
@@ -208,7 +208,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
     private class LoadNextDocumentsTask extends SafeAsyncTask<Void, Void, String[]> {
     	public LoadNextDocumentsTask() {
-			super(getFragmentManager());
+			super(getActivity());
 		}
 
 		@Override

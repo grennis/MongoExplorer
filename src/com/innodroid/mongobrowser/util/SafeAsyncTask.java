@@ -1,20 +1,33 @@
 package com.innodroid.mongobrowser.util;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import com.innodroid.mongobrowser.ExceptionDetailDialogFragment;
 
 public abstract class SafeAsyncTask<T, U, V> extends AsyncTask<T, U, V>{
 	private Exception mException;
-	protected FragmentManager mFM;
+	private FragmentActivity mFragmentActivity;
+	private ProgressDialog mDialog;
 	
 	protected abstract V safeDoInBackground(T... params) throws Exception;
 	protected abstract void safeOnPostExecute(V result);
 	protected abstract String getErrorTitle();
-
-	public SafeAsyncTask(FragmentManager fm) {
-		mFM = fm;
+	
+	public SafeAsyncTask(FragmentActivity activity) {		
+		mFragmentActivity = activity;
+	}
+	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		
+		String caption = getProgressMessage();
+		
+		if (caption != null)
+			mDialog = ProgressDialog.show(mFragmentActivity, null, caption, true, false);		
 	}
 	
 	@Override
@@ -34,9 +47,16 @@ public abstract class SafeAsyncTask<T, U, V> extends AsyncTask<T, U, V>{
 	protected void onPostExecute(V result) {
 		super.onPostExecute(result);
 
+		if (mDialog != null)
+			mDialog.dismiss();
+
 		if (mException == null)
 			safeOnPostExecute(result);
 		else
-			ExceptionDetailDialogFragment.create(getErrorTitle(), mException).show(mFM, null);
+			ExceptionDetailDialogFragment.create(getErrorTitle(), mException).show(mFragmentActivity.getSupportFragmentManager(), null);
+	}
+
+	protected String getProgressMessage() {
+		return null;
 	}
 }
