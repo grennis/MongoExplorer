@@ -1,6 +1,8 @@
 package com.innodroid.mongobrowser;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
@@ -8,7 +10,10 @@ import android.view.MenuItem;
 public class DocumentListActivity extends FragmentActivity implements DocumentListFragment.Callbacks {
 	private static final int REQUEST_EDIT_DOCUMENT = 101;
 	
-    @Override
+	private String mCollectionName;
+	
+    @SuppressLint("NewApi")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -16,6 +21,11 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
         setTitle(name);
         setContentView(R.layout.activity_document_list);
         
+        mCollectionName = getIntent().getExtras().getString(Constants.ARG_COLLECTION_NAME);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+        	getActionBar().setDisplayHomeAsUpEnabled(true);
+
         if (savedInstanceState == null) {
         	Bundle args = getIntent().getExtras();
 	        DocumentListFragment fragment = new DocumentListFragment();
@@ -41,7 +51,7 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 		Intent intent = new Intent(this, DocumentEditActivity.class);
 		intent.putExtra(Constants.ARG_POSITION, -1);
 		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, Constants.NEW_DOCUMENT_CONTENT);
-		intent.putExtra(Constants.ARG_COLLECTION_NAME, getIntent().getExtras().getString(Constants.ARG_COLLECTION_NAME));
+		intent.putExtra(Constants.ARG_COLLECTION_NAME, mCollectionName);
 		startActivityForResult(intent, REQUEST_EDIT_DOCUMENT);		
 	}
 
@@ -64,6 +74,7 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 		Intent intent = new Intent(this, DocumentDetailActivity.class);
 		intent.putExtra(Constants.ARG_POSITION, position);
 		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
+		intent.putExtra(Constants.ARG_COLLECTION_NAME, mCollectionName);
 		startActivity(intent);
     }
 

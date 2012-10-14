@@ -229,4 +229,10 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void onEditDocument(int position, String content) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 public class ConnectionDetailActivity extends FragmentActivity implements ConnectionDetailFragment.Callbacks {
@@ -30,7 +29,7 @@ public class ConnectionDetailActivity extends FragmentActivity implements Connec
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case android.R.id.home:
-                NavUtils.navigateUpTo(this, new Intent(this, ConnectionListActivity.class));
+    			finish();
                 return true;
     		default:
                	break;

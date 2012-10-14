@@ -23,7 +23,7 @@
     <string name="load_more">Load More &#8230;</string>
     <string name="document">Document</string>
     <string name="edit_document">Edit Document</string>
-    <string name="add_document">Add Document</string>
+    <string name="add_document">New Document</string>
     <string name="error_has_occurred">An Error has Occurred</string>
 </resources>
 

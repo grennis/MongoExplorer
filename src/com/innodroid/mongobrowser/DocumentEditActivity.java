@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 public class DocumentEditActivity extends FragmentActivity implements DocumentEditFragment.Callbacks {
@@ -47,7 +46,7 @@ public class DocumentEditActivity extends FragmentActivity implements DocumentEd
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case android.R.id.home:
-                NavUtils.navigateUpTo(this, new Intent(this, DocumentDetailActivity.class));
+    			finish();
                 return true;
     		default:
                	break;

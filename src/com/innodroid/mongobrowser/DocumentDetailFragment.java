@@ -1,7 +1,6 @@
 package com.innodroid.mongobrowser;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,6 +20,7 @@ public class DocumentDetailFragment extends Fragment {
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
+    	void onEditDocument(int position, String content);
     }
 
     public DocumentDetailFragment() {
@@ -36,18 +36,10 @@ public class DocumentDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	View view = inflater.inflate(R.layout.fragment_document_detail, container, false);
     	
-    	mContentText = (TextView) view.findViewById(R.id.document_detail_content);    	
-    	mFormattedText = JsonUtils.prettyPrint(getArguments().getString(Constants.ARG_DOCUMENT_CONTENT));    	
-    	mContentText.setText(mFormattedText);
+    	mContentText = (TextView) view.findViewById(R.id.document_detail_content);
+    	updateContent(getArguments().getString(Constants.ARG_DOCUMENT_CONTENT));
     	
         return view;
-    }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-        
-        //getLoaderManager().initLoader(0, getArguments(), this);
     }
     
     @Override
@@ -73,15 +65,16 @@ public class DocumentDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.menu_document_detail_edit:
-    			editDocument();
+    			mCallbacks.onEditDocument(getArguments().getInt(Constants.ARG_POSITION), mFormattedText);
     		default:
     	    	return super.onOptionsItemSelected(item);
     	}
     }
     
-    private void editDocument() {
-    	Intent intent = new Intent(getActivity(), DocumentEditActivity.class);
-    	intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, mFormattedText);
-    	startActivity(intent);
+    public void updateContent(String json) {
+    	mFormattedText = JsonUtils.prettyPrint(json);    	
+    	mContentText.setText(mFormattedText);
     }
 }
+
+

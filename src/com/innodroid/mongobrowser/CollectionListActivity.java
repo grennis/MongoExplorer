@@ -1,18 +1,23 @@
 package com.innodroid.mongobrowser;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 public class CollectionListActivity extends FragmentActivity implements CollectionListFragment.Callbacks {
+	@SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setTitle(R.string.title_collection_list);
         setContentView(R.layout.activity_collection_list);        
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+        	getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
         	Bundle args = new Bundle();
@@ -29,7 +34,7 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case android.R.id.home:
-                NavUtils.navigateUpTo(this, new Intent(this, ConnectionListActivity.class));
+    			finish();
                 return true;
     		default:
                	break;
