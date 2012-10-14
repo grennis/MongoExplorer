@@ -104,10 +104,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }
 
 	public void onDocumentSaved(int position, String content) {
-		if (position < 0)
-			mAdapter.insert(content, 0);
-//		else
-//			mAdapter.update(position, content);
+		mAdapter.insertOrUpdate(position, content);
 	}
 
 	private void editCollection() {

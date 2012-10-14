@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 public class DocumentListActivity extends FragmentActivity implements DocumentListFragment.Callbacks {
 	private static final int REQUEST_EDIT_DOCUMENT = 101;
+	private static final int REQUEST_VIEW_DOCUMENT = 102;
 	
 	private String mCollectionName;
 	
@@ -57,16 +58,12 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 
 	@Override
 	protected void onActivityResult(int request, int result, Intent data) {
-		switch (request) {
-			case REQUEST_EDIT_DOCUMENT:
-				if (result == RESULT_OK) {
-					DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
-					fragment.onDocumentSaved(data.getIntExtra(Constants.ARG_POSITION, -1), data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
-				}
-				break;
+		if ((request == REQUEST_EDIT_DOCUMENT || request == REQUEST_VIEW_DOCUMENT) && result == RESULT_OK) {
+			DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
+			fragment.onDocumentSaved(data.getIntExtra(Constants.ARG_POSITION, -1), data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
+		} else {
+			super.onActivityResult(request, result, data);
 		}
-		
-		super.onActivityResult(request, result, data);
 	}
 	
 	@Override
@@ -75,7 +72,7 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 		intent.putExtra(Constants.ARG_POSITION, position);
 		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
 		intent.putExtra(Constants.ARG_COLLECTION_NAME, mCollectionName);
-		startActivity(intent);
+		startActivityForResult(intent, REQUEST_VIEW_DOCUMENT);
     }
 
 	@Override

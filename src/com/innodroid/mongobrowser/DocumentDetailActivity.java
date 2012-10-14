@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 public class DocumentDetailActivity extends FragmentActivity implements DocumentDetailFragment.Callbacks {
 	private String mCollectionName;
-	
+
 	private static final int REQUEST_EDIT_DOCUMENT = 101;
 	
     @SuppressLint("NewApi")
@@ -22,7 +22,8 @@ public class DocumentDetailActivity extends FragmentActivity implements Document
         	getActionBar().setDisplayHomeAsUpEnabled(true);
         
         mCollectionName = getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME);
-        
+        updateResult(getIntent().getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
+    
         if (savedInstanceState == null) {
             DocumentDetailFragment fragment = new DocumentDetailFragment();
             fragment.setArguments(getIntent().getExtras());
@@ -56,10 +57,19 @@ public class DocumentDetailActivity extends FragmentActivity implements Document
 	protected void onActivityResult(int request, int result, Intent data) {
 		if (request == REQUEST_EDIT_DOCUMENT && result == RESULT_OK) {
 			DocumentDetailFragment fragment = (DocumentDetailFragment)getSupportFragmentManager().findFragmentById(R.id.document_detail_container);
-			fragment.updateContent(data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
+			String content = data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT);
+			updateResult(content);
+			fragment.updateContent(content);
 		}
 		else {
 			super.onActivityResult(request, result, data);
 		}
+	}
+	
+	private void updateResult(String content) {
+		Intent data = new Intent();
+		data.putExtra(Constants.ARG_POSITION, getIntent().getIntExtra(Constants.ARG_POSITION, -1));
+		data.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
+		setResult(RESULT_OK, data);
 	}
 }
