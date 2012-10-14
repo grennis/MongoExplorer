@@ -13,10 +13,12 @@ import com.innodroid.mongobrowser.R;
 
 public class MongoDocumentAdapter extends BaseAdapter {
 	private Context mContext;
+	private boolean mShowLoadMore;
 	private ArrayList<String> mItems = new ArrayList<String>();
 	
 	public MongoDocumentAdapter(Context context) {
 		mContext = context;
+		mShowLoadMore = true;
 	}
 
 	public void addAll(String[] names) {
@@ -29,12 +31,19 @@ public class MongoDocumentAdapter extends BaseAdapter {
 	
 	@Override
 	public int getItemViewType(int position) {
+		if (!mShowLoadMore)
+			return 1;
+		
 		return (position == getCount()-1) ? 0 : 1;
 	}
 	
 	@Override
 	public int getCount() {
 		int count = mItems.size();
+		
+		if (!mShowLoadMore)
+			return count;
+		
 		return (count == 0) ? 0 : count+1;
 	}
 	
@@ -45,7 +54,7 @@ public class MongoDocumentAdapter extends BaseAdapter {
 	
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		if (position == getCount()-1)
+		if (mShowLoadMore && position == getCount()-1)
 			return getLoadMoreView(position, view, parent);
 		else
 			return getDocumentItemView(position, view, parent);
@@ -84,6 +93,21 @@ public class MongoDocumentAdapter extends BaseAdapter {
 			mItems.set(position, content);
 
 		notifyDataSetChanged();
+	}
+	
+	public void delete(int position) {
+		mItems.remove(position);
+		
+		notifyDataSetChanged();
+	}
+	
+	public void showLoadMore(boolean value) {
+		mShowLoadMore = value;
+		notifyDataSetChanged();
+	}
+	
+	public boolean isShowingLoadMore() {
+		return mShowLoadMore;
 	}
 	
 	private class ViewHolder {

@@ -11,16 +11,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.util.JsonUtils;
+import com.innodroid.mongobrowser.util.SafeAsyncTask;
+import com.innodroid.mongobrowser.util.UiUtils;
+import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
 public class DocumentDetailFragment extends Fragment {
 
+	private int mPosition;
+	private String mCollectionName;
+	private String mRawText;
 	private String mFormattedText;
 	private TextView mContentText;
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
     	void onEditDocument(int position, String content);
+		void onDeleteDocument(int position);
     }
 
     public DocumentDetailFragment() {
@@ -30,6 +38,9 @@ public class DocumentDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);    	
+    	
+    	mPosition = getArguments().getInt(Constants.ARG_POSITION);
+    	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
     }
     
     @Override
@@ -65,15 +76,52 @@ public class DocumentDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.menu_document_detail_edit:
-    			mCallbacks.onEditDocument(getArguments().getInt(Constants.ARG_POSITION), mFormattedText);
+    			mCallbacks.onEditDocument(mPosition, mFormattedText);
+    			return true;
+    		case R.id.menu_document_detail_delete:
+    			deleteDocument();
+    			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);
     	}
     }
     
+    private void deleteDocument() {
+		UiUtils.confirm(getActivity(), R.string.confirm_delete_document, new AlertDialogCallbacks() {					
+			@Override
+			public boolean onOK() {
+				new DeleteDocumentTask().execute();
+				return true;
+			}
+		});
+    }
+    
     public void updateContent(String json) {
+    	mRawText = json;
     	mFormattedText = JsonUtils.prettyPrint(json);    	
     	mContentText.setText(mFormattedText);
+    }
+    
+    private class DeleteDocumentTask extends SafeAsyncTask<Void, Void, Void> {
+		public DeleteDocumentTask() {
+			super(getActivity());
+		}
+
+		@Override
+		protected Void safeDoInBackground(Void... params) throws Exception {
+			MongoHelper.deleteDocument(mCollectionName, mRawText);
+			return null;
+		}
+
+		@Override
+		protected void safeOnPostExecute(Void result) {
+			mCallbacks.onDeleteDocument(mPosition);
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Delete";
+		}		
     }
 }
 

@@ -111,7 +111,12 @@ public class MongoHelper {
 
 	public static String saveDocument(String collectionName, String content) {
 		Object obj = com.mongodb.util.JSON.parse(content);
-		WriteResult result = Database.getCollection(collectionName).save((DBObject) obj);
+		Database.getCollection(collectionName).save((DBObject) obj);
 		return obj.toString();
+	}
+
+	public static void deleteDocument(String collectionName, String content) {
+		Object obj = com.mongodb.util.JSON.parse(content);
+		Database.getCollection(collectionName).remove((DBObject)obj);
 	}
 }

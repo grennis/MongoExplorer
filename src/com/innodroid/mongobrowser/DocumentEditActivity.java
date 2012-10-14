@@ -8,20 +8,13 @@ import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 
 public class DocumentEditActivity extends FragmentActivity implements DocumentEditFragment.Callbacks {
-	private int mPosition;
-	
     @SuppressLint("NewApi")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document_edit);
         
-        mPosition = getIntent().getIntExtra(Constants.ARG_POSITION, -1);
-        
-        if (mPosition >= 0)
-        	setTitle(R.string.edit_document);
-        else
-        	setTitle(R.string.add_document);
+    	setTitle(getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
         	getActionBar().setDisplayHomeAsUpEnabled(true);

@@ -2,13 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-	android:padding="16dp"
 	tools:context=".ConnectionDetailFragment">
 
 	<TextView 
 	    android:id="@+id/document_detail_content"
 	    android:textSize="@dimen/document_detail_text_size"
-	    android:layout_marginTop="12dp"
+		android:padding="16dp"
 	    android:singleLine="false"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content" />

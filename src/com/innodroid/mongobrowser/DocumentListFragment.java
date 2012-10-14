@@ -104,7 +104,10 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }
 
 	public void onDocumentSaved(int position, String content) {
-		mAdapter.insertOrUpdate(position, content);
+		if (content == null)
+			mAdapter.delete(position);
+		else
+			mAdapter.insertOrUpdate(position, content);
 	}
 
 	private void editCollection() {
@@ -115,8 +118,23 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     private void dropCollection() {
     	UiUtils.confirm(getActivity(), R.string.confirm_drop_collection, new AlertDialogCallbacks() {
 			@Override
-			public boolean onOK() {
-            	new DropCollectionTask().execute();
+			public boolean onOK() {				
+				if (mAdapter.getCount() == 0) {
+					new DropCollectionTask().execute();
+					return true;
+				}
+				
+				reconfirmDropCollection();
+				return true;
+			}
+    	});
+	}
+
+    private void reconfirmDropCollection() {
+    	UiUtils.confirm(getActivity(), R.string.really_confirm_drop_collection, new AlertDialogCallbacks() {
+			@Override
+			public boolean onOK() {				
+				new DropCollectionTask().execute();
 				return true;
 			}
     	});
@@ -126,7 +144,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         
-        if (position == mAdapter.getCount()-1) {
+        if ((mAdapter.isShowingLoadMore()) && (position == mAdapter.getCount()-1)) {
         	mStart += mTake;
         	new LoadNextDocumentsTask().execute();
         } else {
@@ -217,6 +235,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected void safeOnPostExecute(String[] results) {
 			mAdapter.addAll(results);
+			
+			if (results.length < mTake)
+				mAdapter.showLoadMore(false);			
 		}
 
 		@Override

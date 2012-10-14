@@ -235,4 +235,10 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void onDeleteDocument(int position) {
+		// TODO Auto-generated method stub
+		
+	}
 }

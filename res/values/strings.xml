@@ -14,6 +14,8 @@
     <string name="password">Password</string>    
     <string name="confirm_delete_connection">Are you sure you want to delete this connection?</string>
     <string name="confirm_drop_collection">Are you sure you want to drop this collection?</string>
+    <string name="really_confirm_drop_collection">This will delete ALL your documents! Are you SURE?</string>
+    <string name="confirm_delete_document">Are you sure you want to delete this document?</string>
     <string name="connect">Connect</string>
     <string name="never_connected">Never Connected</string>
     <string name="last_connected">Last connected %s</string>
