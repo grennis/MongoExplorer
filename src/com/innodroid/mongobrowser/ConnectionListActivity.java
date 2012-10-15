@@ -14,9 +14,10 @@ import android.widget.FrameLayout;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 
-public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditFragment.Callbacks {
-	private static final String STATE_NAV_DEPTH = "navdepth";
+public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
+	//private static final String STATE_NAV_DEPTH = "navdepth";
 	private boolean mTwoPane;
+	private String mCollectionName;
     private FrameLayout mFrame1;
     private FrameLayout mFrame2;
     private FrameLayout mFrame3;
@@ -46,10 +47,11 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	                .replace(R.id.frame_1, fragment)
 	                .commit();
         } else {
-        	if (savedInstanceState.getInt(STATE_NAV_DEPTH) > 0) {
-            	mFrame1.setVisibility(View.GONE);
-            	mFrame3.setVisibility(View.VISIBLE);
-        	}
+        	//int depth = savedInstanceState.getInt(STATE_NAV_DEPTH); 
+//        	if ( > 0) {
+//            	mFrame1.setVisibility(View.GONE);
+//            	mFrame3.setVisibility(View.VISIBLE);
+//        	}
         }
 
         new AddConnectionIfNoneExistTask().execute();
@@ -59,12 +61,16 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putInt(STATE_NAV_DEPTH, getSupportFragmentManager().getBackStackEntryCount());
+		//outState.putInt(STATE_NAV_DEPTH, getSupportFragmentManager().getBackStackEntryCount());
 	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+				hideDocumentDetailPane();
+				return true;
+			}
 			if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
 				hideDocumentListPane();
 				return true;
@@ -75,17 +81,18 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	}
 
 	@Override
-    public void onConnectionItemSelected(long id) {
+    public void onConnectionItemSelected(int position, long id) {
         if (mTwoPane) {
-        	loadDetailsPane(id);
+        	loadConnectionDetailsPane(position, id);
         } else {
-        	showDetailsActivity(id);
+        	showDetailsActivity(position, id);
         }
     }
 	
-    private void loadDetailsPane(long id) {
+    private void loadConnectionDetailsPane(int position, long id) {
         Bundle arguments = new Bundle();
         arguments.putLong(Constants.ARG_CONNECTION_ID, id);
+        arguments.putInt(Constants.ARG_POSITION, position);
         ConnectionDetailFragment fragment = new ConnectionDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
@@ -93,16 +100,18 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
                 .commit();
 	}
     
-    private void showDetailsActivity(long id) {
+    private void showDetailsActivity(int position, long id) {
         Intent detailIntent = new Intent(this, ConnectionDetailActivity.class);
         detailIntent.putExtra(Constants.ARG_CONNECTION_ID, id);
+        detailIntent.putExtra(Constants.ARG_POSITION, position);
         startActivity(detailIntent);
     }
     
-    private void loadCollectionListPane() {
+    private void loadCollectionListPane(int position) {
         Bundle arguments = new Bundle();
         CollectionListFragment fragment = new CollectionListFragment();
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
+        arguments.putInt(Constants.ARG_POSITION, position);
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_2, fragment)
@@ -135,10 +144,47 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	
     	//invalidateOptionsMenu();
     }
+    
+    private void loadDocumentDetailsPane(int position, String content) {
+        FragmentManager fm = getSupportFragmentManager();
+    	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 1;
+
+    	mFrame2.setVisibility(View.GONE);
+    	mFrame4.setVisibility(View.VISIBLE);
+
+    	Bundle arguments = new Bundle();
+        DocumentDetailFragment fragment = new DocumentDetailFragment();
+        arguments.putString(Constants.ARG_COLLECTION_NAME, mCollectionName);
+        arguments.putInt(Constants.ARG_POSITION, position);
+        arguments.putString(Constants.ARG_DOCUMENT_CONTENT, content);
+        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
+        fragment.setArguments(arguments);
+
+    	Fragment collectionList = fm.findFragmentById(R.id.frame_2);
+    	FragmentTransaction ft = fm.beginTransaction();
+
+    	if (!alreadyShiftedFrames) {
+        	ft.addToBackStack("");
+    		ft.remove(collectionList);
+    	}
+    	
+    	ft.replace(R.id.frame_4, fragment);
+    	ft.commit();    	
+    	
+    	//invalidateOptionsMenu();
+    	
+    }
 
     private void hideDocumentListPane() {
     	mFrame3.setVisibility(View.GONE);
     	mFrame1.setVisibility(View.VISIBLE);
+    	
+    	getSupportFragmentManager().popBackStack();
+    }
+
+    private void hideDocumentDetailPane() {
+    	mFrame4.setVisibility(View.GONE);
+    	mFrame2.setVisibility(View.VISIBLE);
     	
     	getSupportFragmentManager().popBackStack();
     }
@@ -149,51 +195,67 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 
     private void addConnection() {
-        DialogFragment fragment = ConnectionEditDialogFragment.create(0, this);
+        DialogFragment fragment = ConnectionEditDialogFragment.create(0, 0, this);
         fragment.show(getSupportFragmentManager(), null);
     }
 
 	@Override
 	public void onCollectionItemSelected(String name) {
+		mCollectionName = name;
 		loadDocumentListPane(name);
 	}
 
 	@Override
 	public void onDocumentItemSelected(int position, String content) {
+		loadDocumentDetailsPane(position, content);
 	}
 
 	@Override
-	public void onConnected() {
-		loadCollectionListPane();
+	public void onConnected(int position) {
+		loadCollectionListPane(position);
 	}
 
 	@Override
-	public void onConnectionDeleted() {
+	public void onConnectionDeleted(int position) {
         getSupportFragmentManager().beginTransaction()
 	        .remove(getSupportFragmentManager().findFragmentById(R.id.frame_2))
 	        .commit();
 	}
 
 	@Override
-	public void onConnectionEdited(long id) {
+	public void onConnectionEdited(int position, long id) {
 		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
         fragment.refreshList(id);
         
         if (mTwoPane)
-        	loadDetailsPane(id);
+        	loadConnectionDetailsPane(position, id);
 	}
 
 	@Override
-	public void onCollectionEdited(String name) {
-	}
-	
-	@Override
-	public void onCollectionDropped(String name) {
+	public void onCollectionDropped(int position, String name) {
         FragmentManager fm = getSupportFragmentManager();
-    	fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_3)).commit();
+
+        if (fm.getBackStackEntryCount() > 1) {
+        	hideDocumentDetailPane();
+        }
+        
+        fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_3)).commit();
 
     	CollectionListFragment fragment = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
         fragment.refreshList();
+        
+	}
+	
+	@Override
+	public void onAddDocument() {
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, -1, Constants.NEW_DOCUMENT_CONTENT_PADDED, this);
+		fragment.show(getSupportFragmentManager(), null);
+	}
+
+	@Override
+	public void onEditDocument(int position, String content) {
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, position, content, this);
+		fragment.show(getSupportFragmentManager(), null);
 	}
 
     private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {
@@ -219,26 +281,33 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 
 	@Override
+	public void onCollectionEdited(int position, String name) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
 	public void onDocumentSaved(int position, String content) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onAddDocument() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onEditDocument(int position, String content) {
-		// TODO Auto-generated method stub
-		
+        DocumentListFragment frag1 = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
+        frag1.onDocumentSaved(position, content);
+        
+        int select = position < 0 ? 0 : position;
+    	frag1.setActivatedPosition(select);
+        loadDocumentDetailsPane(select, content);
 	}
 
 	@Override
 	public void onDeleteDocument(int position) {
-		// TODO Auto-generated method stub
-		
+        DocumentListFragment frag1 = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
+        frag1.onDocumentSaved(position, null);
+        int count = frag1.getItemCount();
+        
+        if (count == 0) {
+        	hideDocumentDetailPane();
+        } else {
+        	int select = Math.min(position, count-1);
+        	frag1.setActivatedPosition(select);
+            loadDocumentDetailsPane(select, frag1.getItem(select));
+        }
 	}
 }
+

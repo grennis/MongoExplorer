@@ -11,5 +11,6 @@ public class Constants {
 	public static final String ARG_DOCUMENT_CONTENT = "doccontent";
 	
 	public static final String NEW_DOCUMENT_CONTENT = "{\n    \n}\n";
+	public static final String NEW_DOCUMENT_CONTENT_PADDED = "{\n    \n}\n\n\n\n\n";
 }
 

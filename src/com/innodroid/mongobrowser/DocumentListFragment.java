@@ -26,6 +26,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     private String mCollectionName;
     private MongoDocumentAdapter mAdapter;
     private Callbacks mCallbacks = null;
+    private int mPosition;
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private int mStart = 0;
     private int mTake = 5;
@@ -33,8 +34,8 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     public interface Callbacks {
     	public void onAddDocument();
         public void onDocumentItemSelected(int position, String content);
-        public void onCollectionEdited(String name);
-        public void onCollectionDropped(String name);
+        public void onCollectionEdited(int position, String name);
+        public void onCollectionDropped(int position, String name);
     }
 
     public DocumentListFragment() {
@@ -52,6 +53,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		int take = getResources().getInteger(R.integer.default_document_page_size);
 		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
+    	mPosition = getArguments().getInt(Constants.ARG_POSITION);
 
 		new LoadNextDocumentsTask().execute();
     }
@@ -176,6 +178,14 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		new RenameCollectionTask().execute(name);
 	}
 	
+	public int getItemCount() {
+		return mAdapter.getActualCount();
+	}
+	
+	public String getItem(int position) {
+		return mAdapter.getItem(position);
+	}
+
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {
     	public RenameCollectionTask() {
 			super(getActivity());
@@ -190,7 +200,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected void safeOnPostExecute(String result) {
 			mCollectionName = result;
-			mCallbacks.onCollectionEdited(result);
+			mCallbacks.onCollectionEdited(mPosition, result);
 		}
 
 		@Override
@@ -212,7 +222,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
 		@Override
 		protected void safeOnPostExecute(Void result) {
-			mCallbacks.onCollectionDropped(mCollectionName);
+			mCallbacks.onCollectionDropped(mPosition, mCollectionName);
 		}
 
 		@Override

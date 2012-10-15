@@ -27,13 +27,14 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 	private static Callbacks mCallbacks;
 
 	public interface Callbacks {
-		void onConnectionEdited(long id);
+		void onConnectionEdited(int position, long id);
 	}
 	
-    static ConnectionEditDialogFragment create(long id, Callbacks callbacks) {
+    static ConnectionEditDialogFragment create(int position, long id, Callbacks callbacks) {
     	ConnectionEditDialogFragment fragment = new ConnectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putLong(Constants.ARG_CONNECTION_ID, id);
+    	args.putInt(Constants.ARG_POSITION, position);
     	fragment.setArguments(args);
     	ConnectionEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
@@ -85,6 +86,7 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 
     	MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
 
+    	int position = getArguments().getInt(Constants.ARG_POSITION, 0);    	
     	long id = getArguments().getLong(Constants.ARG_CONNECTION_ID, 0);
 
     	if (id == 0)
@@ -92,7 +94,7 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
     	else
     		helper.updateConnection(id, name, server, port, db, user, pass);
 
-    	mCallbacks.onConnectionEdited(id);
+    	mCallbacks.onConnectionEdited(position, id);
 
     	return true;
     }

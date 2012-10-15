@@ -30,7 +30,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 
     public interface Callbacks {
     	public void onAddConnection();
-        public void onConnectionItemSelected(long id);
+        public void onConnectionItemSelected(int position, long id);
     }
 
     public ConnectionListFragment() {
@@ -104,7 +104,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         super.onListItemClick(listView, view, position, id);
         
         if (mCallbacks != null)
-        	mCallbacks.onConnectionItemSelected(mAdapter.getItemId(position));
+        	mCallbacks.onConnectionItemSelected(position, mAdapter.getItemId(position));
     }
 
     @Override

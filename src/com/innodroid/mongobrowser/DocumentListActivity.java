@@ -76,12 +76,12 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
     }
 
 	@Override
-	public void onCollectionEdited(String name) {
+	public void onCollectionEdited(int position, String name) {
 		setTitle(name);
 	}
 
 	@Override
-	public void onCollectionDropped(String name) {
+	public void onCollectionDropped(int position, String name) {
 		finish();
 	}
 }

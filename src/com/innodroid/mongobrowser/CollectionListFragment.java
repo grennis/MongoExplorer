@@ -38,17 +38,10 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		mAdapter = new MongoCollectionAdapter(getActivity());
 		setListAdapter(mAdapter);
 		setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onResume() {
-    	super.onResume();
-
     	refreshList();
     }
-    
+
 	public void refreshList() {
-    	//mSelectAfterLoad = selectAfterLoad;
     	new LoadNamesTask().execute();
 	}
 

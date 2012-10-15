@@ -46,6 +46,10 @@ public class MongoDocumentAdapter extends BaseAdapter {
 		
 		return (count == 0) ? 0 : count+1;
 	}
+
+	public int getActualCount() {
+		return mItems.size();
+	}
 	
 	@Override
 	public int getViewTypeCount() {

@@ -28,8 +28,12 @@ public class UiUtils {
 	public static Dialog buildAlertDialog(View view, int icon, int title, final AlertDialogCallbacks callbacks) {
 		return buildAlertDialog(view, icon, title, true, callbacks);
 	}
-	
+
 	public static Dialog buildAlertDialog(View view, int icon, int title, boolean hasCancel, final AlertDialogCallbacks callbacks) {
+		return buildAlertDialog(view, icon, view.getResources().getString(title), hasCancel, callbacks);
+	}
+	
+	public static Dialog buildAlertDialog(View view, int icon, String title, boolean hasCancel, final AlertDialogCallbacks callbacks) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext())
 	        .setIcon(icon)
 	        .setView(view)
