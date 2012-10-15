@@ -34,7 +34,6 @@ import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, ConnectionEditDialogFragment.Callbacks {
 
 	private long mConnectionID;
-	private int mPosition;
 	private TextView mTitle;
 	private TextView mServer;
 	private TextView mPort;
@@ -44,8 +43,8 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
-    	public void onConnectionDeleted(int position);
-        public void onConnected(int position);
+    	public void onConnectionDeleted();
+        public void onConnected();
     }
 
     public ConnectionDetailFragment() {
@@ -56,7 +55,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);
     	
-    	mPosition = getArguments().getInt(Constants.ARG_POSITION);
     	mConnectionID = getArguments().getLong(Constants.ARG_CONNECTION_ID);
     }
     
@@ -150,7 +148,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	}
 	
     private void editConnection() {
-        DialogFragment fragment = ConnectionEditDialogFragment.create(mPosition, mConnectionID, this);
+        DialogFragment fragment = ConnectionEditDialogFragment.create(mConnectionID, this);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -165,7 +163,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     }
     
 	@Override
-	public void onConnectionEdited(int position, long id) {
+	public void onConnectionEdited(long id) {
 	}
 
 	private class ConnectTask extends SafeAsyncTask<Void, Void, Boolean>{
@@ -193,7 +191,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			mCallbacks.onConnected(mPosition);
+			mCallbacks.onConnected();
 		}
 
 		@Override
@@ -221,7 +219,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			mCallbacks.onConnectionDeleted(mPosition);
+			mCallbacks.onConnectionDeleted();
 		}
 
 		@Override

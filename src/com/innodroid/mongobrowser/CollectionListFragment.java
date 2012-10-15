@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -62,7 +63,7 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
     }
     
     private void addCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.create("", this);
+        DialogFragment fragment = CollectionEditDialogFragment.create("", true, this);
         fragment.show(getFragmentManager(), null);
 	}
     
@@ -102,6 +103,8 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         
+        setActivatedPosition(position);
+        
         if (mCallbacks != null)
         	mCallbacks.onCollectionItemSelected(mAdapter.getCollectionName(position));
     }
@@ -125,8 +128,28 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
     }
     
 	@Override
-	public void onCollectionEdited(int pos, String name) {
+	public void onCreateCollection(String name) {
 		new AddCollectionTask().execute(name);
+	}
+
+	@Override
+	public void onRenameCollection(String name) {
+		Log.e("ERR", "Shouldnt get here");
+	}
+	
+	public void onCollectionEdited(String name) {
+		mAdapter.setItemName(mActivatedPosition, name);
+	}
+
+	public void onCollectionDropped() {
+		mAdapter.delete(mActivatedPosition);
+
+		if (mActivatedPosition < mAdapter.getCount())
+			mCallbacks.onCollectionItemSelected(mAdapter.getItem(mActivatedPosition).Name);
+		else {
+			mCallbacks.onCollectionItemSelected(null);
+			mActivatedPosition = ListView.INVALID_POSITION;
+		}
 	}
 
     private class AddCollectionTask extends SafeAsyncTask<String, Void, String> {
@@ -142,7 +165,9 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 
 		@Override
 		protected void safeOnPostExecute(String result) {
-			mAdapter.add(result);
+			mAdapter.add(0, result);
+			setActivatedPosition(0);
+			mCallbacks.onCollectionItemSelected(result);
 		}
 
 		@Override

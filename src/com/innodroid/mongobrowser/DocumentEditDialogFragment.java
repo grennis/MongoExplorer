@@ -1,20 +1,14 @@
 package com.innodroid.mongobrowser;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.innodroid.mongo.MongoHelper;
-import com.innodroid.mongobrowser.CollectionEditDialogFragment.Callbacks;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
@@ -26,15 +20,16 @@ public class DocumentEditDialogFragment extends DialogFragment {
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
-    	void onDocumentSaved(int position, String content);
+    	void onDocumentCreated(String content);
+    	void onDocumentUpdated(String content);
     }
 
-    static DocumentEditDialogFragment create(String collectionName, int position, String content, Callbacks callbacks) {
+    static DocumentEditDialogFragment create(String collectionName, boolean isNew, String content, Callbacks callbacks) {
     	DocumentEditDialogFragment fragment = new DocumentEditDialogFragment();
     	Bundle args = new Bundle();
-    	args.putInt(Constants.ARG_POSITION, position);
     	args.putString(Constants.ARG_DOCUMENT_CONTENT, content);
     	args.putString(Constants.ARG_COLLECTION_NAME, collectionName);
+    	args.putBoolean(Constants.ARG_IS_NEW, isNew);
     	fragment.setArguments(args);
     	fragment.mCallbacks = callbacks;
     	return fragment;
@@ -85,9 +80,11 @@ public class DocumentEditDialogFragment extends DialogFragment {
 		}
 		
 		@Override
-		protected void safeOnPostExecute(String result) {			
-			int position = getArguments().getInt(Constants.ARG_POSITION);
-			mCallbacks.onDocumentSaved(position, result);
+		protected void safeOnPostExecute(String result) {
+			if (getArguments().getBoolean(Constants.ARG_IS_NEW))
+				mCallbacks.onDocumentCreated(result);
+			else
+				mCallbacks.onDocumentUpdated(result);
 		}
 
 		@Override

@@ -90,15 +90,16 @@ public class MongoDocumentAdapter extends BaseAdapter {
 		return view;
 	}
 	
-	public void insertOrUpdate(int position, String content) {
-		if (position < 0)
-			mItems.add(0, content);
-		else
-			mItems.set(position, content);
-
+	public void insert(int position, String content) {
+		mItems.add(position, content);
 		notifyDataSetChanged();
 	}
-	
+
+	public void update(int position, String content) {
+		mItems.set(position, content);
+		notifyDataSetChanged();
+	}
+
 	public void delete(int position) {
 		mItems.remove(position);
 		

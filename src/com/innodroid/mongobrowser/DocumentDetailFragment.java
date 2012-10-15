@@ -19,7 +19,6 @@ import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
 
 public class DocumentDetailFragment extends Fragment {
 
-	private int mPosition;
 	private String mCollectionName;
 	private String mRawText;
 	private String mFormattedText;
@@ -27,8 +26,8 @@ public class DocumentDetailFragment extends Fragment {
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
-    	void onEditDocument(int position, String content);
-		void onDeleteDocument(int position);
+    	void onEditDocument(String content);
+		void onDeleteDocument();
     }
 
     public DocumentDetailFragment() {
@@ -39,7 +38,6 @@ public class DocumentDetailFragment extends Fragment {
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);    	
     	
-    	mPosition = getArguments().getInt(Constants.ARG_POSITION);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
     }
     
@@ -76,7 +74,7 @@ public class DocumentDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.menu_document_detail_edit:
-    			mCallbacks.onEditDocument(mPosition, mFormattedText);
+    			mCallbacks.onEditDocument(mFormattedText);
     			return true;
     		case R.id.menu_document_detail_delete:
     			deleteDocument();
@@ -115,7 +113,7 @@ public class DocumentDetailFragment extends Fragment {
 
 		@Override
 		protected void safeOnPostExecute(Void result) {
-			mCallbacks.onDeleteDocument(mPosition);
+			mCallbacks.onDeleteDocument();
 		}
 
 		@Override

@@ -83,16 +83,15 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	@Override
     public void onConnectionItemSelected(int position, long id) {
         if (mTwoPane) {
-        	loadConnectionDetailsPane(position, id);
+        	loadConnectionDetailsPane(id);
         } else {
-        	showDetailsActivity(position, id);
+        	showDetailsActivity(id);
         }
     }
 	
-    private void loadConnectionDetailsPane(int position, long id) {
+    private void loadConnectionDetailsPane(long id) {
         Bundle arguments = new Bundle();
         arguments.putLong(Constants.ARG_CONNECTION_ID, id);
-        arguments.putInt(Constants.ARG_POSITION, position);
         ConnectionDetailFragment fragment = new ConnectionDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
@@ -100,18 +99,16 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
                 .commit();
 	}
     
-    private void showDetailsActivity(int position, long id) {
+    private void showDetailsActivity(long id) {
         Intent detailIntent = new Intent(this, ConnectionDetailActivity.class);
         detailIntent.putExtra(Constants.ARG_CONNECTION_ID, id);
-        detailIntent.putExtra(Constants.ARG_POSITION, position);
         startActivity(detailIntent);
     }
     
-    private void loadCollectionListPane(int position) {
+    private void loadCollectionListPane() {
         Bundle arguments = new Bundle();
         CollectionListFragment fragment = new CollectionListFragment();
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
-        arguments.putInt(Constants.ARG_POSITION, position);
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_2, fragment)
@@ -145,7 +142,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	//invalidateOptionsMenu();
     }
     
-    private void loadDocumentDetailsPane(int position, String content) {
+    private void loadDocumentDetailsPane(String content) {
         FragmentManager fm = getSupportFragmentManager();
     	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 1;
 
@@ -155,7 +152,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	Bundle arguments = new Bundle();
         DocumentDetailFragment fragment = new DocumentDetailFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, mCollectionName);
-        arguments.putInt(Constants.ARG_POSITION, position);
         arguments.putString(Constants.ARG_DOCUMENT_CONTENT, content);
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
         fragment.setArguments(arguments);
@@ -195,7 +191,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 
     private void addConnection() {
-        DialogFragment fragment = ConnectionEditDialogFragment.create(0, 0, this);
+        DialogFragment fragment = ConnectionEditDialogFragment.create(0, this);
         fragment.show(getSupportFragmentManager(), null);
     }
 
@@ -206,33 +202,39 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	}
 
 	@Override
-	public void onDocumentItemSelected(int position, String content) {
-		loadDocumentDetailsPane(position, content);
+	public void onDocumentItemSelected(String content) {
+		loadDocumentDetailsPane(content);
 	}
 
 	@Override
-	public void onConnected(int position) {
-		loadCollectionListPane(position);
+	public void onConnected() {
+		loadCollectionListPane();
 	}
 
 	@Override
-	public void onConnectionDeleted(int position) {
+	public void onConnectionDeleted() {
         getSupportFragmentManager().beginTransaction()
 	        .remove(getSupportFragmentManager().findFragmentById(R.id.frame_2))
 	        .commit();
 	}
 
 	@Override
-	public void onConnectionEdited(int position, long id) {
+	public void onConnectionEdited(long id) {
 		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
         fragment.refreshList(id);
         
         if (mTwoPane)
-        	loadConnectionDetailsPane(position, id);
+        	loadConnectionDetailsPane(id);
 	}
 
 	@Override
-	public void onCollectionDropped(int position, String name) {
+	public void onCollectionEdited(String name) {
+        CollectionListFragment fragment = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
+        fragment.onCollectionEdited(name);		
+	}
+
+	@Override
+	public void onCollectionDropped(String name) {
         FragmentManager fm = getSupportFragmentManager();
 
         if (fm.getBackStackEntryCount() > 1) {
@@ -242,20 +244,40 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_3)).commit();
 
     	CollectionListFragment fragment = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
-        fragment.refreshList();
-        
+        fragment.onCollectionDropped();
 	}
 	
 	@Override
 	public void onAddDocument() {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, -1, Constants.NEW_DOCUMENT_CONTENT_PADDED, this);
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED, this);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 
 	@Override
-	public void onEditDocument(int position, String content) {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, position, content, this);
+	public void onEditDocument(String content) {
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, false, content, this);
 		fragment.show(getSupportFragmentManager(), null);
+	}
+
+	@Override
+	public void onDocumentCreated(String content) {
+        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
+        fragment.onDocumentCreated(content);
+	}
+
+	@Override
+	public void onDocumentUpdated(String content) {
+        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
+        fragment.onDocumentUpdated(content);
+	}
+
+	@Override
+	public void onDeleteDocument() {
+        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
+        fragment.onDocumentDeleted();
+        
+        if (fragment.getItemCount() == 0)
+        	hideDocumentDetailPane();
 	}
 
     private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {
@@ -279,35 +301,5 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 			return "Failed to Check Connections";
 		}
     }
-
-	@Override
-	public void onCollectionEdited(int position, String name) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void onDocumentSaved(int position, String content) {
-        DocumentListFragment frag1 = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
-        frag1.onDocumentSaved(position, content);
-        
-        int select = position < 0 ? 0 : position;
-    	frag1.setActivatedPosition(select);
-        loadDocumentDetailsPane(select, content);
-	}
-
-	@Override
-	public void onDeleteDocument(int position) {
-        DocumentListFragment frag1 = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
-        frag1.onDocumentSaved(position, null);
-        int count = frag1.getItemCount();
-        
-        if (count == 0) {
-        	hideDocumentDetailPane();
-        } else {
-        	int select = Math.min(position, count-1);
-        	frag1.setActivatedPosition(select);
-            loadDocumentDetailsPane(select, frag1.getItem(select));
-        }
-	}
 }
 

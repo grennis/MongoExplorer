@@ -10,7 +10,6 @@ import android.view.MenuItem;
 public class DocumentDetailActivity extends FragmentActivity implements DocumentDetailFragment.Callbacks {
 
 	private String mCollectionName;
-	private int mPosition;
 
 	private static final int REQUEST_EDIT_DOCUMENT = 101;
 	
@@ -24,7 +23,6 @@ public class DocumentDetailActivity extends FragmentActivity implements Document
         	getActionBar().setDisplayHomeAsUpEnabled(true);
         
         mCollectionName = getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME);
-        mPosition = getIntent().getIntExtra(Constants.ARG_POSITION, -1);
         
         updateResult(getIntent().getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
     
@@ -49,16 +47,15 @@ public class DocumentDetailActivity extends FragmentActivity implements Document
     }
 
 	@Override
-	public void onEditDocument(int position, String content) {
+	public void onEditDocument(String content) {
     	Intent intent = new Intent(this, DocumentEditActivity.class);
     	intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
-    	intent.putExtra(Constants.ARG_POSITION, position);
 		intent.putExtra(Constants.ARG_COLLECTION_NAME, mCollectionName);
     	startActivityForResult(intent, REQUEST_EDIT_DOCUMENT);
 	}
 	
 	@Override
-	public void onDeleteDocument(int position) {
+	public void onDeleteDocument() {
 		updateResult(null);
 		finish();
 	}
@@ -78,7 +75,6 @@ public class DocumentDetailActivity extends FragmentActivity implements Document
 	
 	private void updateResult(String content) {
 		Intent data = new Intent();
-		data.putExtra(Constants.ARG_POSITION, mPosition);
 		data.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
 		setResult(RESULT_OK, data);
 	}

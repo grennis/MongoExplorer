@@ -53,6 +53,12 @@ public class MongoCollectionAdapter extends ArrayAdapter<NameAndCount> {
 	public String getCollectionName(int position) {
 		return getItem(position).Name;
 	}
+
+	public void setItemName(int position, String name) {
+		NameAndCount item = getItem(position);
+		item.Name = name;
+		notifyDataSetChanged();
+	}
 	
 	public void setItemCount(int position, long count) {
 		NameAndCount item = getItem(position);
@@ -60,14 +66,18 @@ public class MongoCollectionAdapter extends ArrayAdapter<NameAndCount> {
 		notifyDataSetChanged();
 	}
 	
-	public void add(String name) {
+	public void add(int position, String name) {
 		NameAndCount item = new NameAndCount();
 		item.Name = name;
 		item.Count = 0;
-		add(item);
+		super.insert(item, position);
 		notifyDataSetChanged();		
 	}
 	
+	public void delete(int position) {
+		super.remove(getItem(position));
+	}
+
 	private class ViewHolder 
 	{
 		public TextView NameView;

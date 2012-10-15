@@ -21,7 +21,7 @@ public class DocumentEditFragment extends Fragment {
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
-    	void onDocumentSaved(int position, String content);
+    	void onDocumentSaved(String content);
     }
 
     public DocumentEditFragment() {
@@ -96,8 +96,7 @@ public class DocumentEditFragment extends Fragment {
 		
 		@Override
 		protected void safeOnPostExecute(String result) {			
-			int position = getArguments().getInt(Constants.ARG_POSITION);
-			mCallbacks.onDocumentSaved(position, result);
+			mCallbacks.onDocumentSaved(result);
 		}
 
 		@Override

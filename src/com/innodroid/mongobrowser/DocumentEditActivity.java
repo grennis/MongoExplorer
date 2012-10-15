@@ -27,9 +27,8 @@ public class DocumentEditActivity extends FragmentActivity implements DocumentEd
     }
 
     @Override
-    public void onDocumentSaved(int position, String content) {
+    public void onDocumentSaved(String content) {
     	Intent data = new Intent();
-    	data.putExtra(Constants.ARG_POSITION, position);
     	data.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
     	setResult(RESULT_OK, data);
     	finish();

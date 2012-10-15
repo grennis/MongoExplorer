@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,16 +27,15 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     private String mCollectionName;
     private MongoDocumentAdapter mAdapter;
     private Callbacks mCallbacks = null;
-    private int mPosition;
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private int mStart = 0;
     private int mTake = 5;
 
     public interface Callbacks {
     	public void onAddDocument();
-        public void onDocumentItemSelected(int position, String content);
-        public void onCollectionEdited(int position, String name);
-        public void onCollectionDropped(int position, String name);
+        public void onDocumentItemSelected(String content);
+        public void onCollectionEdited(String name);
+        public void onCollectionDropped(String name);
     }
 
     public DocumentListFragment() {
@@ -53,7 +53,6 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		int take = getResources().getInteger(R.integer.default_document_page_size);
 		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
-    	mPosition = getArguments().getInt(Constants.ARG_POSITION);
 
 		new LoadNextDocumentsTask().execute();
     }
@@ -105,15 +104,30 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         }
     }
 
-	public void onDocumentSaved(int position, String content) {
-		if (content == null)
-			mAdapter.delete(position);
-		else
-			mAdapter.insertOrUpdate(position, content);
+	public void onDocumentCreated(String content) {
+		mAdapter.insert(0, content);
+		setActivatedPosition(0);
+		mCallbacks.onDocumentItemSelected(content);
+	}
+	
+	public void onDocumentUpdated(String content) {
+		mAdapter.update(mActivatedPosition, content);
+		mCallbacks.onDocumentItemSelected(content);
 	}
 
+	public void onDocumentDeleted() {
+		mAdapter.delete(mActivatedPosition);
+
+		if (mActivatedPosition < mAdapter.getActualCount())
+			mCallbacks.onDocumentItemSelected(mAdapter.getItem(mActivatedPosition));
+		else {
+			mCallbacks.onDocumentItemSelected(null);
+			mActivatedPosition = ListView.INVALID_POSITION;
+		}
+	}
+	
 	private void editCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, this);
+        DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, false, this);
         fragment.show(getFragmentManager(), null);
 	}
 
@@ -150,8 +164,10 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         	mStart += mTake;
         	new LoadNextDocumentsTask().execute();
         } else {
+        	setActivatedPosition(position);
+        	
         	if (mCallbacks != null)
-        		mCallbacks.onDocumentItemSelected(position, mAdapter.getItem(position));
+        		mCallbacks.onDocumentItemSelected(mAdapter.getItem(position));
         }
     }
 
@@ -164,17 +180,23 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }
     
     public void setActivatedPosition(int position) {
-        if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
-        } else {
-            getListView().setItemChecked(position, true);
-        }
+//        if (position == ListView.INVALID_POSITION) {
+//            getListView().setItemChecked(mActivatedPosition, false);
+//        } else {
+//            getListView().setItemChecked(position, true);
+//        }
 
         mActivatedPosition = position;
+        Log.e("greg", "SET ACTIVE POS TO " + position);
     }
 
 	@Override
-	public void onCollectionEdited(int pos, String name) {
+	public void onCreateCollection(String name) {
+		Log.e("ERROR", "Shouldnt get here");
+	}
+    
+	@Override
+	public void onRenameCollection(String name) {
 		new RenameCollectionTask().execute(name);
 	}
 	
@@ -200,7 +222,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected void safeOnPostExecute(String result) {
 			mCollectionName = result;
-			mCallbacks.onCollectionEdited(mPosition, result);
+			mCallbacks.onCollectionEdited(result);
 		}
 
 		@Override
@@ -222,7 +244,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
 		@Override
 		protected void safeOnPostExecute(Void result) {
-			mCallbacks.onCollectionDropped(mPosition, mCollectionName);
+			mCallbacks.onCollectionDropped(mCollectionName);
 		}
 
 		@Override
@@ -238,6 +260,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
 		@Override
 		protected String[] safeDoInBackground(Void... args) {
+			if (mCollectionName == null)
+				return new String[0];
+			
 			String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mStart, mTake);
 			return docs;
 		}

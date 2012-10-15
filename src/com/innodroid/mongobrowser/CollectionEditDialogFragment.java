@@ -15,13 +15,15 @@ public class CollectionEditDialogFragment extends DialogFragment {
 	private static Callbacks mCallbacks;
 
 	public interface Callbacks {
-		void onCollectionEdited(int pos, String name);
+		void onCreateCollection(String name);
+		void onRenameCollection(String name);
 	}
 	
-    static CollectionEditDialogFragment create(String name, Callbacks callbacks) {
+    static CollectionEditDialogFragment create(String name, boolean isNew, Callbacks callbacks) {
     	CollectionEditDialogFragment fragment = new CollectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_COLLECTION_NAME, name);
+    	args.putBoolean(Constants.ARG_IS_NEW, isNew);
     	fragment.setArguments(args);
     	CollectionEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
@@ -51,7 +53,10 @@ public class CollectionEditDialogFragment extends DialogFragment {
     		return false;
     	}
 
-    	mCallbacks.onCollectionEdited(0, name);
+    	if (getArguments().getBoolean(Constants.ARG_IS_NEW))
+    		mCallbacks.onCreateCollection(name);
+    	else
+    		mCallbacks.onRenameCollection(name);
 
     	return true;
     }

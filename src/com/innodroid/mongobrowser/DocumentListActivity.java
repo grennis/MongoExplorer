@@ -50,7 +50,6 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
     @Override
 	public void onAddDocument() {
 		Intent intent = new Intent(this, DocumentEditActivity.class);
-		intent.putExtra(Constants.ARG_POSITION, -1);
 		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, Constants.NEW_DOCUMENT_CONTENT);
 		intent.putExtra(Constants.ARG_COLLECTION_NAME, mCollectionName);
 		startActivityForResult(intent, REQUEST_EDIT_DOCUMENT);		
@@ -60,28 +59,27 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	protected void onActivityResult(int request, int result, Intent data) {
 		if ((request == REQUEST_EDIT_DOCUMENT || request == REQUEST_VIEW_DOCUMENT) && result == RESULT_OK) {
 			DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
-			fragment.onDocumentSaved(data.getIntExtra(Constants.ARG_POSITION, -1), data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
+			fragment.onDocumentUpdated(data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
 		} else {
 			super.onActivityResult(request, result, data);
 		}
 	}
 	
 	@Override
-    public void onDocumentItemSelected(int position, String content) {
+    public void onDocumentItemSelected(String content) {
 		Intent intent = new Intent(this, DocumentDetailActivity.class);
-		intent.putExtra(Constants.ARG_POSITION, position);
 		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
 		intent.putExtra(Constants.ARG_COLLECTION_NAME, mCollectionName);
 		startActivityForResult(intent, REQUEST_VIEW_DOCUMENT);
     }
 
 	@Override
-	public void onCollectionEdited(int position, String name) {
+	public void onCollectionEdited(String name) {
 		setTitle(name);
 	}
 
 	@Override
-	public void onCollectionDropped(int position, String name) {
+	public void onCollectionDropped(String name) {
 		finish();
 	}
 }
