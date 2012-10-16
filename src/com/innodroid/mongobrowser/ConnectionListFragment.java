@@ -44,15 +44,10 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 		setListAdapter(mAdapter);
 		
 		setHasOptionsMenu(true);
-    }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
 
-    	refreshList(-1);
+		getLoaderManager().initLoader(0, null, this);
     }
-    
+        
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.connection_list_menu, menu);
@@ -115,11 +110,6 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         }
     }
 
-    public void refreshList(long selectAfterLoad) {
-    	mSelectAfterLoad = selectAfterLoad;
-		getLoaderManager().initLoader(0, null, this);
-    }
-    
     @SuppressLint("NewApi")
 	public boolean isItemSelected() {
         return getListView().getCheckedItemCount() > 0;
@@ -164,6 +154,10 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 		cursor.moveToPosition(original);
 		
 		setActivatedPosition(pos);
-		
+	}
+
+	public void reloadAndSelect(long id) {
+		mSelectAfterLoad = id;
+		getLoaderManager().initLoader(0, null, this);		
 	}
 }

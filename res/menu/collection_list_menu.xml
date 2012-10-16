@@ -3,7 +3,8 @@
     <item android:id="@+id/menu_collection_list_add"
           android:icon="@android:drawable/ic_menu_add"
           android:title="Add Collection"
-          android:showAsAction="withText|ifRoom"/>
+          android:orderInCategory="20"
+          android:showAsAction="withText|never"/>
     <!-- 
     <item android:id="@+id/collection_detail_menu_edit"
           android:icon="@android:drawable/ic_menu_edit"

@@ -3,6 +3,7 @@
     <item android:id="@+id/menu_connection_list_add"
           android:icon="@android:drawable/ic_menu_add"
           android:title="Add Connection"
+          android:orderInCategory="10"
           android:showAsAction="withText|ifRoom"/>
 	<item android:id="@+id/menu_connection_list_configure"
           android:icon="@android:drawable/ic_menu_preferences"

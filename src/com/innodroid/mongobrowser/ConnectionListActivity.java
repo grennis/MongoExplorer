@@ -166,9 +166,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	
     	ft.replace(R.id.frame_4, fragment);
     	ft.commit();    	
-    	
-    	//invalidateOptionsMenu();
-    	
     }
 
     private void hideDocumentListPane() {
@@ -215,13 +212,22 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	public void onConnectionDeleted() {
         getSupportFragmentManager().beginTransaction()
 	        .remove(getSupportFragmentManager().findFragmentById(R.id.frame_2))
-	        .commit();
+	        .commit();        
 	}
 
 	@Override
-	public void onConnectionEdited(long id) {
+	public void onConnectionAdded(long id) {
+		reloadConnectionListAndSelect(id);
+	}
+
+	@Override
+	public void onConnectionUpdated(long id) {
+		reloadConnectionListAndSelect(id);
+	}
+
+	private void reloadConnectionListAndSelect(long id) {
 		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
-        fragment.refreshList(id);
+        fragment.reloadAndSelect(id);
         
         if (mTwoPane)
         	loadConnectionDetailsPane(id);

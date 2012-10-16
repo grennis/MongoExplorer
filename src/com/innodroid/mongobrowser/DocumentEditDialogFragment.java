@@ -3,8 +3,6 @@ package com.innodroid.mongobrowser;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.EditText;
 
@@ -53,18 +51,6 @@ public class DocumentEditDialogFragment extends DialogFragment {
 		});    	
     }
     
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
-    	
-    	setHasOptionsMenu(true);    	
-    }
-    
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    	inflater.inflate(R.menu.document_edit_menu, menu);
-    }    
-
     public void save() {
 		new SaveDocumentTask().execute(mContentEdit.getText().toString());
     }

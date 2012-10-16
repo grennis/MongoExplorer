@@ -3,10 +3,12 @@
     <item android:id="@+id/menu_document_detail_edit"
           android:icon="@android:drawable/ic_menu_edit"
           android:title="Edit Document"
+          android:orderInCategory="60"
           android:showAsAction="withText|ifRoom"/>
     <item android:id="@+id/menu_document_detail_delete"
           android:icon="@android:drawable/ic_menu_delete"
           android:title="Delete Document"
-          android:showAsAction="withText|ifRoom"/>
+          android:orderInCategory="70"
+          android:showAsAction="withText|never"/>
 </menu>
 

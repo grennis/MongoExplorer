@@ -74,10 +74,12 @@ public class DocumentDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.menu_document_detail_edit:
-    			mCallbacks.onEditDocument(mFormattedText);
+    			if (mRawText != null)
+    				mCallbacks.onEditDocument(mFormattedText);
     			return true;
     		case R.id.menu_document_detail_delete:
-    			deleteDocument();
+    			if (mRawText != null)
+    				deleteDocument();
     			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);

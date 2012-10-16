@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_document_list_edit"
-          android:icon="@android:drawable/ic_menu_edit"
-          android:title="Edit Collection"
-          android:showAsAction="withText|ifRoom"/>
     <item android:id="@+id/menu_document_list_add"
           android:icon="@android:drawable/ic_menu_add"
           android:title="Add Document"
+          android:orderInCategory="50"
           android:showAsAction="withText|ifRoom"/>
+    <item android:id="@+id/menu_document_list_edit"
+          android:icon="@android:drawable/ic_menu_edit"
+          android:title="Rename Collection"
+          android:orderInCategory="80"
+          android:showAsAction="withText|never"/>
     <item android:id="@+id/menu_document_list_delete"
           android:icon="@android:drawable/ic_menu_delete"
           android:title="Drop Collection"
-          android:showAsAction="withText|ifRoom"/>
-    <!-- 
-    <item android:id="@+id/collection_detail_menu_edit"
-          android:icon="@android:drawable/ic_menu_edit"
-          android:title="Edit"
-          android:showAsAction="withText|ifRoom"/>
-           -->
+          android:orderInCategory="90"
+          android:showAsAction="withText|never"/>
 </menu>
 

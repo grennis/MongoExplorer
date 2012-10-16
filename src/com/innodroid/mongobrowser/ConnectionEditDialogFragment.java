@@ -27,7 +27,8 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 	private static Callbacks mCallbacks;
 
 	public interface Callbacks {
-		void onConnectionEdited(long id);
+		void onConnectionAdded(long id);
+		void onConnectionUpdated(long id);
 	}
 	
     static ConnectionEditDialogFragment create(long id, Callbacks callbacks) {
@@ -87,13 +88,15 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 
     	long id = getArguments().getLong(Constants.ARG_CONNECTION_ID, 0);
 
-    	if (id == 0)
+    	if (id == 0) {
     		id = helper.addConnection(name, server, port, db, user, pass);
-    	else
+    		mCallbacks.onConnectionAdded(id);
+    	}
+    	else {
     		helper.updateConnection(id, name, server, port, db, user, pass);
-
-    	mCallbacks.onConnectionEdited(id);
-
+        	mCallbacks.onConnectionUpdated(id);
+    	}
+    	
     	return true;
     }
     

@@ -14,6 +14,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -77,14 +78,9 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			}        	
         });
 
-        return view;
-    }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-        
         getLoaderManager().initLoader(0, getArguments(), this);
+
+        return view;
     }
     
     @Override
@@ -161,9 +157,15 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			}
     	});
     }
-    
+
 	@Override
-	public void onConnectionEdited(long id) {
+	public void onConnectionAdded(long id) {
+		Log.e("ERR", "Should never get here");
+	}
+
+	@Override
+	public void onConnectionUpdated(long id) {
+        getLoaderManager().initLoader(0, getArguments(), this);
 	}
 
 	private class ConnectTask extends SafeAsyncTask<Void, Void, Boolean>{
@@ -212,8 +214,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
 		@Override
 		protected Boolean safeDoInBackground(Void... arg0) {
-			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
-			getActivity().getContentResolver().delete(uri, null, null);
+			new MongoBrowserProviderHelper(getActivity().getContentResolver()).deleteConnection(mConnectionID);
 			return true;
 		}
 		

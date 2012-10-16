@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 
 public class MongoHelper {
 	private static Mongo Connection;
