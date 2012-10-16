@@ -15,7 +15,6 @@ import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 
 public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
-	//private static final String STATE_NAV_DEPTH = "navdepth";
 	private boolean mTwoPane;
 	private String mCollectionName;
     private FrameLayout mFrame1;
@@ -27,7 +26,6 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.title_connection_list);
         setContentView(R.layout.activity_connection_list);
 
         mFrame1 = (FrameLayout)findViewById(R.id.frame_1);
@@ -38,6 +36,11 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         if (mFrame2 != null)
             mTwoPane = true;
 
+        if (mTwoPane)
+        	setTitle(R.string.app_name);
+        else
+        	setTitle(R.string.title_connection_list);
+
         if (savedInstanceState == null) {
         	Bundle args = new Bundle();
 	        ConnectionListFragment fragment = new ConnectionListFragment();
@@ -47,23 +50,21 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	                .replace(R.id.frame_1, fragment)
 	                .commit();
         } else {
-        	//int depth = savedInstanceState.getInt(STATE_NAV_DEPTH); 
-//        	if ( > 0) {
-//            	mFrame1.setVisibility(View.GONE);
-//            	mFrame3.setVisibility(View.VISIBLE);
-//        	}
+        	int depth = getSupportFragmentManager().getBackStackEntryCount();
+        	if (depth == 2) {
+        		mFrame1.setVisibility(View.GONE);
+        		mFrame2.setVisibility(View.GONE);
+        		mFrame3.setVisibility(View.VISIBLE);
+        		mFrame4.setVisibility(View.VISIBLE);        		
+        	} else if (depth == 1) {
+        		mFrame1.setVisibility(View.GONE);
+        		mFrame3.setVisibility(View.VISIBLE);
+        	}        		
         }
 
         new AddConnectionIfNoneExistTask().execute();
     }
-	
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
 		
-		//outState.putInt(STATE_NAV_DEPTH, getSupportFragmentManager().getBackStackEntryCount());
-	}
-	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -119,8 +120,8 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         FragmentManager fm = getSupportFragmentManager();
     	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 0;
 
-    	mFrame1.setVisibility(View.GONE);
-    	mFrame3.setVisibility(View.VISIBLE);
+    	if (!alreadyShiftedFrames)
+    		mFrame3.setVisibility(View.VISIBLE);
 
     	Bundle arguments = new Bundle();
         DocumentListFragment fragment = new DocumentListFragment();
@@ -130,24 +131,25 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
     	Fragment connectionList = fm.findFragmentById(R.id.frame_1);
     	FragmentTransaction ft = fm.beginTransaction();
+    	ft.replace(R.id.frame_3, fragment);
 
     	if (!alreadyShiftedFrames) {
-        	ft.addToBackStack("");
     		ft.remove(connectionList);
+        	ft.addToBackStack("doclist");
     	}
     	
-    	ft.replace(R.id.frame_3, fragment);
     	ft.commit();    	
-    	
-    	//invalidateOptionsMenu();
+
+    	if (!alreadyShiftedFrames)
+    		mFrame1.setVisibility(View.GONE);
     }
     
     private void loadDocumentDetailsPane(String content) {
         FragmentManager fm = getSupportFragmentManager();
     	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 1;
 
-    	mFrame2.setVisibility(View.GONE);
-    	mFrame4.setVisibility(View.VISIBLE);
+    	if (!alreadyShiftedFrames)
+    		mFrame4.setVisibility(View.VISIBLE);
 
     	Bundle arguments = new Bundle();
         DocumentDetailFragment fragment = new DocumentDetailFragment();
@@ -158,28 +160,34 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
     	Fragment collectionList = fm.findFragmentById(R.id.frame_2);
     	FragmentTransaction ft = fm.beginTransaction();
+    	ft.replace(R.id.frame_4, fragment);
 
     	if (!alreadyShiftedFrames) {
-        	ft.addToBackStack("");
     		ft.remove(collectionList);
+        	ft.addToBackStack("docdetails");
     	}
     	
-    	ft.replace(R.id.frame_4, fragment);
     	ft.commit();    	
+    	
+    	if (!alreadyShiftedFrames)
+    		mFrame2.setVisibility(View.GONE);
     }
 
     private void hideDocumentListPane() {
-    	mFrame3.setVisibility(View.GONE);
-    	mFrame1.setVisibility(View.VISIBLE);
-    	
+    	mFrame1.setVisibility(View.VISIBLE);    	
     	getSupportFragmentManager().popBackStack();
+    	mFrame3.setVisibility(View.GONE);
     }
 
     private void hideDocumentDetailPane() {
-    	mFrame4.setVisibility(View.GONE);
-    	mFrame2.setVisibility(View.VISIBLE);
-    	
+    	mFrame2.setVisibility(View.VISIBLE);    	
     	getSupportFragmentManager().popBackStack();
+    	
+    	// Pop the back stack isnt really enough since the fragment added in the transaction may have been replaced
+    	FragmentManager fm = getSupportFragmentManager();
+    	fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_4)).commit();
+    	
+    	mFrame4.setVisibility(View.GONE);
     }
 
     @Override

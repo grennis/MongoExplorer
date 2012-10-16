@@ -180,14 +180,13 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }
     
     public void setActivatedPosition(int position) {
-//        if (position == ListView.INVALID_POSITION) {
-//            getListView().setItemChecked(mActivatedPosition, false);
-//        } else {
-//            getListView().setItemChecked(position, true);
-//        }
+        if (position == ListView.INVALID_POSITION) {
+            getListView().setItemChecked(mActivatedPosition, false);
+        } else {
+            getListView().setItemChecked(position, true);
+        }
 
         mActivatedPosition = position;
-        Log.e("greg", "SET ACTIVE POS TO " + position);
     }
 
 	@Override

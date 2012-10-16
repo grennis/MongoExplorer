@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mongo Browser</string>
+    <string name="app_name">Mongo Explorer</string>
     <string name="title_connection_detail">Connection</string>
     <string name="title_connection_list">Connections</string>
     <string name="title_edit_connection">Setup Connection</string>
