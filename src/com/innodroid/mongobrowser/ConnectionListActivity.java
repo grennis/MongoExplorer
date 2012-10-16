@@ -15,6 +15,8 @@ import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 
 public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
+	private static final String STATE_COLLECTION_NAME = "collname";
+	
 	private boolean mTwoPane;
 	private String mCollectionName;
     private FrameLayout mFrame1;
@@ -42,14 +44,10 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         	setTitle(R.string.title_connection_list);
 
         if (savedInstanceState == null) {
-        	Bundle args = new Bundle();
-	        ConnectionListFragment fragment = new ConnectionListFragment();
-	        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
-	        fragment.setArguments(args);
-	        getSupportFragmentManager().beginTransaction()
-	                .replace(R.id.frame_1, fragment)
-	                .commit();
+        	loadConnectionListPane();
         } else {
+        	mCollectionName = savedInstanceState.getString(STATE_COLLECTION_NAME);
+        		
         	int depth = getSupportFragmentManager().getBackStackEntryCount();
         	if (depth == 2) {
         		mFrame1.setVisibility(View.GONE);
@@ -64,7 +62,13 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
         new AddConnectionIfNoneExistTask().execute();
     }
-		
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(STATE_COLLECTION_NAME, mCollectionName);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -89,6 +93,14 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         	showDetailsActivity(id);
         }
     }
+	
+	private void loadConnectionListPane() {
+    	Bundle args = new Bundle();
+        ConnectionListFragment fragment = new ConnectionListFragment();
+        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
+        fragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).commit();		
+	}
 	
     private void loadConnectionDetailsPane(long id) {
         Bundle arguments = new Bundle();
@@ -174,7 +186,7 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     }
 
     private void hideDocumentListPane() {
-    	mFrame1.setVisibility(View.VISIBLE);    	
+    	mFrame1.setVisibility(View.VISIBLE);    
     	getSupportFragmentManager().popBackStack();
     	mFrame3.setVisibility(View.GONE);
     }

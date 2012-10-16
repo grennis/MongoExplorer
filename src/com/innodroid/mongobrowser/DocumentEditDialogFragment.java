@@ -15,7 +15,7 @@ public class DocumentEditDialogFragment extends DialogFragment {
 	private EditText mContentEdit;
 	private String mContent;
 	private String mCollectionName;
-	private Callbacks mCallbacks;
+	private static Callbacks mCallbacks;
 
     public interface Callbacks {
     	void onDocumentCreated(String content);
@@ -29,7 +29,7 @@ public class DocumentEditDialogFragment extends DialogFragment {
     	args.putString(Constants.ARG_COLLECTION_NAME, collectionName);
     	args.putBoolean(Constants.ARG_IS_NEW, isNew);
     	fragment.setArguments(args);
-    	fragment.mCallbacks = callbacks;
+    	DocumentEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 

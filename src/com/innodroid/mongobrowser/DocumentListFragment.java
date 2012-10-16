@@ -49,6 +49,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		setListAdapter(mAdapter);
 		
 		setHasOptionsMenu(true);
+    	setRetainInstance(true);    	
 
 		int take = getResources().getInteger(R.integer.default_document_page_size);
 		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);

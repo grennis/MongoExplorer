@@ -32,6 +32,7 @@ public class DocumentEditFragment extends Fragment {
     	super.onCreate(savedInstanceState);
     	
     	setHasOptionsMenu(true);    	
+    	setRetainInstance(true);    	
     }
     
     @Override

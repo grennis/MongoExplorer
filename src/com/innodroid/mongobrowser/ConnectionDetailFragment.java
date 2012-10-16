@@ -55,7 +55,8 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);
-    	
+    	setRetainInstance(true);    	
+
     	mConnectionID = getArguments().getLong(Constants.ARG_CONNECTION_ID);
     }
     

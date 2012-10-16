@@ -1,7 +1,5 @@
 package com.innodroid.mongobrowser;
 
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -32,22 +30,22 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     	public void onAddConnection();
         public void onConnectionItemSelected(int position, long id);
     }
-
-    public ConnectionListFragment() {
-    }
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 		mAdapter = new MongoConnectionAdapter(getActivity(), null, true);
 		setListAdapter(mAdapter);
-		
+	
 		setHasOptionsMenu(true);
 
-		getLoaderManager().initLoader(0, null, this);
+	    // Cannot figure out why cant use setRetainInstance(true).. when navigating back to this fragment it is empty and will not populate
+		//setRetainInstance(true);
+
+		getLoaderManager().initLoader(0, null, this);		
     }
-        
+    
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.connection_list_menu, menu);
@@ -98,6 +96,8 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         
+        setActivatedPosition(position);
+        
         if (mCallbacks != null)
         	mCallbacks.onConnectionItemSelected(position, mAdapter.getItemId(position));
     }
@@ -110,11 +110,6 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
         }
     }
 
-    @SuppressLint("NewApi")
-	public boolean isItemSelected() {
-        return getListView().getCheckedItemCount() > 0;
-    }
-    
     public void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);
@@ -134,6 +129,10 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 		
 		if (mSelectAfterLoad > 0)
 			selectItem(mSelectAfterLoad);
+		else
+			setActivatedPosition(mActivatedPosition);
+		
+		mSelectAfterLoad = 0;
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
