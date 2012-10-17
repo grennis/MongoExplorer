@@ -9,6 +9,7 @@
     <dimen name="exception_detail_vert_spacing">2dp</dimen>
     <dimen name="exception_detail_header_size">24sp</dimen>
     <dimen name="exception_detail_text_size">16sp</dimen>
+	<dimen name="list_item_left_padding">6dp</dimen> 
     <item name="document_lines" type="integer">4</item>
     <item name="default_document_page_size" type="integer">6</item>
 </resources>

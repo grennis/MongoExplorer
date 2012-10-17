@@ -5,6 +5,11 @@
           android:title="Add Document"
           android:orderInCategory="50"
           android:showAsAction="withText|ifRoom"/>
+    <item android:id="@+id/menu_document_list_query"
+          android:icon="@android:drawable/ic_menu_search"
+          android:title="Query"
+          android:orderInCategory="55"
+          android:showAsAction="withText|always"/>
     <item android:id="@+id/menu_document_list_edit"
           android:icon="@android:drawable/ic_menu_edit"
           android:title="Rename Collection"

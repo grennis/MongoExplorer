@@ -9,22 +9,31 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
+import com.innodroid.mongobrowser.util.LeftMarginAnimation;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
+import com.innodroid.mongobrowser.util.WidthAnimation;
 
 public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
 	private static final String STATE_COLLECTION_NAME = "collname";
 	
 	private boolean mTwoPane;
+	private int mScreenWidth;
+	private int mLeftPaneWidth;
+	private int mRightPaneWidth;
 	private String mCollectionName;
     private FrameLayout mFrame1;
     private FrameLayout mFrame2;
     private FrameLayout mFrame3;
     private FrameLayout mFrame4;
 
+	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -41,30 +50,61 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
         if (mFrame2 != null)
             mTwoPane = true;
 
-        if (mTwoPane)
+        if (mTwoPane) {
         	setTitle(R.string.app_name);
-        else
+        	mScreenWidth = getWindowManager().getDefaultDisplay().getWidth();
+        	mLeftPaneWidth = mScreenWidth/2 - (mScreenWidth/10);
+        	mRightPaneWidth = mScreenWidth - mLeftPaneWidth;
+        }
+        else {
         	setTitle(R.string.title_connection_list);
+        }
 
         if (savedInstanceState == null) {
+        	if (mTwoPane) {
+	        	positionFramesOnScreen(mFrame1, mFrame2);
+	        	moveOffscreenToRight(mFrame3);
+	        	moveOffscreenToRight(mFrame4);
+        	}
+
         	loadConnectionListPane();
         } else {
         	mCollectionName = savedInstanceState.getString(STATE_COLLECTION_NAME);
-        		
-        	int depth = getSupportFragmentManager().getBackStackEntryCount();
-        	if (depth == 2) {
-        		mFrame1.setVisibility(View.GONE);
-        		mFrame2.setVisibility(View.GONE);
-        		mFrame3.setVisibility(View.VISIBLE);
-        		mFrame4.setVisibility(View.VISIBLE);        		
-        	} else if (depth == 1) {
-        		mFrame1.setVisibility(View.GONE);
-        		mFrame3.setVisibility(View.VISIBLE);
-        	}        		
+
+        	if (mTwoPane) {
+	        	int depth = getSupportFragmentManager().getBackStackEntryCount();
+	        	if (depth == 2) {
+	            	moveOffscreenToLeft(mFrame1);
+	            	moveOffscreenToLeft(mFrame2);
+	            	positionFramesOnScreen(mFrame3, mFrame4);
+	        	} else if (depth == 1) {
+	            	moveOffscreenToLeft(mFrame1);
+	            	positionFramesOnScreen(mFrame2, mFrame3);
+	            	moveOffscreenToRight(mFrame4);
+	        	} else {
+	            	positionFramesOnScreen(mFrame1, mFrame2);
+	            	moveOffscreenToRight(mFrame3);
+	            	moveOffscreenToRight(mFrame4);
+	        	}
+        	}
         }
 
         new AddConnectionIfNoneExistTask().execute();
     }
+
+	private void moveOffscreenToLeft(View view) {		
+		((MarginLayoutParams)view.getLayoutParams()).leftMargin = mScreenWidth + 1;
+	}
+
+	private void moveOffscreenToRight(View view) {		
+		((MarginLayoutParams)view.getLayoutParams()).leftMargin = mScreenWidth + 1;
+	}
+
+	private void positionFramesOnScreen(View left, View right) {
+		left.getLayoutParams().width = mLeftPaneWidth;
+    	((MarginLayoutParams)right.getLayoutParams()).leftMargin = mLeftPaneWidth;
+    	right.getLayoutParams().width = mRightPaneWidth;
+	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -136,8 +176,8 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 0;
 
     	if (!alreadyShiftedFrames)
-    		mFrame3.setVisibility(View.VISIBLE);
-
+    		shiftAllLeft(mFrame1, mFrame2, mFrame3);
+    	
     	Bundle arguments = new Bundle();
         DocumentListFragment fragment = new DocumentListFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
@@ -154,18 +194,15 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	}
     	
     	ft.commit();    	
-
-    	if (!alreadyShiftedFrames)
-    		mFrame1.setVisibility(View.GONE);
     }
     
-    private void loadDocumentDetailsPane(String content) {
+	private void loadDocumentDetailsPane(String content) {
         FragmentManager fm = getSupportFragmentManager();
     	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 1;
 
     	if (!alreadyShiftedFrames)
-    		mFrame4.setVisibility(View.VISIBLE);
-
+    		shiftAllLeft(mFrame2, mFrame3, mFrame4);
+    	
     	Bundle arguments = new Bundle();
         DocumentDetailFragment fragment = new DocumentDetailFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, mCollectionName);
@@ -183,28 +220,80 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
     	}
     	
     	ft.commit();    	
-    	
-    	if (!alreadyShiftedFrames)
-    		mFrame2.setVisibility(View.GONE);
     }
 
     private void hideDocumentListPane() {
-    	mFrame1.setVisibility(View.VISIBLE);    
     	getSupportFragmentManager().popBackStack();
-    	mFrame3.setVisibility(View.GONE);
+    	shiftAllRight(mFrame1, mFrame2, mFrame3);
     }
 
     private void hideDocumentDetailPane() {
-    	mFrame2.setVisibility(View.VISIBLE);    	
     	getSupportFragmentManager().popBackStack();
     	
     	// Pop the back stack isnt really enough since the fragment added in the transaction may have been replaced
     	FragmentManager fm = getSupportFragmentManager();
     	fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_4)).commit();
-    	
-    	mFrame4.setVisibility(View.GONE);
+    	shiftAllRight(mFrame2, mFrame3, mFrame4);    	
     }
 
+    private void shiftAllLeft(View view1, View view2, View view3) {
+		animateFromLeftPaneOffscreen(view1);
+		animateFromRightPaneToLeftPane(view2);
+		animateFromOffscreenToRightPane(view3);
+    }
+    
+    private void shiftAllRight(View view1, View view2, View view3) {
+		animateFromRightPaneOffscreen(view3);
+		animateFromLeftPaneToRightPane(view2);
+		animateFromOffscreenToLeftPane(view1);
+    }
+    
+    private void animateFromOffscreenToRightPane(View view) {
+    	((MarginLayoutParams)view.getLayoutParams()).width = mRightPaneWidth;
+    	view.requestLayout();
+    	
+		Animation animation = new LeftMarginAnimation(view, mScreenWidth, mLeftPaneWidth);
+		view.startAnimation(animation);
+	}
+
+	private void animateFromRightPaneToLeftPane(View view) {
+		Animation translate = new LeftMarginAnimation(view, mLeftPaneWidth, 0);
+		Animation width = new WidthAnimation(view, mRightPaneWidth, mLeftPaneWidth);
+		
+		AnimationSet set = new AnimationSet(true);
+		set.addAnimation(translate);
+		set.addAnimation(width);
+		view.startAnimation(set);
+	}
+
+	private void animateFromLeftPaneOffscreen(View view) {
+		Animation animation = new LeftMarginAnimation(view, 0, -mLeftPaneWidth);
+		view.startAnimation(animation);
+	}
+
+    private void animateFromOffscreenToLeftPane(View view) {
+    	((MarginLayoutParams)view.getLayoutParams()).width = mLeftPaneWidth;
+    	view.requestLayout();
+    	
+		Animation animation = new LeftMarginAnimation(view, -mLeftPaneWidth, 0);
+		view.startAnimation(animation);
+	}
+
+	private void animateFromLeftPaneToRightPane(View view) {
+		Animation translate = new LeftMarginAnimation(view, 0, mLeftPaneWidth);
+		Animation width = new WidthAnimation(view, mLeftPaneWidth, mRightPaneWidth);
+		
+		AnimationSet set = new AnimationSet(true);
+		set.addAnimation(translate);
+		set.addAnimation(width);
+		view.startAnimation(set);
+	}
+
+	private void animateFromRightPaneOffscreen(View view) {
+		Animation animation = new LeftMarginAnimation(view, mLeftPaneWidth, mScreenWidth+1);
+		view.startAnimation(animation);
+	}
+	
     @Override
     public void onAddConnection() {
     	addConnection();
