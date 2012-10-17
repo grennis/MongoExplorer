@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
+import android.view.Window;
 
 public class DocumentDetailActivity extends FragmentActivity implements DocumentDetailFragment.Callbacks {
 
@@ -16,6 +17,8 @@ public class DocumentDetailActivity extends FragmentActivity implements Document
     @SuppressLint("NewApi")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document_detail);
 

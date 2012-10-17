@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
+import android.view.Window;
 
 public class DocumentListActivity extends FragmentActivity implements DocumentListFragment.Callbacks {
 	private static final int REQUEST_EDIT_DOCUMENT = 101;
@@ -16,6 +17,8 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
         super.onCreate(savedInstanceState);
 
         String name = getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME);
@@ -58,15 +61,25 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	@Override
 	protected void onActivityResult(int request, int result, Intent data) {
 		if ((request == REQUEST_EDIT_DOCUMENT || request == REQUEST_VIEW_DOCUMENT) && result == RESULT_OK) {
+			String content = data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT);
 			DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
-			fragment.onDocumentUpdated(data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT));
+			
+			if (content == null)
+				fragment.onDocumentDeleted();
+			else
+				fragment.onDocumentUpdated(content);
+				
 		} else {
 			super.onActivityResult(request, result, data);
 		}
 	}
+
+	@Override
+    public void onDocumentItemActivated(String content) {
+	}
 	
 	@Override
-    public void onDocumentItemSelected(String content) {
+    public void onDocumentItemClicked(String content) {
 		Intent intent = new Intent(this, DocumentDetailActivity.class);
 		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);
 		intent.putExtra(Constants.ARG_COLLECTION_NAME, mCollectionName);

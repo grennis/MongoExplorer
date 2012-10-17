@@ -30,9 +30,10 @@ public class DocumentEditFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	
+
+    	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME); 
+
     	setHasOptionsMenu(true);    	
-    	setRetainInstance(true);    	
     }
     
     @Override
@@ -40,11 +41,11 @@ public class DocumentEditFragment extends Fragment {
     	View view = inflater.inflate(R.layout.fragment_document_edit, container, false);
     	
     	mContentEdit = (EditText) view.findViewById(R.id.document_edit_content);
-    	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME); 
     	
     	String json = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
     	mContentEdit.setText(json);
-    	
+		getActivity().setProgressBarIndeterminateVisibility(false);
+
         return view;
     }
     

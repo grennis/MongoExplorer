@@ -36,8 +36,7 @@ public class DocumentDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setHasOptionsMenu(true);    	
-    	setRetainInstance(true);    	
+    	setHasOptionsMenu(true);
 
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
     }
@@ -48,7 +47,8 @@ public class DocumentDetailFragment extends Fragment {
     	
     	mContentText = (TextView) view.findViewById(R.id.document_detail_content);
     	updateContent(getArguments().getString(Constants.ARG_DOCUMENT_CONTENT));
-    	
+		getActivity().setProgressBarIndeterminateVisibility(false);
+
         return view;
     }
     

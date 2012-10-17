@@ -33,7 +33,8 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
     public interface Callbacks {
     	public void onAddDocument();
-        public void onDocumentItemSelected(String content);
+        public void onDocumentItemClicked(String content);
+        public void onDocumentItemActivated(String content);
         public void onCollectionEdited(String name);
         public void onCollectionDropped(String name);
     }
@@ -49,25 +50,30 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		setListAdapter(mAdapter);
 		
 		setHasOptionsMenu(true);
-    	setRetainInstance(true);    	
+		
+		// Need to preserve the state of the list... the user may have hit "load more" a few times and need to preserve that
+    	setRetainInstance(true);
 
 		int take = getResources().getInteger(R.integer.default_document_page_size);
 		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
 
+		if (savedInstanceState != null)
+			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
+		
 		new LoadNextDocumentsTask().execute();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
 
         getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
+        
+        if (mActivatedPosition != ListView.INVALID_POSITION)
+            setActivatedPosition(mActivatedPosition);
     }
     
     @Override
@@ -108,21 +114,21 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	public void onDocumentCreated(String content) {
 		mAdapter.insert(0, content);
 		setActivatedPosition(0);
-		mCallbacks.onDocumentItemSelected(content);
+		mCallbacks.onDocumentItemActivated(content);
 	}
 	
 	public void onDocumentUpdated(String content) {
 		mAdapter.update(mActivatedPosition, content);
-		mCallbacks.onDocumentItemSelected(content);
+		mCallbacks.onDocumentItemActivated(content);
 	}
 
 	public void onDocumentDeleted() {
 		mAdapter.delete(mActivatedPosition);
 
 		if (mActivatedPosition < mAdapter.getActualCount())
-			mCallbacks.onDocumentItemSelected(mAdapter.getItem(mActivatedPosition));
+			mCallbacks.onDocumentItemActivated(mAdapter.getItem(mActivatedPosition));
 		else {
-			mCallbacks.onDocumentItemSelected(null);
+			mCallbacks.onDocumentItemActivated(null);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
 	}
@@ -168,7 +174,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         	setActivatedPosition(position);
         	
         	if (mCallbacks != null)
-        		mCallbacks.onDocumentItemSelected(mAdapter.getItem(position));
+        		mCallbacks.onDocumentItemClicked(mAdapter.getItem(position));
         }
     }
 

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
@@ -26,6 +27,8 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_connection_list);
@@ -219,7 +222,12 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	}
 
 	@Override
-	public void onDocumentItemSelected(String content) {
+	public void onDocumentItemClicked(String content) {
+		loadDocumentDetailsPane(content);
+	}
+
+	@Override
+	public void onDocumentItemActivated(String content) {
 		loadDocumentDetailsPane(content);
 	}
 

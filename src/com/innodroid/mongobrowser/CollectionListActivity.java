@@ -6,11 +6,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
+import android.view.Window;
 
-public class CollectionListActivity extends FragmentActivity implements CollectionListFragment.Callbacks {
+public class CollectionListActivity extends FragmentActivity implements CollectionListFragment.Callbacks {	
+	public static final int REQUEST_DOCUMENT_LIST = 101;
+	
 	@SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
         super.onCreate(savedInstanceState);
 
         setTitle(R.string.title_collection_list);
@@ -29,7 +34,7 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
 	                .commit();	        
         }
 	}
-
+	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
@@ -47,8 +52,19 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
     public void onCollectionItemSelected(String name) {
         Intent intent = new Intent(this, DocumentListActivity.class);
         intent.putExtra(Constants.ARG_COLLECTION_NAME, name);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_DOCUMENT_LIST);
     }
+	
+	@Override
+	protected void onActivityResult(int request, int result, Intent data) {
+		super.onActivityResult(request, result, data);
+
+		if (request == REQUEST_DOCUMENT_LIST) {
+			// The collection may have been renamed
+	        CollectionListFragment fragment = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.collection_list);
+	        fragment.refreshList();			
+		}
+	}
 }
 
 

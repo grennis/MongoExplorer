@@ -55,7 +55,6 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);
-    	setRetainInstance(true);    	
 
     	mConnectionID = getArguments().getLong(Constants.ARG_CONNECTION_ID);
     }
@@ -118,11 +117,14 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     }
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle args) {
+		getActivity().setProgressBarIndeterminateVisibility(true);
 		Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
 	    return new CursorLoader(getActivity(), uri, null, null, null, null);
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		getActivity().setProgressBarIndeterminateVisibility(false);
+
 		Resources res = getResources();
 		
 		if (!cursor.moveToFirst())

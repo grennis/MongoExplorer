@@ -39,10 +39,16 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		mAdapter = new MongoCollectionAdapter(getActivity());
 		setListAdapter(mAdapter);
 		setHasOptionsMenu(true);
-    	setRetainInstance(true);
 
-    	new LoadNamesTask().execute();
+		if (savedInstanceState != null)
+			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
+
+		refreshList();
     }
+
+	public void refreshList() {
+    	new LoadNamesTask().execute();
+	}
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -68,20 +74,18 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
-        
+
         getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
+        
+        if (mActivatedPosition != ListView.INVALID_POSITION)
+            setActivatedPosition(mActivatedPosition);
     }
     
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        //LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, new IntentFilter(Constants.MessageConnectionItemChanged));
 
         if (!(activity instanceof Callbacks)) {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
@@ -92,7 +96,6 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 
     @Override
     public void onDetach() {
-        //LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
         mCallbacks = null;
         super.onDetach();
     }
@@ -194,11 +197,6 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		@Override
 		protected String getErrorTitle() {
 			return "Failed to Get Names";
-		}
-		
-		@Override
-		protected String getProgressMessage() {
-			return "Loading";
 		}		
     }
 

@@ -3,7 +3,6 @@ package com.innodroid.mongobrowser.util;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 
 import com.innodroid.mongobrowser.ExceptionDetailDialogFragment;
 
@@ -26,6 +25,8 @@ public abstract class SafeAsyncTask<T, U, V> extends AsyncTask<T, U, V>{
 		
 		String caption = getProgressMessage();
 		
+		mFragmentActivity.setProgressBarIndeterminateVisibility(true);
+		
 		if (caption != null)
 			mDialog = ProgressDialog.show(mFragmentActivity, null, caption, true, false);		
 	}
@@ -46,6 +47,8 @@ public abstract class SafeAsyncTask<T, U, V> extends AsyncTask<T, U, V>{
 	@Override
 	protected void onPostExecute(V result) {
 		super.onPostExecute(result);
+
+		mFragmentActivity.setProgressBarIndeterminateVisibility(false);
 
 		if (mDialog != null)
 			mDialog.dismiss();

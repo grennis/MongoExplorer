@@ -38,10 +38,10 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 		mAdapter = new MongoConnectionAdapter(getActivity(), null, true);
 		setListAdapter(mAdapter);
 	
+		if (savedInstanceState != null)
+			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
+		
 		setHasOptionsMenu(true);
-
-	    // Cannot figure out why cant use setRetainInstance(true).. when navigating back to this fragment it is empty and will not populate
-		//setRetainInstance(true);
 
 		getLoaderManager().initLoader(0, null, this);		
     }
@@ -70,13 +70,12 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
-
         getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
+
+        if (mActivatedPosition != ListView.INVALID_POSITION)
+            setActivatedPosition(mActivatedPosition);
     }
     
     @Override
