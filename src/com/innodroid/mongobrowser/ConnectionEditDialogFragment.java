@@ -55,10 +55,15 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
     	if (id != 0)
     		getLoaderManager().initLoader(0, getArguments(), this);
 
-    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, R.string.title_edit_connection, new UiUtils.AlertDialogCallbacks() {			
+    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, R.string.title_edit_connection, true, 0, new UiUtils.AlertDialogCallbacks() {			
 			@Override
 			public boolean onOK() {
 				return save();
+			}
+
+			@Override
+			public boolean onNeutralButton() {
+				return false;
 			}
 		});    	
     }

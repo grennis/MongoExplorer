@@ -88,9 +88,12 @@ public class MongoHelper {
 		Database.getCollection(oldName).rename(newName);
 	}
 
-	public static String[] getPageOfDocuments(String collection, int start, int take) {
+	public static String[] getPageOfDocuments(String collection, String queryText, int start, int take) {
 		DBCollection coll = Database.getCollection(collection);
-		DBCursor cursor = coll.find().skip(start).limit(take);		
+		DBCursor cursor = (queryText == null) ? coll.find() : coll.find(parse(queryText));
+
+		cursor = cursor.skip(start).limit(take);
+		
 		ArrayList<String> results = new ArrayList<String>();
 		
 		while (cursor.hasNext()) {
@@ -98,6 +101,7 @@ public class MongoHelper {
 			results.add(cursor.curr().toString());
 		}
 		
+		cursor.close();
 		String[] res = new String[results.size()];
 		results.toArray(res);
 		return res;
@@ -108,13 +112,17 @@ public class MongoHelper {
 	}
 
 	public static String saveDocument(String collectionName, String content) {
-		Object obj = com.mongodb.util.JSON.parse(content);
-		Database.getCollection(collectionName).save((DBObject) obj);
+		DBObject obj = parse(content);
+		Database.getCollection(collectionName).save(obj);
 		return obj.toString();
 	}
 
 	public static void deleteDocument(String collectionName, String content) {
-		Object obj = com.mongodb.util.JSON.parse(content);
-		Database.getCollection(collectionName).remove((DBObject)obj);
+		Database.getCollection(collectionName).remove(parse(content));
+	}
+	
+	private static DBObject parse(String text) {
+		Object obj = com.mongodb.util.JSON.parse(text);
+		return (DBObject)obj;
 	}
 }

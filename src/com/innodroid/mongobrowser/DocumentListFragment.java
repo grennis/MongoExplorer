@@ -19,12 +19,14 @@ import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
-import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
+import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
-public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks {
+public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, QueryEditDialogFragment.Callbacks {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private static final String STATE_QUERY_TEXT = "query_text";
 
     private String mCollectionName;
+    private String mQueryText;
     private MongoDocumentAdapter mAdapter;
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
@@ -35,7 +37,6 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     	public void onAddDocument();
         public void onDocumentItemClicked(String content);
         public void onDocumentItemActivated(String content);
-        public void onDocumentListRefresh();
         public void onCollectionEdited(String name);
         public void onCollectionDropped(String name);
     }
@@ -59,10 +60,12 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
 
-		if (savedInstanceState != null)
+		if (savedInstanceState != null) {
 			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
+			mQueryText = savedInstanceState.getString(STATE_QUERY_TEXT);
+		}
 		
-		new LoadNextDocumentsTask().execute();
+		new LoadNextDocumentsTask(false).execute();
     }
 
     @Override
@@ -101,6 +104,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     		case R.id.menu_document_list_add:
     			mCallbacks.onAddDocument();
     			return true;
+    		case R.id.menu_document_list_query:
+    			editQuery();
+    			return true;
     		case R.id.menu_document_list_edit:
     			editCollection();
     			return true;
@@ -114,6 +120,11 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     	    	return super.onOptionsItemSelected(item);
         }
     }
+
+	private void editQuery() {
+		String query = (mQueryText == null) ? Constants.NEW_DOCUMENT_CONTENT_PADDED : mQueryText;
+		QueryEditDialogFragment.create(query, this).show(getFragmentManager(), null);
+	}
 
 	public void onDocumentCreated(String content) {
 		mAdapter.insert(0, content);
@@ -143,9 +154,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	}
 
     private void dropCollection() {
-    	UiUtils.confirm(getActivity(), R.string.confirm_drop_collection, new AlertDialogCallbacks() {
+    	UiUtils.confirm(getActivity(), R.string.confirm_drop_collection, new ConfirmCallbacks() {
 			@Override
-			public boolean onOK() {				
+			public boolean onConfirm() {				
 				if (mAdapter.getCount() == 0) {
 					new DropCollectionTask().execute();
 					return true;
@@ -158,9 +169,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	}
 
     private void reconfirmDropCollection() {
-    	UiUtils.confirm(getActivity(), R.string.really_confirm_drop_collection, new AlertDialogCallbacks() {
+    	UiUtils.confirm(getActivity(), R.string.really_confirm_drop_collection, new ConfirmCallbacks() {
 			@Override
-			public boolean onOK() {				
+			public boolean onConfirm() {				
 				new DropCollectionTask().execute();
 				return true;
 			}
@@ -173,7 +184,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         
         if ((mAdapter.isShowingLoadMore()) && (position == mAdapter.getCount()-1)) {
         	mStart += mTake;
-        	new LoadNextDocumentsTask().execute();
+        	new LoadNextDocumentsTask(false).execute();
         } else {
         	setActivatedPosition(position);
         	
@@ -187,6 +198,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         super.onSaveInstanceState(outState);
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
+            outState.putString(STATE_QUERY_TEXT, mQueryText);
         }
     }
     
@@ -219,11 +231,24 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	}
 
 	private void reloadList() {
-		mActivatedPosition = ListView.INVALID_POSITION;
+		boolean selectAfterLoad = mActivatedPosition != ListView.INVALID_POSITION;
+		setActivatedPosition(ListView.INVALID_POSITION);
+		mCallbacks.onDocumentItemActivated(null);
 		mAdapter.removeAll();
 		mStart = 0;
-		mCallbacks.onDocumentListRefresh();
-		new LoadNextDocumentsTask().execute();		
+		new LoadNextDocumentsTask(selectAfterLoad).execute();		
+	}
+
+	@Override
+	public void onQueryUpdated(String query) {
+		mQueryText = query;
+		reloadList();
+	}
+
+	@Override
+	public void onQueryCleared() {
+		mQueryText = null;
+		reloadList();
 	}
 
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {
@@ -272,8 +297,12 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }
 
     private class LoadNextDocumentsTask extends SafeAsyncTask<Void, Void, String[]> {
-    	public LoadNextDocumentsTask() {
+    	private boolean mSelectAfterLoad;
+    	
+    	public LoadNextDocumentsTask(boolean selectAfterLoad) {
 			super(getActivity());
+			
+			mSelectAfterLoad = selectAfterLoad;
 		}
 
 		@Override
@@ -281,7 +310,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			if (mCollectionName == null)
 				return new String[0];
 			
-			String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mStart, mTake);
+			String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mQueryText, mStart, mTake);
 			return docs;
 		}
 
@@ -290,7 +319,12 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			mAdapter.addAll(results);
 			
 			if (results.length < mTake)
-				mAdapter.showLoadMore(false);			
+				mAdapter.showLoadMore(false);
+			
+			if (mSelectAfterLoad && results.length > 0) {
+				setActivatedPosition(0);
+				mCallbacks.onDocumentItemActivated(results[0]);
+			}
 		}
 
 		@Override

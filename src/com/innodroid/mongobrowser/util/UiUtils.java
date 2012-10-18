@@ -12,28 +12,30 @@ import com.innodroid.mongobrowser.R;
 public class UiUtils {
 	public interface AlertDialogCallbacks {
 		boolean onOK();
+		boolean onNeutralButton();
+	}
+	
+	public interface ConfirmCallbacks {
+		boolean onConfirm();
 	}
 
-	private static AlertDialogCallbacks mEmptyCallbacks = new AlertDialogCallbacks() {
+	public static AlertDialogCallbacks EmptyAlertCallbacks = new AlertDialogCallbacks() {
 		@Override
 		public boolean onOK() {
 			return true;
 		}		
+
+		@Override
+		public boolean onNeutralButton() {
+			return true;
+		}		
 	};
 	
-	public static Dialog buildAlertDialog(View view, int icon, int title) {
-		return buildAlertDialog(view, icon, title, false, mEmptyCallbacks);
-	}
-
-	public static Dialog buildAlertDialog(View view, int icon, int title, final AlertDialogCallbacks callbacks) {
-		return buildAlertDialog(view, icon, title, true, callbacks);
-	}
-
-	public static Dialog buildAlertDialog(View view, int icon, int title, boolean hasCancel, final AlertDialogCallbacks callbacks) {
-		return buildAlertDialog(view, icon, view.getResources().getString(title), hasCancel, callbacks);
+	public static Dialog buildAlertDialog(View view, int icon, int title, boolean hasCancel, int middleButtonText, final AlertDialogCallbacks callbacks) {
+		return buildAlertDialog(view, icon, view.getResources().getString(title), hasCancel, middleButtonText, callbacks);
 	}
 	
-	public static Dialog buildAlertDialog(View view, int icon, String title, boolean hasCancel, final AlertDialogCallbacks callbacks) {
+	public static Dialog buildAlertDialog(View view, int icon, String title, boolean hasCancel, int middleButtonText, final AlertDialogCallbacks callbacks) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext())
 	        .setIcon(icon)
 	        .setView(view)
@@ -54,6 +56,15 @@ public class UiUtils {
 		        );   	
         }
 
+        if (middleButtonText != 0) {
+	        builder.setNeutralButton(middleButtonText,
+		            new DialogInterface.OnClickListener() {
+		                public void onClick(DialogInterface dialog, int whichButton) {
+		                }
+		            }
+		        );   	
+        }
+
         final AlertDialog dialog = builder.create();
 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -67,13 +78,22 @@ public class UiUtils {
                     		dialog.dismiss();
                     }
                 });
+
+                b = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    	if (callbacks.onNeutralButton())
+                    		dialog.dismiss();
+                    }
+                });
             }
         });     
         
         return dialog;
 	}
-
-	public static void confirm(Context context, int message, final AlertDialogCallbacks callbacks) {
+	
+	public static void confirm(Context context, int message, final ConfirmCallbacks callbacks) {
         new AlertDialog.Builder(context)
 	        .setIcon(android.R.drawable.ic_dialog_alert)
 	        .setMessage(message)
@@ -82,7 +102,7 @@ public class UiUtils {
 	        .setPositiveButton(android.R.string.ok,
 	            new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int whichButton) {
-	                	callbacks.onOK();
+	                	callbacks.onConfirm();
 	                }
 	            }
 	        )

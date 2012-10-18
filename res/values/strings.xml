@@ -27,5 +27,6 @@
     <string name="edit_document">Edit Document</string>
     <string name="add_document">New Document</string>
     <string name="error_has_occurred">An Error has Occurred</string>
+    <string name="clear">Clear</string>
 </resources>
 

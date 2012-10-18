@@ -15,7 +15,7 @@ import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.util.JsonUtils;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
-import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
+import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 public class DocumentDetailFragment extends Fragment {
 
@@ -87,10 +87,18 @@ public class DocumentDetailFragment extends Fragment {
     	}
     }
     
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+    	
+    	menu.findItem(R.id.menu_document_detail_edit).setEnabled(mRawText != null);
+    	menu.findItem(R.id.menu_document_detail_delete).setEnabled(mRawText != null);
+    }
+
     private void deleteDocument() {
-		UiUtils.confirm(getActivity(), R.string.confirm_delete_document, new AlertDialogCallbacks() {					
+		UiUtils.confirm(getActivity(), R.string.confirm_delete_document, new ConfirmCallbacks() {					
 			@Override
-			public boolean onOK() {
+			public boolean onConfirm() {
 				new DeleteDocumentTask().execute();
 				return true;
 			}
@@ -99,8 +107,16 @@ public class DocumentDetailFragment extends Fragment {
     
     public void updateContent(String json) {
     	mRawText = json;
-    	mFormattedText = JsonUtils.prettyPrint(json);    	
-    	mContentText.setText(mFormattedText);
+    	
+    	if (mRawText == null) {
+    		mContentText.setText("");
+    		mFormattedText = null;
+    	} else {
+    		mFormattedText = JsonUtils.prettyPrint(json);    	
+    		mContentText.setText(mFormattedText);
+    	}
+    	
+    	getActivity().invalidateOptionsMenu();
     }
     
     private class DeleteDocumentTask extends SafeAsyncTask<Void, Void, Void> {

@@ -317,15 +317,13 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 
 	@Override
 	public void onDocumentItemActivated(String content) {
+		// If nothing was selected (i.e., refresh) and we aren't showing the details pane, then dont shift to it
+		if (content == null && getSupportFragmentManager().getBackStackEntryCount() < 2)
+			return;
+		
 		loadDocumentDetailsPane(content);
 	}
 
-	@Override
-	public void onDocumentListRefresh() {
-		if (getSupportFragmentManager().getBackStackEntryCount() > 1)
-			hideDocumentDetailPane();		
-	}
-	
 	@Override
 	public void onConnected() {
 		loadCollectionListPane();

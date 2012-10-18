@@ -30,7 +30,7 @@ import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
-import com.innodroid.mongobrowser.util.UiUtils.AlertDialogCallbacks;
+import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, ConnectionEditDialogFragment.Callbacks {
 
@@ -152,9 +152,9 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     }
 
     private void deleteConnection() {
-    	UiUtils.confirm(getActivity(), R.string.confirm_delete_connection, new AlertDialogCallbacks() {
+    	UiUtils.confirm(getActivity(), R.string.confirm_delete_connection, new ConfirmCallbacks() {
 			@Override
-			public boolean onOK() {
+			public boolean onConfirm() {
             	new DeleteConnectionTask().execute();
 				return true;
 			}

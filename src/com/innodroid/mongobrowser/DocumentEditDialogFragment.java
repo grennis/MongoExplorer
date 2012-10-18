@@ -42,17 +42,23 @@ public class DocumentEditDialogFragment extends DialogFragment {
     	mContentEdit = (EditText)view.findViewById(R.id.document_edit_content);
     	mContentEdit.setText(mContent);
     	
-    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, mCollectionName, true, new UiUtils.AlertDialogCallbacks() {			
+    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, mCollectionName, true, 0, new UiUtils.AlertDialogCallbacks() {			
 			@Override
 			public boolean onOK() {
 				save();
 				return true;
 			}
+
+			@Override
+			public boolean onNeutralButton() {
+				return false;
+			}
 		});    	
     }
     
     public void save() {
-		new SaveDocumentTask().execute(mContentEdit.getText().toString());
+    	String doc = mContentEdit.getText().toString();
+    	new SaveDocumentTask().execute(doc);
     }
     
     public class SaveDocumentTask extends SafeAsyncTask<String, Void, String> {
