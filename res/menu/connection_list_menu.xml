@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_connection_list_add"
-          android:icon="@android:drawable/ic_menu_add"
+          android:icon="@drawable/ic_menu_add"
           android:title="Add Connection"
           android:orderInCategory="10"
           android:showAsAction="withText|ifRoom"/>
 	<item android:id="@+id/menu_connection_list_configure"
-          android:icon="@android:drawable/ic_menu_preferences"
+          android:icon="@drawable/ic_menu_preferences"
           android:title="Settings"
           android:orderInCategory="999"
           android:showAsAction="withText|ifRoom"/>

@@ -35,6 +35,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     	public void onAddDocument();
         public void onDocumentItemClicked(String content);
         public void onDocumentItemActivated(String content);
+        public void onDocumentListRefresh();
         public void onCollectionEdited(String name);
         public void onCollectionDropped(String name);
     }
@@ -105,6 +106,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     			return true;
     		case R.id.menu_document_list_delete:
     			dropCollection();
+    			return true;
+    		case R.id.menu_document_list_refresh:
+    			reloadList();
     			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);
@@ -212,6 +216,14 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	
 	public String getItem(int position) {
 		return mAdapter.getItem(position);
+	}
+
+	private void reloadList() {
+		mActivatedPosition = ListView.INVALID_POSITION;
+		mAdapter.removeAll();
+		mStart = 0;
+		mCallbacks.onDocumentListRefresh();
+		new LoadNextDocumentsTask().execute();		
 	}
 
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {

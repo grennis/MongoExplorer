@@ -115,6 +115,11 @@ public class MongoDocumentAdapter extends BaseAdapter {
 		return mShowLoadMore;
 	}
 	
+	public void removeAll() {
+		mItems.clear();
+		notifyDataSetChanged();
+	}
+
 	private class ViewHolder {
 		public TextView NameView;
 	}

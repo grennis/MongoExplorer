@@ -321,6 +321,12 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 	}
 
 	@Override
+	public void onDocumentListRefresh() {
+		if (getSupportFragmentManager().getBackStackEntryCount() > 1)
+			hideDocumentDetailPane();		
+	}
+	
+	@Override
 	public void onConnected() {
 		loadCollectionListPane();
 	}

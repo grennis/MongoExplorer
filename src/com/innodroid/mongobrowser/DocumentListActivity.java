@@ -79,6 +79,10 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	}
 	
 	@Override
+    public void onDocumentListRefresh() {
+	}
+	
+	@Override
     public void onDocumentItemClicked(String content) {
 		Intent intent = new Intent(this, DocumentDetailActivity.class);
 		intent.putExtra(Constants.ARG_DOCUMENT_CONTENT, content);

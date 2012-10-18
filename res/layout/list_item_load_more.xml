@@ -7,7 +7,7 @@
 
    	<ImageView android:id="@+id/list_item_load_more_icon"
    	    android:contentDescription="@string/title_document_list"
-   	    android:src="@drawable/load_more"
+   	    android:src="@drawable/ic_menu_more"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
 	    android:layout_alignParentLeft="true"
