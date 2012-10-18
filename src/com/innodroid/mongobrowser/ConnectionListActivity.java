@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
@@ -15,12 +14,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.widget.FrameLayout;
 
+import com.innodroid.billing.BillingActivity;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.LeftMarginAnimation;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.WidthAnimation;
 
-public class ConnectionListActivity extends FragmentActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
+public class ConnectionListActivity extends BillingActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
 	private static final String STATE_COLLECTION_NAME = "collname";
 	
 	private boolean mTwoPane;
@@ -428,5 +428,15 @@ public class ConnectionListActivity extends FragmentActivity implements Connecti
 			return "Failed to Check Connections";
 		}
     }
+
+	@Override
+	protected String getProductId() {
+		return "ABC123";
+	}
+
+	@Override
+	protected String getPurchaseCompleteMessage() {
+		return "Thank you for your purchase! You have unlocked the full application.";
+	}
 }
 

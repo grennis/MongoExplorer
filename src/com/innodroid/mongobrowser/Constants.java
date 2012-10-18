@@ -1,6 +1,8 @@
 package com.innodroid.mongobrowser;
 
 public class Constants {
+	public static final String LOG_TAG = "mongoexp";
+	
 	public static final String PrefShowSystemCollections = "show_system_collections";
 	public static final String PrefDocumentPageSize = "document_page_size";
 	
