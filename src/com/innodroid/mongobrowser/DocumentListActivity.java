@@ -37,6 +37,8 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	        fragment.setArguments(args);
 	        getSupportFragmentManager().beginTransaction().add(R.id.document_list, fragment).commit();
         }
+        
+        setProgressBarIndeterminateVisibility(false);        
     }
 
     @Override
@@ -66,7 +68,9 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 			
 			if (content == null)
 				fragment.onDocumentDeleted();
-			else
+			else if (request == REQUEST_EDIT_DOCUMENT)
+				fragment.onDocumentCreated(content);
+			else 
 				fragment.onDocumentUpdated(content);
 				
 		} else {

@@ -127,7 +127,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 		mAdapter.swapCursor(cursor);
 		
 		if (mSelectAfterLoad > 0)
-			selectItem(mSelectAfterLoad);
+			selectItem(cursor, mSelectAfterLoad);
 		else
 			setActivatedPosition(mActivatedPosition);
 		
@@ -138,11 +138,12 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 		mAdapter.swapCursor(null);
 	}
 
-	private void selectItem(long id) {
+	private void selectItem(Cursor cursor, long id) {
 		int pos = 0;
-		Cursor cursor = mAdapter.getCursor();
 		int original = cursor.getPosition();
-		cursor.moveToFirst();
+		if (!cursor.moveToFirst())
+			return;
+
 		do {
 			if (cursor.getLong(MongoBrowserProvider.INDEX_CONNECTION_ID) == id)
 				break;
@@ -157,5 +158,9 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
 	public void reloadAndSelect(long id) {
 		mSelectAfterLoad = id;
 		getLoaderManager().initLoader(0, null, this);		
+	}
+
+	public int getConnectionCount() {
+		return mAdapter.getCount();
 	}
 }

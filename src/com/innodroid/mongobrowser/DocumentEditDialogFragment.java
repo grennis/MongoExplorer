@@ -56,6 +56,14 @@ public class DocumentEditDialogFragment extends DialogFragment {
 		});    	
     }
     
+    @Override
+    public void onDestroyView() {
+    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
+    	if (getDialog() != null && getRetainInstance())
+    		getDialog().setDismissMessage(null);
+    	super.onDestroyView();
+    }
+    
     public void save() {
     	String doc = mContentEdit.getText().toString();
     	new SaveDocumentTask().execute(doc);

@@ -131,7 +131,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 			return;
 		
 		mTitle.setText(cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_NAME));
-		mServer.setText(res.getString(R.string.server) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_NAME));
+		mServer.setText(res.getString(R.string.server) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_SERVER));
 		mPort.setText(res.getString(R.string.port) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PORT));
 		mDB.setText(res.getString(R.string.database) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_DB));
 		mUser.setText(res.getString(R.string.user) + " : " + cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_USER));

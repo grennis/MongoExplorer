@@ -68,6 +68,14 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 		});    	
     }
 
+    @Override
+    public void onDestroyView() {
+    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
+    	if (getDialog() != null && getRetainInstance())
+    		getDialog().setDismissMessage(null);
+    	super.onDestroyView();
+    }
+    
     private boolean save() {    	
     	String name = mNameView.getText().toString();
     	String server = mServerView.getText().toString();

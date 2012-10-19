@@ -18,6 +18,8 @@ import com.innodroid.billing.BillingActivity;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.LeftMarginAnimation;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
+import com.innodroid.mongobrowser.util.UiUtils;
+import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 import com.innodroid.mongobrowser.util.WidthAnimation;
 
 public class ConnectionListActivity extends BillingActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
@@ -32,6 +34,7 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
     private FrameLayout mFrame2;
     private FrameLayout mFrame3;
     private FrameLayout mFrame4;
+    private static boolean mHavePromptedToAddConnection = false;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -89,7 +92,14 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
         	}
         }
 
-        new AddConnectionIfNoneExistTask().execute();
+    	restoreTransactionsIfNecessary();
+    	
+    	if (mHavePromptedToAddConnection)
+    		setProgressBarIndeterminateVisibility(false);
+    	else {
+    		mHavePromptedToAddConnection = true;
+    		new AddConnectionIfNoneExistTask().execute();
+    	}
     }
 
 	private void moveOffscreenToLeft(View view) {		
@@ -296,7 +306,19 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 	
     @Override
     public void onAddConnection() {
-    	addConnection();
+    	ConnectionListFragment fragment = (ConnectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_1);
+    	if (fragment.getConnectionCount() == 0 || hasPurchased()) {
+    		addConnection();
+    		return;
+    	}
+    	
+    	UiUtils.confirm(this, R.string.purchase_offer, new ConfirmCallbacks() {
+			@Override
+			public boolean onConfirm() {
+				beginPurchase();
+				return true;
+			}
+    	});    	
     }
 
     private void addConnection() {
@@ -407,6 +429,16 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
         	hideDocumentDetailPane();
 	}
 
+	@Override
+	protected String getProductId() {
+		return "mongoexp";
+	}
+
+	@Override
+	protected String getPurchaseCompleteMessage() {
+		return "Thank you for your purchase! You have unlocked the full application.";
+	}
+	
     private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {
 		public AddConnectionIfNoneExistTask() {
 			super(ConnectionListActivity.this);
@@ -428,15 +460,5 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 			return "Failed to Check Connections";
 		}
     }
-
-	@Override
-	protected String getProductId() {
-		return "ABC123";
-	}
-
-	@Override
-	protected String getPurchaseCompleteMessage() {
-		return "Thank you for your purchase! You have unlocked the full application.";
-	}
 }
 

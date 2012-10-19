@@ -50,6 +50,14 @@ public class CollectionEditDialogFragment extends DialogFragment {
 		});    	
     }
 
+    @Override
+    public void onDestroyView() {
+    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
+    	if (getDialog() != null && getRetainInstance())
+    		getDialog().setDismissMessage(null);
+    	super.onDestroyView();
+    }
+    
     private boolean save() {
     	String name = mNameView.getText().toString();
 

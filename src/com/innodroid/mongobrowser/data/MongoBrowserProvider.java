@@ -18,7 +18,7 @@ public class MongoBrowserProvider extends ContentProvider {
 	private static final String LOG_TAG = "MongoBrowserProvider";
 	private static final String DATABASE_NAME = "mongobrowser.db";
 	public static final String TABLE_NAME_CONNECTIONS = "connections";
-	private static final int DATABASE_VERSION = 9;
+	private static final int DATABASE_VERSION = 14;
 
 	public static final int INDEX_CONNECTION_ID = 0;
 	public static final int INDEX_CONNECTION_NAME = 1;
@@ -188,12 +188,18 @@ public class MongoBrowserProvider extends ContentProvider {
 				 + " );"
 			);
 			
+			/*
 			insertData(db, "Lumenbox DEV", "dbh61.mongolab.com", 27617, "lumenbox_dev", "lumenuser", "hellolumen");
 			insertData(db, "Lumenbox PROD", "ds031277.mongolab.com", 31277, "lumenbox", "user", "user");
 			insertData(db, "imMeta DEV", "ds031637.mongolab.com", 31637, "immeta_dev", "imm3ta", "passw0rd");
 			insertData(db, "imMeta PROD", "ds029817.mongolab.com", 29817, "immeta_prod", "pr0dm3ta", "passw0rd");
 			insertData(db, "atWork DEV", "ds033487.mongolab.com", 33487, "atwork_dev", "atwork", "!hello1!");
-			insertData(db, "guag", "alex.mongohq.com", 10053, "getupandgreen", "admin", "hello123");			
+			insertData(db, "guag", "alex.mongohq.com", 10053, "getupandgreen", "admin", "hello123");		
+			*/	
+
+			insertData(db, "Demo App QA", "demo.mongolab.com", 57323, "demo_qa", "app_login", "passw0rd");
+			insertData(db, "Demo App PROD", "demo.mongolab.com", 33487, "atwork_dev", "atwork", "!hello1!");
+			insertData(db, "Support Database", "alex.mongohq.com", 12345, "support", "app_login", "hello123");		
 		}
 
 		private void insertData(SQLiteDatabase dbx, String name, String server, int port, String db, String user, String pass) {
