@@ -34,6 +34,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     private int mTake = 5;
 
     public interface Callbacks {
+    	public void onDocumentListRefreshRequested();
     	public void onAddDocument();
         public void onDocumentItemClicked(String content);
         public void onDocumentItemActivated(String content);
@@ -114,7 +115,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     			dropCollection();
     			return true;
     		case R.id.menu_document_list_refresh:
-    			reloadList();
+    			mCallbacks.onDocumentListRefreshRequested();
     			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);
@@ -230,8 +231,8 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		return mAdapter.getItem(position);
 	}
 
-	private void reloadList() {
-		boolean selectAfterLoad = mActivatedPosition != ListView.INVALID_POSITION;
+	public void reloadList(boolean trySelectAfterLoad) {
+		boolean selectAfterLoad = trySelectAfterLoad && (mActivatedPosition != ListView.INVALID_POSITION);
 		setActivatedPosition(ListView.INVALID_POSITION);
 		mCallbacks.onDocumentItemActivated(null);
 		mAdapter.removeAll();
@@ -242,13 +243,13 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	@Override
 	public void onQueryUpdated(String query) {
 		mQueryText = query;
-		reloadList();
+		reloadList(true);
 	}
 
 	@Override
 	public void onQueryCleared() {
 		mQueryText = null;
-		reloadList();
+		reloadList(true);
 	}
 
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {

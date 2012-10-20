@@ -62,7 +62,7 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
 		if (request == REQUEST_DOCUMENT_LIST) {
 			// The collection may have been renamed
 	        CollectionListFragment fragment = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.collection_list);
-	        fragment.refreshList();			
+	        fragment.reloadList();			
 		}
 	}
 }

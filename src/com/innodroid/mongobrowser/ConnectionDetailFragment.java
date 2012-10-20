@@ -168,7 +168,9 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
 	@Override
 	public void onConnectionUpdated(long id) {
-        getLoaderManager().initLoader(0, getArguments(), this);
+		// Gets detached on orientation change
+		if (super.isAdded())
+			getLoaderManager().initLoader(0, getArguments(), this);
 	}
 
 	private class ConnectTask extends SafeAsyncTask<Void, Void, Boolean>{

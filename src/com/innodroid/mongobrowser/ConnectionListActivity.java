@@ -370,7 +370,9 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 
 	private void reloadConnectionListAndSelect(long id) {
 		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
-        fragment.reloadAndSelect(id);
+		
+		if (fragment != null)
+			fragment.reloadAndSelect(id);
         
         if (mTwoPane)
         	loadConnectionDetailsPane(id);
@@ -412,7 +414,11 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 	public void onDocumentCreated(String content) {
         DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
         fragment.onDocumentCreated(content);
-	}
+
+        CollectionListFragment collectionList = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
+        if (collectionList != null)
+        	collectionList.reloadList();
+}
 
 	@Override
 	public void onDocumentUpdated(String content) {
@@ -427,8 +433,23 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
         
         if (fragment.getItemCount() == 0)
         	hideDocumentDetailPane();
+
+        CollectionListFragment collectionList = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
+        if (collectionList != null)
+        	collectionList.reloadList();
 	}
 
+	@Override 
+	public void onDocumentListRefreshRequested() {
+        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
+
+        fragment.reloadList(getSupportFragmentManager().getBackStackEntryCount() > 1);		
+
+        CollectionListFragment collectionList = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
+        if (collectionList != null)
+        	collectionList.reloadList();
+	}
+	
 	@Override
 	protected String getProductId() {
 		return "mongoexp";

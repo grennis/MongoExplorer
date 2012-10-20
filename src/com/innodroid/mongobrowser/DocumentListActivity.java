@@ -99,4 +99,10 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	public void onCollectionDropped(String name) {
 		finish();
 	}
+
+	@Override
+	public void onDocumentListRefreshRequested() {		
+		DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
+		fragment.reloadList(false);
+	}
 }

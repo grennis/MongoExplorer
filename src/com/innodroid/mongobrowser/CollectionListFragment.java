@@ -43,10 +43,10 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		if (savedInstanceState != null)
 			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
 
-		refreshList();
+		reloadList();
     }
 
-	public void refreshList() {
+	public void reloadList() {
     	new LoadNamesTask().execute();
 	}
 
@@ -206,9 +206,9 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		}
 
     	@Override
-		protected Void safeDoInBackground(String... arg0) {
-			for (int i = 0; i<arg0.length; i++) {
-				publishProgress(new Long[] { (long)i, MongoHelper.getCollectionCount(arg0[i])});
+		protected Void safeDoInBackground(String... names) {    		
+			for (int i = 0; i<names.length; i++) {
+				publishProgress(new Long[] { (long)i, MongoHelper.getCollectionCount(names[i])});
 			}
 			
 			return null;
