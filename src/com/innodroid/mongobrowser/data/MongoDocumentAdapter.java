@@ -117,6 +117,7 @@ public class MongoDocumentAdapter extends BaseAdapter {
 	
 	public void removeAll() {
 		mItems.clear();
+		mShowLoadMore = true;
 		notifyDataSetChanged();
 	}
 
