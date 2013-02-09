@@ -8,7 +8,7 @@ import android.widget.EditText;
 
 import com.innodroid.mongobrowser.util.UiUtils;
 
-public class QueryEditDialogFragment extends DialogFragment {
+public class QueryEditTextDialogFragment extends DialogFragment {
 
 	private EditText mContentEdit;
 	private String mContent;
@@ -16,27 +16,26 @@ public class QueryEditDialogFragment extends DialogFragment {
 
     public interface Callbacks {
     	void onQueryUpdated(String query);
-    	void onQueryCleared();
     }
 
-    static QueryEditDialogFragment create(String content, Callbacks callbacks) {
-    	QueryEditDialogFragment fragment = new QueryEditDialogFragment();
+    static QueryEditTextDialogFragment create(String content, Callbacks callbacks) {
+    	QueryEditTextDialogFragment fragment = new QueryEditTextDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_DOCUMENT_CONTENT, content);
     	fragment.setArguments(args);
-    	QueryEditDialogFragment.mCallbacks = callbacks;
+    	QueryEditTextDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_query_edit, null);
+    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_query_text_edit, null);
 
     	mContent = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
     	mContentEdit = (EditText)view.findViewById(R.id.query_edit_content);
     	mContentEdit.setText(mContent);
     	
-    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, "Edit Query", true, R.string.clear, new UiUtils.AlertDialogCallbacks() {			
+    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, "Edit Query", true, 0, new UiUtils.AlertDialogCallbacks() {			
 			@Override
 			public boolean onOK() {
 				mCallbacks.onQueryUpdated(mContentEdit.getText().toString());
@@ -45,7 +44,6 @@ public class QueryEditDialogFragment extends DialogFragment {
 
 			@Override
 			public boolean onNeutralButton() {
-				mCallbacks.onQueryCleared();
 				return true;
 			}
 		});    

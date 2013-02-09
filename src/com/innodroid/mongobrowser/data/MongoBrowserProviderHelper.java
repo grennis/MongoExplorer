@@ -40,6 +40,24 @@ public class MongoBrowserProviderHelper {
 		mResolver.update(MongoBrowserProvider.CONNECTION_URI, cv, BaseColumns._ID + " = ?", new String[] { Long.toString(id) });
 	}
 
+	public void saveQuery(String name, String text) {
+		Log.i(LOG_TAG, "Saving query");
+
+		Cursor test = getQueryByName(name);
+		boolean alreadyExists = test.moveToFirst();
+		test.close();
+		
+		ContentValues cv = new ContentValues();
+		cv.put(MongoBrowserProvider.NAME_QUERY_TEXT, text);
+
+		if (alreadyExists) {
+			mResolver.update(MongoBrowserProvider.QUERY_URI, cv, MongoBrowserProvider.NAME_QUERY_NAME + " = ?", new String[] { name });
+		} else {
+			cv.put(MongoBrowserProvider.NAME_QUERY_NAME, name);
+			mResolver.insert(MongoBrowserProvider.QUERY_URI, cv);			
+		}
+	}
+
 	public void deleteConnection(long id) {
 		Log.i(LOG_TAG, "Deleting Connection");
 
@@ -49,6 +67,10 @@ public class MongoBrowserProviderHelper {
 	public int deleteAllConnections() {
 		Log.i(LOG_TAG, "Deleting all Connections");
 		return mResolver.delete(MongoBrowserProvider.CONNECTION_URI, null, null);
+	}
+	
+	public Cursor getQueryByName(String name) {
+		return mResolver.query(MongoBrowserProvider.QUERY_URI, null, MongoBrowserProvider.NAME_QUERY_NAME + " = ?", new String[] { name }, null);
 	}
 
 	public static ContentValues getContentValuesForConnection(String name, String server, int port, String db, String user, String pass) {

@@ -4,6 +4,7 @@ package com.innodroid.mongobrowser;
 import java.net.UnknownHostException;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,18 +16,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
+import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
-public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, QueryEditDialogFragment.Callbacks {
+public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, QueryEditTextDialogFragment.Callbacks, QueryEditNameDialogFragment.Callbacks {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String STATE_QUERY_TEXT = "query_text";
 
     private String mCollectionName;
+    private String mQueryName;
     private String mQueryText;
     private MongoDocumentAdapter mAdapter;
     private Callbacks mCallbacks = null;
@@ -122,6 +126,12 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     		case R.id.menu_document_list_edit_query:
     			editQuery();
     			return true;
+    		case R.id.menu_document_list_save_query:
+    			saveQuery();
+    			return true;
+    		case R.id.menu_document_list_clear_query:
+    			clearQuery();
+    			return true;
     		case R.id.menu_document_list_edit:
     			editCollection();
     			return true;
@@ -137,12 +147,37 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }
 
 	private void newQuery() {
+		mQueryName = null;
+		mQueryText = null;
 		editQuery();
 	}
 	
     private void editQuery() {
 		String query = (mQueryText == null) ? Constants.NEW_DOCUMENT_CONTENT_PADDED : mQueryText;
-		QueryEditDialogFragment.create(query, this).show(getFragmentManager(), null);
+		QueryEditTextDialogFragment.create(query, this).show(getFragmentManager(), null);
+	}
+
+    private void saveQuery() {
+    	if (mQueryName == null) {
+    		new GetUniqueQueryName().execute();
+    		return;
+    	}
+    	
+		QueryEditNameDialogFragment.create(mQueryName, this).show(getFragmentManager(), null);
+	}
+
+	public void clearQuery() {
+		mQueryName = null;
+		mQueryText = null;
+		reloadList(true);
+    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+    		getActivity().invalidateOptionsMenu();
+	}
+	
+	@Override 
+	public void onQueryNamed(String name) {
+		mQueryName = name;
+		new SaveQuery().execute();
 	}
 
 	public void onDocumentCreated(String content) {
@@ -266,14 +301,6 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     		getActivity().invalidateOptionsMenu();
 	}
 
-	@Override
-	public void onQueryCleared() {
-		mQueryText = null;
-		reloadList(true);
-    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-    		getActivity().invalidateOptionsMenu();
-	}
-
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {
     	public RenameCollectionTask() {
 			super(getActivity());
@@ -353,6 +380,66 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected String getErrorTitle() {
 			return "Failed to Load";
+		}		
+    }
+    
+    private class GetUniqueQueryName extends SafeAsyncTask<Void, Void, String> {
+    	public GetUniqueQueryName() {
+			super(getActivity());
+    	}
+
+		@Override
+		protected String safeDoInBackground(Void... args) {
+			String name = "Query ";
+			MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
+			
+			int i = 1;
+			while (true)
+			{
+				String tryName = name + i;
+				Cursor cursor = helper.getQueryByName(tryName);
+				boolean taken = cursor.moveToFirst();
+				cursor.close();
+				
+				if (!taken)
+					return tryName;
+			
+				i++;
+			}
+		}
+
+		@Override
+		protected void safeOnPostExecute(String results) {
+			mQueryName = results;
+			saveQuery();
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Get Query Name";
+		}		
+    }
+    
+    private class SaveQuery extends SafeAsyncTask<Void, Void, Void> {
+    	public SaveQuery() {
+			super(getActivity());
+    	}
+
+		@Override
+		protected Void safeDoInBackground(Void... args) {
+			MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
+			helper.saveQuery(mQueryName, mQueryText);
+			return null;
+		}
+
+		@Override
+		protected void safeOnPostExecute(Void args) {
+			Toast.makeText(getActivity(), "Query Saved", Toast.LENGTH_SHORT).show();
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Save";
 		}		
     }
 }

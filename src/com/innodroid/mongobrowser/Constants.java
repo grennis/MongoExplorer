@@ -9,6 +9,7 @@ public class Constants {
 	public static final String ARG_CONNECTION_ID = "connid";
 	public static final String ARG_COLLECTION_NAME = "collname";
 	public static final String ARG_ACTIVATE_ON_CLICK = "actonclick";
+	public static final String ARG_DOCUMENT_TITLE = "doctitle";
 	public static final String ARG_DOCUMENT_CONTENT = "doccontent";
 	public static final String ARG_IS_NEW = "isnew";
 	
