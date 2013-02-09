@@ -42,10 +42,12 @@ public class MongoBrowserProvider extends ContentProvider {
 	public static final int INDEX_QUERY_ID = 0;
 	public static final int INDEX_QUERY_NAME = 1;
 	public static final int INDEX_QUERY_CONN_ID = 2;
-	public static final int INDEX_QUERY_TEXT = 3;
+	public static final int INDEX_QUERY_COLL_NAME = 3;
+	public static final int INDEX_QUERY_TEXT = 4;
 	
 	public static final String NAME_QUERY_NAME = "qname";
 	public static final String NAME_QUERY_CONN_ID = "connid";
+	public static final String NAME_QUERY_COLL_NAME = "coll";
 	public static final String NAME_QUERY_TEXT = "qtext";
 
 	//setup authority for provider
@@ -267,6 +269,7 @@ public class MongoBrowserProvider extends ContentProvider {
 				"CREATE TABLE "  + TABLE_NAME_QUERIES + "(" + BaseColumns._ID + " INTEGER PRIMARY KEY, " 
 				 + NAME_QUERY_NAME + " TEXT, "
 				 + NAME_QUERY_CONN_ID + " INTEGER, "
+				 + NAME_QUERY_COLL_NAME + " TEXT, "
 				 + NAME_QUERY_TEXT + " TEXT"
 				 + " );"
 			);			

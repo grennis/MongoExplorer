@@ -29,6 +29,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String STATE_QUERY_TEXT = "query_text";
 
+    private long mConnectionId;
     private String mCollectionName;
     private String mQueryName;
     private String mQueryText;
@@ -65,6 +66,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		int take = getResources().getInteger(R.integer.default_document_page_size);
 		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
+    	mConnectionId = getArguments().getLong(Constants.ARG_CONNECTION_ID);
 
 		if (savedInstanceState != null) {
 			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
@@ -397,7 +399,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			while (true)
 			{
 				String tryName = name + i;
-				Cursor cursor = helper.getQueryByName(tryName);
+				Cursor cursor = helper.findQuery(tryName, mConnectionId, mCollectionName);
 				boolean taken = cursor.moveToFirst();
 				cursor.close();
 				
@@ -428,7 +430,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected Void safeDoInBackground(Void... args) {
 			MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
-			helper.saveQuery(mQueryName, mQueryText);
+			helper.saveQuery(mQueryName, mConnectionId, mCollectionName, mQueryText);
 			return null;
 		}
 

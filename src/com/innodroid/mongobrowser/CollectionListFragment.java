@@ -21,12 +21,13 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
+    private long mConnectionId;
     private MongoCollectionAdapter mAdapter;
     private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     public interface Callbacks {
-        public void onCollectionItemSelected(String name);
+        public void onCollectionItemSelected(long connectionId, String name);
     }
 
     public CollectionListFragment() {
@@ -36,6 +37,7 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mConnectionId = getArguments().getLong(Constants.ARG_CONNECTION_ID);
 		mAdapter = new MongoCollectionAdapter(getActivity());
 		setListAdapter(mAdapter);
 		setHasOptionsMenu(true);
@@ -107,7 +109,7 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
         setActivatedPosition(position);
         
         if (mCallbacks != null)
-        	mCallbacks.onCollectionItemSelected(mAdapter.getCollectionName(position));
+        	mCallbacks.onCollectionItemSelected(mConnectionId, mAdapter.getCollectionName(position));
     }
 
     @Override
@@ -146,9 +148,9 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		mAdapter.delete(mActivatedPosition);
 
 		if (mActivatedPosition < mAdapter.getCount())
-			mCallbacks.onCollectionItemSelected(mAdapter.getItem(mActivatedPosition).Name);
+			mCallbacks.onCollectionItemSelected(mConnectionId, mAdapter.getItem(mActivatedPosition).Name);
 		else {
-			mCallbacks.onCollectionItemSelected(null);
+			mCallbacks.onCollectionItemSelected(mConnectionId, null);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
 	}
@@ -168,7 +170,7 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		protected void safeOnPostExecute(String result) {
 			mAdapter.add(0, result);
 			setActivatedPosition(0);
-			mCallbacks.onCollectionItemSelected(result);
+			mCallbacks.onCollectionItemSelected(mConnectionId, result);
 		}
 
 		@Override

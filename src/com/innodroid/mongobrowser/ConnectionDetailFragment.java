@@ -45,7 +45,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 
     public interface Callbacks {
     	public void onConnectionDeleted();
-        public void onConnected();
+        public void onConnected(long id);
     }
 
     public ConnectionDetailFragment() {
@@ -198,7 +198,7 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			mCallbacks.onConnected();
+			mCallbacks.onConnected(mConnectionID);
 		}
 
 		@Override

@@ -42,8 +42,9 @@ public class ConnectionDetailActivity extends FragmentActivity implements Connec
     }
 
 	@Override
-	public void onConnected() {
+	public void onConnected(long connectionId) {
 		Intent activ = new Intent(ConnectionDetailActivity.this, CollectionListActivity.class);
+		activ.putExtra(Constants.ARG_CONNECTION_ID, connectionId);
 		startActivity(activ);
 		finish();
 	}

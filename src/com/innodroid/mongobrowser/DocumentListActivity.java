@@ -12,6 +12,7 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
 	private static final int REQUEST_EDIT_DOCUMENT = 101;
 	private static final int REQUEST_VIEW_DOCUMENT = 102;
 	
+	private long mConnectionId;
 	private String mCollectionName;
 	
     @SuppressLint("NewApi")
@@ -25,6 +26,7 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
         setTitle(name);
         setContentView(R.layout.activity_document_list);
         
+        mConnectionId = getIntent().getExtras().getLong(Constants.ARG_CONNECTION_ID);
         mCollectionName = getIntent().getExtras().getString(Constants.ARG_COLLECTION_NAME);
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -34,6 +36,7 @@ public class DocumentListActivity extends FragmentActivity implements DocumentLi
         	Bundle args = getIntent().getExtras();
 	        DocumentListFragment fragment = new DocumentListFragment();
 	        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, false);
+	        args.putLong(Constants.ARG_CONNECTION_ID, mConnectionId);
 	        fragment.setArguments(args);
 	        getSupportFragmentManager().beginTransaction().add(R.id.document_list, fragment).commit();
         }

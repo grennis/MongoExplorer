@@ -171,17 +171,18 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
         startActivity(detailIntent);
     }
     
-    private void loadCollectionListPane() {
+    private void loadCollectionListPane(long connectionId) {
         Bundle arguments = new Bundle();
         CollectionListFragment fragment = new CollectionListFragment();
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
+        arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_2, fragment)
                 .commit();
     }
 
-    private void loadDocumentListPane(String collection) {
+    private void loadDocumentListPane(long connectionId, String collection) {
         FragmentManager fm = getSupportFragmentManager();
     	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 0;
 
@@ -191,6 +192,7 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
     	Bundle arguments = new Bundle();
         DocumentListFragment fragment = new DocumentListFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
+        arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
         fragment.setArguments(arguments);
 
@@ -327,9 +329,9 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
     }
 
 	@Override
-	public void onCollectionItemSelected(String name) {
+	public void onCollectionItemSelected(long connectionId, String name) {
 		mCollectionName = name;
-		loadDocumentListPane(name);
+		loadDocumentListPane(connectionId, name);
 	}
 
 	@Override
@@ -347,8 +349,8 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 	}
 
 	@Override
-	public void onConnected() {
-		loadCollectionListPane();
+	public void onConnected(long connectionId) {
+		loadCollectionListPane(connectionId);
 	}
 
 	@Override
