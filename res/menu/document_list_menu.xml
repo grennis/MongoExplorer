@@ -10,11 +10,28 @@
           android:title="Add Document"
           android:orderInCategory="50"
           android:showAsAction="withText|ifRoom"/>
-    <item android:id="@+id/menu_document_list_query"
-          android:icon="@drawable/ic_menu_search"
-          android:title="Query"
+    <item android:icon="@drawable/ic_menu_search"
+          android:title="Queries"
           android:orderInCategory="55"
-          android:showAsAction="withText|always"/>
+          android:showAsAction="withText|always">
+		<menu>
+		    <item android:id="@+id/menu_document_list_new_query"
+                  android:icon="@drawable/ic_menu_add"
+                  android:title="New Query" />
+		    <item android:id="@+id/menu_document_list_load_query"
+                  android:icon="@drawable/ic_menu_load"
+                  android:title="Load Query" />
+		    <item android:id="@+id/menu_document_list_edit_query"
+                  android:icon="@drawable/ic_menu_edit"
+                  android:title="Edit Query" />
+		    <item android:id="@+id/menu_document_list_save_query"
+                  android:icon="@drawable/ic_menu_save"
+                  android:title="Save Query" />
+		    <item android:id="@+id/menu_document_list_clear_query"
+                  android:icon="@drawable/ic_menu_close_clear_cancel"
+                  android:title="Clear Query" />
+		</menu>      
+	</item>
     <item android:id="@+id/menu_document_list_edit"
           android:icon="@drawable/ic_menu_edit"
           android:title="Rename Collection"

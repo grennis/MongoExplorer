@@ -4,6 +4,7 @@ package com.innodroid.mongobrowser;
 import java.net.UnknownHostException;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -100,12 +101,25 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }    
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+    	
+    	boolean haveQuery = mQueryText != null;
+		menu.findItem(R.id.menu_document_list_clear_query).setEnabled(haveQuery);
+		menu.findItem(R.id.menu_document_list_save_query).setEnabled(haveQuery);
+		menu.findItem(R.id.menu_document_list_edit_query).setEnabled(haveQuery);
+    }
+    
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {    	
         switch (item.getItemId()) {
     		case R.id.menu_document_list_add:
     			mCallbacks.onAddDocument();
     			return true;
-    		case R.id.menu_document_list_query:
+    		case R.id.menu_document_list_new_query:
+    			newQuery();
+    			return true;
+    		case R.id.menu_document_list_edit_query:
     			editQuery();
     			return true;
     		case R.id.menu_document_list_edit:
@@ -122,7 +136,11 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         }
     }
 
-	private void editQuery() {
+	private void newQuery() {
+		editQuery();
+	}
+	
+    private void editQuery() {
 		String query = (mQueryText == null) ? Constants.NEW_DOCUMENT_CONTENT_PADDED : mQueryText;
 		QueryEditDialogFragment.create(query, this).show(getFragmentManager(), null);
 	}
@@ -244,12 +262,16 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	public void onQueryUpdated(String query) {
 		mQueryText = query;
 		reloadList(true);
+    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+    		getActivity().invalidateOptionsMenu();
 	}
 
 	@Override
 	public void onQueryCleared() {
 		mQueryText = null;
 		reloadList(true);
+    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+    		getActivity().invalidateOptionsMenu();
 	}
 
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {
