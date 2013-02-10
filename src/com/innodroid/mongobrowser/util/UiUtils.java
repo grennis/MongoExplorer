@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListAdapter;
 
 import com.innodroid.mongobrowser.R;
 
@@ -90,6 +92,25 @@ public class UiUtils {
             }
         });     
         
+        return dialog;
+	}
+	
+	public static Dialog buildAlertDialog(Context context, ListAdapter adapter, OnClickListener listener, int icon, String title) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+	        .setIcon(icon)
+	        .setAdapter(adapter, listener)
+	        .setTitle(title)
+	        .setPositiveButton(android.R.string.ok,
+	            new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                }
+	            }
+	        );
+        
+        builder.setCancelable(true);
+
+        final AlertDialog dialog = builder.create();
+
         return dialog;
 	}
 	

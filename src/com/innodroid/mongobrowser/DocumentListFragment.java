@@ -4,6 +4,8 @@ package com.innodroid.mongobrowser;
 import java.net.UnknownHostException;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,18 +21,23 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.innodroid.mongo.MongoHelper;
+import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
+import com.innodroid.mongobrowser.data.MongoQueryAdapter;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, QueryEditTextDialogFragment.Callbacks, QueryEditNameDialogFragment.Callbacks {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private static final String STATE_QUERY_ID = "query_id";
+    private static final String STATE_QUERY_NAME = "query_name";
     private static final String STATE_QUERY_TEXT = "query_text";
 
     private long mConnectionId;
     private String mCollectionName;
+    private long mQueryID;
     private String mQueryName;
     private String mQueryText;
     private MongoDocumentAdapter mAdapter;
@@ -70,6 +77,8 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
 		if (savedInstanceState != null) {
 			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
+			mQueryID = savedInstanceState.getLong(STATE_QUERY_ID);
+			mQueryName = savedInstanceState.getString(STATE_QUERY_NAME);
 			mQueryText = savedInstanceState.getString(STATE_QUERY_TEXT);
 		}
 		
@@ -110,7 +119,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     public void onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
     	
-    	boolean haveQuery = mQueryText != null;
+    	boolean haveQuery = mQueryID != 0;
 		menu.findItem(R.id.menu_document_list_clear_query).setEnabled(haveQuery);
 		menu.findItem(R.id.menu_document_list_save_query).setEnabled(haveQuery);
 		menu.findItem(R.id.menu_document_list_edit_query).setEnabled(haveQuery);
@@ -124,6 +133,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     			return true;
     		case R.id.menu_document_list_new_query:
     			newQuery();
+    			return true;
+    		case R.id.menu_document_list_load_query:
+    			loadQuery();
     			return true;
     		case R.id.menu_document_list_edit_query:
     			editQuery();
@@ -149,9 +161,35 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     }
 
 	private void newQuery() {
+		mQueryID = 0;
 		mQueryName = null;
 		mQueryText = null;
 		editQuery();
+	}
+	
+	private void loadQuery() {
+		Cursor cursor = new MongoBrowserProviderHelper(getActivity().getContentResolver()).getNamedQueries(mConnectionId, mCollectionName);
+		final MongoQueryAdapter adapter = new MongoQueryAdapter(getActivity(), cursor, false);
+		
+		OnClickListener listener = new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Cursor cursor = adapter.getCursor();
+				cursor.moveToPosition(which);
+				loadQuery(cursor);
+			}		
+		};
+		
+		UiUtils.buildAlertDialog(getActivity(), adapter, listener, R.drawable.ic_menu_load, "Load Query").show();		
+	}
+	
+	private void loadQuery(Cursor cursor) {
+		mQueryID = cursor.getLong(MongoBrowserProvider.INDEX_QUERY_ID);
+		mQueryName = cursor.getString(MongoBrowserProvider.INDEX_QUERY_NAME);
+		mQueryText = cursor.getString(MongoBrowserProvider.INDEX_QUERY_TEXT);
+		reloadList(true);
+    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+    		getActivity().invalidateOptionsMenu();
 	}
 	
     private void editQuery() {
@@ -160,7 +198,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	}
 
     private void saveQuery() {
-    	if (mQueryName == null) {
+    	if (mQueryID == 0) {
     		new GetUniqueQueryName().execute();
     		return;
     	}
@@ -169,6 +207,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	}
 
 	public void clearQuery() {
+		mQueryID = 0;
 		mQueryName = null;
 		mQueryText = null;
 		reloadList(true);
@@ -254,6 +293,8 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         super.onSaveInstanceState(outState);
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
+            outState.putLong(STATE_QUERY_ID, mQueryID);
+            outState.putString(STATE_QUERY_NAME, mQueryName);
             outState.putString(STATE_QUERY_TEXT, mQueryText);
         }
     }
@@ -430,7 +471,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected Void safeDoInBackground(Void... args) {
 			MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
-			helper.saveQuery(mQueryName, mConnectionId, mCollectionName, mQueryText);
+			helper.saveQuery(mQueryID, mQueryName, mConnectionId, mCollectionName, mQueryText);
 			return null;
 		}
 

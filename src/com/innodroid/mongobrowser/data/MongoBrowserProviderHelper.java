@@ -40,26 +40,19 @@ public class MongoBrowserProviderHelper {
 		mResolver.update(MongoBrowserProvider.CONNECTION_URI, cv, BaseColumns._ID + " = ?", new String[] { Long.toString(id) });
 	}
 
-	public void saveQuery(String name, long connectionId, String collectionName, String text) {
+	public void saveQuery(long id, String name, long connectionId, String collectionName, String text) {
 		Log.i(LOG_TAG, "Saving query");
 
-		long id = 0;
-		Cursor test = findQuery(name, connectionId, collectionName);
-		if (test.moveToFirst()) {
-			id = test.getLong(MongoBrowserProvider.INDEX_QUERY_ID);
-		}
-		test.close();
-		
 		ContentValues cv = new ContentValues();
 		cv.put(MongoBrowserProvider.NAME_QUERY_TEXT, text);
+		cv.put(MongoBrowserProvider.NAME_QUERY_NAME, name);
+		cv.put(MongoBrowserProvider.NAME_QUERY_CONN_ID, connectionId);
+		cv.put(MongoBrowserProvider.NAME_QUERY_COLL_NAME, collectionName);
 
 		if (id > 0) {
 			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.QUERY_URI, id);
 			mResolver.update(uri, cv, null, null);
 		} else {
-			cv.put(MongoBrowserProvider.NAME_QUERY_NAME, name);
-			cv.put(MongoBrowserProvider.NAME_QUERY_CONN_ID, connectionId);
-			cv.put(MongoBrowserProvider.NAME_QUERY_COLL_NAME, collectionName);
 			mResolver.insert(MongoBrowserProvider.QUERY_URI, cv);			
 		}
 	}
@@ -77,6 +70,10 @@ public class MongoBrowserProviderHelper {
 	
 	public Cursor findQuery(String name, long connectionId, String collectionName) {
 		return mResolver.query(MongoBrowserProvider.QUERY_URI, null, MongoBrowserProvider.NAME_QUERY_NAME + " = ? and " + MongoBrowserProvider.NAME_QUERY_CONN_ID + " = ? and " + MongoBrowserProvider.NAME_QUERY_COLL_NAME + " = ?", new String[] { name, Long.toString(connectionId), collectionName }, null);
+	}
+	
+	public Cursor getNamedQueries(long connectionId, String collectionName) {
+		return mResolver.query(MongoBrowserProvider.QUERY_URI, null, MongoBrowserProvider.NAME_QUERY_CONN_ID + " = ? and " + MongoBrowserProvider.NAME_QUERY_COLL_NAME + " = ?", new String[] { Long.toString(connectionId), collectionName }, null);
 	}
 
 	public static ContentValues getContentValuesForConnection(String name, String server, int port, String db, String user, String pass) {
