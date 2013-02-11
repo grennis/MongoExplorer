@@ -40,7 +40,7 @@ public class MongoBrowserProviderHelper {
 		mResolver.update(MongoBrowserProvider.CONNECTION_URI, cv, BaseColumns._ID + " = ?", new String[] { Long.toString(id) });
 	}
 
-	public void saveQuery(long id, String name, long connectionId, String collectionName, String text) {
+	public long saveQuery(long id, String name, long connectionId, String collectionName, String text) {
 		Log.i(LOG_TAG, "Saving query");
 
 		ContentValues cv = new ContentValues();
@@ -52,8 +52,10 @@ public class MongoBrowserProviderHelper {
 		if (id > 0) {
 			Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.QUERY_URI, id);
 			mResolver.update(uri, cv, null, null);
+			return id;
 		} else {
-			mResolver.insert(MongoBrowserProvider.QUERY_URI, cv);			
+			Uri result = mResolver.insert(MongoBrowserProvider.QUERY_URI, cv);			
+			return Long.parseLong(result.getLastPathSegment());
 		}
 	}
 

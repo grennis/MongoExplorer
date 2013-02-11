@@ -236,8 +236,8 @@ public class MongoBrowserProvider extends ContentProvider {
 			insertConnection(db, "imMeta DEV", "ds031637.mongolab.com", 31637, "immeta_dev", "imm3ta", "passw0rd");
 			insertConnection(db, "imMeta PROD", "ds029817.mongolab.com", 29817, "immeta_prod", "pr0dm3ta", "passw0rd");
 			insertConnection(db, "atWork DEV", "ds033487.mongolab.com", 33487, "atwork_dev", "atwork", "!hello1!");
-			insertConnection(db, "guag", "alex.mongohq.com", 10053, "getupandgreen", "admin", "hello123");		
-			 */
+			insertConnection(db, "guag", "alex.mongohq.com", 10053, "getupandgreen", "admin", "hello123");	
+			*/	
 			
 			/* This used for screenshots */
 			/*
@@ -274,13 +274,14 @@ public class MongoBrowserProvider extends ContentProvider {
 				 + " );"
 			);			
 		}
-
-		/*
+		
+/*
 		private long insertConnection(SQLiteDatabase dbx, String name, String server, int port, String db, String user, String pass) {
 			ContentValues cv = MongoBrowserProviderHelper.getContentValuesForConnection(name, server, port, db, user, pass);
 			return dbx.insert(TABLE_NAME_CONNECTIONS, null, cv);
-		}*/
-
+		}
+*/
+		
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)  {
 			Log.w(LOG_TAG, "Upgrade database");

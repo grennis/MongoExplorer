@@ -28,5 +28,7 @@
     <string name="add_document">New Document</string>
     <string name="error_has_occurred">An Error has Occurred</string>
     <string name="clear">Clear</string>
+    <string name="load_query">Load Query</string>
     <string name="purchase_offer">To continue, please purchase the full application unlock to add more than one connection</string>
+    <string name="no_saved_queries">You don\'t have any queries stored for this connection and collection</string>
 </resources>

@@ -80,6 +80,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			mQueryID = savedInstanceState.getLong(STATE_QUERY_ID);
 			mQueryName = savedInstanceState.getString(STATE_QUERY_NAME);
 			mQueryText = savedInstanceState.getString(STATE_QUERY_TEXT);
+			getActivity().invalidateOptionsMenu();
 		}
 		
 		new LoadNextDocumentsTask(false).execute();
@@ -162,13 +163,19 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
 	private void newQuery() {
 		mQueryID = 0;
-		mQueryName = null;
+		mQueryName = null ;
 		mQueryText = null;
 		editQuery();
 	}
 	
 	private void loadQuery() {
 		Cursor cursor = new MongoBrowserProviderHelper(getActivity().getContentResolver()).getNamedQueries(mConnectionId, mCollectionName);
+		
+		if (cursor.getCount() == 0) {
+			UiUtils.message(getActivity(), R.string.load_query, R.string.no_saved_queries);
+			return;
+		}
+		
 		final MongoQueryAdapter adapter = new MongoQueryAdapter(getActivity(), cursor, false);
 		
 		OnClickListener listener = new OnClickListener() {
@@ -198,7 +205,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	}
 
     private void saveQuery() {
-    	if (mQueryID == 0) {
+    	if (mQueryName == null) {
     		new GetUniqueQueryName().execute();
     		return;
     	}
@@ -339,6 +346,10 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	@Override
 	public void onQueryUpdated(String query) {
 		mQueryText = query;
+		
+		if (mQueryID == 0)
+			mQueryID = -1;
+		
 		reloadList(true);
     	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
     		getActivity().invalidateOptionsMenu();
@@ -471,7 +482,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected Void safeDoInBackground(Void... args) {
 			MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
-			helper.saveQuery(mQueryID, mQueryName, mConnectionId, mCollectionName, mQueryText);
+			mQueryID = helper.saveQuery(mQueryID, mQueryName, mConnectionId, mCollectionName, mQueryText);
 			return null;
 		}
 

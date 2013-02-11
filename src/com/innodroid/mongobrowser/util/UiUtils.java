@@ -113,7 +113,22 @@ public class UiUtils {
 
         return dialog;
 	}
-	
+
+	public static void message(Context context, int title, int message) {
+        new AlertDialog.Builder(context)
+	        .setIcon(android.R.drawable.ic_dialog_info)
+	        .setMessage(message)
+	        .setTitle(title)
+	        .setCancelable(true)
+	        .setPositiveButton(android.R.string.ok,
+	            new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                }
+	            }
+	        )
+	        .create().show();
+	}
+
 	public static void confirm(Context context, int message, final ConfirmCallbacks callbacks) {
         new AlertDialog.Builder(context)
 	        .setIcon(android.R.drawable.ic_dialog_alert)
