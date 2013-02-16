@@ -99,13 +99,7 @@ public class UiUtils {
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
 	        .setIcon(icon)
 	        .setAdapter(adapter, listener)
-	        .setTitle(title)
-	        .setPositiveButton(android.R.string.ok,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                }
-	            }
-	        );
+	        .setTitle(title);
         
         builder.setCancelable(true);
 
