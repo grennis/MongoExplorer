@@ -1,5 +1,6 @@
 package com.innodroid.mongobrowser;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentUris;
 import android.database.Cursor;
@@ -24,19 +25,22 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 	private TextView mDatabaseView;
 	private TextView mUserView;
 	private TextView mPasswordView;
-	private static Callbacks mCallbacks;
+	private Callbacks mCallbacks;
 
 	public interface Callbacks {
 		void onConnectionAdded(long id);
 		void onConnectionUpdated(long id);
 	}
 	
-    static ConnectionEditDialogFragment create(long id, Callbacks callbacks) {
+	public ConnectionEditDialogFragment() {
+		super();
+	}
+	
+    static ConnectionEditDialogFragment create(long id) {
     	ConnectionEditDialogFragment fragment = new ConnectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putLong(Constants.ARG_CONNECTION_ID, id);
     	fragment.setArguments(args);
-    	ConnectionEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
@@ -69,11 +73,13 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
     }
 
     @Override
-    public void onDestroyView() {
-    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
-    	if (getDialog() != null && getRetainInstance())
-    		getDialog().setDismissMessage(null);
-    	super.onDestroyView();
+    public void onAttach(Activity activity) {
+    	super.onAttach(activity);
+
+    	if (getTargetFragment() != null)
+    		mCallbacks = (Callbacks)getTargetFragment();
+    	else
+    		mCallbacks = (Callbacks)activity;
     }
     
     private boolean save() {    	

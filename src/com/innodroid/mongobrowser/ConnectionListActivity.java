@@ -324,7 +324,7 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
     }
 
     private void addConnection() {
-        DialogFragment fragment = ConnectionEditDialogFragment.create(0, this);
+        DialogFragment fragment = ConnectionEditDialogFragment.create(0);
         fragment.show(getSupportFragmentManager(), null);
     }
 
@@ -405,13 +405,13 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 	
 	@Override
 	public void onAddDocument() {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED, this);
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 
 	@Override
 	public void onEditDocument(String content) {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, false, content, this);
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, false, content);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 

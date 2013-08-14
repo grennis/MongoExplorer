@@ -12,20 +12,22 @@ import android.widget.Toast;
 public class CollectionEditDialogFragment extends DialogFragment {
 	private TextView mNameView;
 	private String mName;
-	private static Callbacks mCallbacks;
 
 	public interface Callbacks {
 		void onCreateCollection(String name);
 		void onRenameCollection(String name);
 	}
 	
-    static CollectionEditDialogFragment create(String name, boolean isNew, Callbacks callbacks) {
+	public CollectionEditDialogFragment() {
+		super();
+	}
+	
+    static CollectionEditDialogFragment create(String name, boolean isNew) {
     	CollectionEditDialogFragment fragment = new CollectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_COLLECTION_NAME, name);
     	args.putBoolean(Constants.ARG_IS_NEW, isNew);
     	fragment.setArguments(args);
-    	CollectionEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
@@ -50,14 +52,6 @@ public class CollectionEditDialogFragment extends DialogFragment {
 		});    	
     }
 
-    @Override
-    public void onDestroyView() {
-    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
-    	if (getDialog() != null && getRetainInstance())
-    		getDialog().setDismissMessage(null);
-    	super.onDestroyView();
-    }
-    
     private boolean save() {
     	String name = mNameView.getText().toString();
 
@@ -66,10 +60,11 @@ public class CollectionEditDialogFragment extends DialogFragment {
     		return false;
     	}
 
+    	Callbacks callbacks = (Callbacks)getTargetFragment();
     	if (getArguments().getBoolean(Constants.ARG_IS_NEW))
-    		mCallbacks.onCreateCollection(name);
+    		callbacks.onCreateCollection(name);
     	else
-    		mCallbacks.onRenameCollection(name);
+    		callbacks.onRenameCollection(name);
 
     	return true;
     }

@@ -12,6 +12,10 @@ public class ExceptionDetailDialogFragment extends DialogFragment {
 	private static final String ARG_TITLE = "title";
 	private static final String ARG_MESSAGE = "msg";
 	
+	public ExceptionDetailDialogFragment() {
+		super();
+	}
+	
     public static ExceptionDetailDialogFragment create(String title, Exception ex) {
     	ExceptionDetailDialogFragment fragment = new ExceptionDetailDialogFragment();
     	Bundle args = new Bundle();
@@ -33,14 +37,6 @@ public class ExceptionDetailDialogFragment extends DialogFragment {
 
     	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_dialog_alert, R.string.error_has_occurred, false, 0, UiUtils.EmptyAlertCallbacks);  	
     }
-
-    @Override
-    public void onDestroyView() {
-    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
-    	if (getDialog() != null && getRetainInstance())
-    		getDialog().setDismissMessage(null);
-    	super.onDestroyView();
-    }    
 }
 
 

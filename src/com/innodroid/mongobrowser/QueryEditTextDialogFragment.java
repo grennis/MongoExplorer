@@ -9,21 +9,22 @@ import android.widget.EditText;
 import com.innodroid.mongobrowser.util.UiUtils;
 
 public class QueryEditTextDialogFragment extends DialogFragment {
-
 	private EditText mContentEdit;
 	private String mContent;
-	private static Callbacks mCallbacks;
 
     public interface Callbacks {
     	void onQueryUpdated(String query);
     }
+    
+    public QueryEditTextDialogFragment() {
+    	super();
+    }
 
-    static QueryEditTextDialogFragment create(String content, Callbacks callbacks) {
+    static QueryEditTextDialogFragment create(String content) {
     	QueryEditTextDialogFragment fragment = new QueryEditTextDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_DOCUMENT_CONTENT, content);
     	fragment.setArguments(args);
-    	QueryEditTextDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
@@ -38,7 +39,7 @@ public class QueryEditTextDialogFragment extends DialogFragment {
     	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, "Edit Query", true, 0, new UiUtils.AlertDialogCallbacks() {			
 			@Override
 			public boolean onOK() {
-				mCallbacks.onQueryUpdated(mContentEdit.getText().toString());
+				((Callbacks)getTargetFragment()).onQueryUpdated(mContentEdit.getText().toString());
 				return true;
 			}
 

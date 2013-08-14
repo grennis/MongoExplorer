@@ -75,7 +75,8 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
     }
     
     private void addCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.create("", true, this);
+        DialogFragment fragment = CollectionEditDialogFragment.create("", true);
+        fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
 	}
     
@@ -266,7 +267,8 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 				return;
 			}
 
-	        DialogFragment fragment = ChangeDatabaseDialogFragment.create(CollectionListFragment.this, result);
+	        DialogFragment fragment = ChangeDatabaseDialogFragment.create(result);
+	        fragment.setTargetFragment(CollectionListFragment.this, 0);
 	        fragment.show(getFragmentManager(), null);    	
 		}
 

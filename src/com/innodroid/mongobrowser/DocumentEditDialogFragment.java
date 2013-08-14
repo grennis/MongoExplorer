@@ -1,5 +1,6 @@
 package com.innodroid.mongobrowser;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -11,25 +12,27 @@ import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
 public class DocumentEditDialogFragment extends DialogFragment {
-
 	private EditText mContentEdit;
 	private String mContent;
 	private String mCollectionName;
-	private static Callbacks mCallbacks;
+	private Callbacks mCallbacks;
 
     public interface Callbacks {
     	void onDocumentCreated(String content);
     	void onDocumentUpdated(String content);
     }
 
-    static DocumentEditDialogFragment create(String collectionName, boolean isNew, String content, Callbacks callbacks) {
+	public DocumentEditDialogFragment() {
+		super();
+	}
+	
+    static DocumentEditDialogFragment create(String collectionName, boolean isNew, String content) {
     	DocumentEditDialogFragment fragment = new DocumentEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_DOCUMENT_CONTENT, content);
     	args.putString(Constants.ARG_COLLECTION_NAME, collectionName);
     	args.putBoolean(Constants.ARG_IS_NEW, isNew);
     	fragment.setArguments(args);
-    	DocumentEditDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
@@ -57,18 +60,17 @@ public class DocumentEditDialogFragment extends DialogFragment {
     }
     
     @Override
-    public void onDestroyView() {
-    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
-    	if (getDialog() != null && getRetainInstance())
-    		getDialog().setDismissMessage(null);
-    	super.onDestroyView();
+    public void onAttach(Activity activity) {
+    	super.onAttach(activity);
+    	
+    	mCallbacks = (Callbacks)activity;
     }
     
     public void save() {
     	String doc = mContentEdit.getText().toString();
     	new SaveDocumentTask().execute(doc);
     }
-    
+
     public class SaveDocumentTask extends SafeAsyncTask<String, Void, String> {
     	public SaveDocumentTask() {
 			super(getActivity());

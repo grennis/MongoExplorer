@@ -201,7 +201,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	
     private void editQuery() {
 		String query = (mQueryText == null) ? Constants.NEW_DOCUMENT_CONTENT_PADDED : mQueryText;
-		QueryEditTextDialogFragment.create(query, this).show(getFragmentManager(), null);
+		QueryEditTextDialogFragment dialog = QueryEditTextDialogFragment.create(query);
+		dialog.setTargetFragment(this, 0);
+		dialog.show(getFragmentManager(), null);
 	}
 
     private void saveQuery() {
@@ -210,7 +212,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     		return;
     	}
     	
-		QueryEditNameDialogFragment.create(mQueryName, this).show(getFragmentManager(), null);
+    	QueryEditNameDialogFragment dialog = QueryEditNameDialogFragment.create(mQueryName);
+    	dialog.setTargetFragment(this, 0);
+    	dialog.show(getFragmentManager(), null);
 	}
 
 	public void clearQuery() {
@@ -251,7 +255,8 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	}
 	
 	private void editCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, false, this);
+        DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, false);
+        fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
 	}
 

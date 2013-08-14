@@ -147,7 +147,8 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
 	}
 	
     private void editConnection() {
-        DialogFragment fragment = ConnectionEditDialogFragment.create(mConnectionID, this);
+        DialogFragment fragment = ConnectionEditDialogFragment.create(mConnectionID);
+        fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 

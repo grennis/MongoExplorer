@@ -15,7 +15,6 @@ import android.widget.ListView;
 
 public class ChangeDatabaseDialogFragment extends DialogFragment {
 	private ListView mDatabaseListView;
-	private static Callbacks mCallbacks;
 
 	private static String ARG_DATABASES = "databases";
 	
@@ -23,12 +22,15 @@ public class ChangeDatabaseDialogFragment extends DialogFragment {
 		void onChangeDatabase(String name);
 	}
 	
-    static ChangeDatabaseDialogFragment create(Callbacks callbacks, ArrayList<String> databases) {
+	public ChangeDatabaseDialogFragment() {
+		super();
+	}
+	
+    static ChangeDatabaseDialogFragment create(ArrayList<String> databases) {
     	ChangeDatabaseDialogFragment fragment = new ChangeDatabaseDialogFragment();
     	Bundle args = new Bundle();
     	args.putStringArrayList(ARG_DATABASES, databases);
     	fragment.setArguments(args);
-    	ChangeDatabaseDialogFragment.mCallbacks = callbacks;
     	return fragment;
     }
 
@@ -58,19 +60,11 @@ public class ChangeDatabaseDialogFragment extends DialogFragment {
     	mDatabaseListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				mCallbacks.onChangeDatabase(adapter.getItem(position));
+				((Callbacks)getTargetFragment()).onChangeDatabase(adapter.getItem(position));
 				dialog.dismiss();
 			}    		
     	});
     	
     	return dialog;
-    }
-
-    @Override
-    public void onDestroyView() {
-    	// http://stackoverflow.com/questions/8235080/fragments-dialogfragment-and-screen-rotation
-    	if (getDialog() != null && getRetainInstance())
-    		getDialog().setDismissMessage(null);
-    	super.onDestroyView();
     }
 }
