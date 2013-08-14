@@ -5,7 +5,14 @@
           android:title="Add Collection"
           android:orderInCategory="20"
           android:showAsAction="withText|never"/>
-    <!-- 
+    
+     <item android:id="@+id/menu_collection_list_change_db"
+        android:icon="@drawable/ic_menu_load"
+        android:title="Change Database"
+        android:orderInCategory="22"
+        android:showAsAction="withText|never"/>
+
+     <!-- 
     <item android:id="@+id/collection_detail_menu_edit"
           android:icon="@android:drawable/ic_menu_edit"
           android:title="Edit"

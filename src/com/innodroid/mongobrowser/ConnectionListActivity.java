@@ -371,6 +371,9 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 	}
 
 	private void reloadConnectionListAndSelect(long id) {
+		if (isFinishing())
+			return;
+		
 		ConnectionListFragment fragment = (ConnectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
 		
 		if (fragment != null)

@@ -1,6 +1,8 @@
 package com.innodroid.mongobrowser;
 
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,8 +18,9 @@ import android.widget.ListView;
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
+import com.innodroid.mongobrowser.util.UiUtils;
 
-public class CollectionListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks {
+public class CollectionListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, ChangeDatabaseDialogFragment.Callbacks {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
@@ -63,6 +66,9 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
             case R.id.menu_collection_list_add:
             	addCollection();
                 return true;
+            case R.id.menu_collection_list_change_db:
+            	changeDatabase();
+                return true;
         }
 
     	return super.onOptionsItemSelected(item);
@@ -72,6 +78,10 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
         DialogFragment fragment = CollectionEditDialogFragment.create("", true, this);
         fragment.show(getFragmentManager(), null);
 	}
+    
+    private void changeDatabase() {
+    	new GetDatabasesTask().execute();
+    }
     
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -143,6 +153,11 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 	public void onCollectionEdited(String name) {
 		mAdapter.setItemName(mActivatedPosition, name);
 	}
+	
+	@Override
+	public void onChangeDatabase(String name) {
+		new ChangeDatabaseTask().execute(name);
+	}
 
 	public void onCollectionDropped() {
 		mAdapter.delete(mActivatedPosition);
@@ -188,8 +203,8 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		protected String[] safeDoInBackground(Void... arg0) {
 			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
 			return MongoHelper.getCollectionNames(includeSystem);
-		}		
-		
+		}
+
 		@Override
 		protected void safeOnPostExecute(String[] result) {
 			mAdapter.loadItems(result);
@@ -232,5 +247,54 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		protected String getErrorTitle() {
 			return "Failed to Get Counts";
 		}
+    }
+    
+    private class GetDatabasesTask extends SafeAsyncTask<String, Void, ArrayList<String>> {
+    	public GetDatabasesTask() {
+			super(getActivity());
+		}
+
+    	@Override
+		protected ArrayList<String> safeDoInBackground(String... args) throws Exception {
+			return MongoHelper.getDatabaseNames();
+		}
+
+		@Override
+		protected void safeOnPostExecute(ArrayList<String> result) {
+			if (result == null || result.size() == 0) {
+				UiUtils.message(getActivity(), R.string.title_no_databases, R.string.message_no_databases);
+				return;
+			}
+
+	        DialogFragment fragment = ChangeDatabaseDialogFragment.create(CollectionListFragment.this, result);
+	        fragment.show(getFragmentManager(), null);    	
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to get database list";
+		}		
+    }
+    
+    private class ChangeDatabaseTask extends SafeAsyncTask<String, Void, String> {
+    	public ChangeDatabaseTask() {
+			super(getActivity());
+		}
+
+    	@Override
+		protected String safeDoInBackground(String... args) throws Exception {
+    		MongoHelper.changeDatabase(args[0]);
+    		return args[0];
+		}
+
+		@Override
+		protected void safeOnPostExecute(String result) {
+			reloadList();
+		}
+
+		@Override
+		protected String getErrorTitle() {
+			return "Failed to Change DB";
+		}		
     }
 }

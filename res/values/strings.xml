@@ -6,6 +6,8 @@
     <string name="title_edit_collection">Collection Name</string>
     <string name="title_document_list">Documents</string>
     <string name="title_confirm">Confirm</string>
+    <string name="title_change_database">Change Database</string>
+    <string name="title_no_databases">No Databases</string>
     <string name="name">Name</string>
     <string name="server">Server</string>
     <string name="port">Port</string>
@@ -31,4 +33,5 @@
     <string name="load_query">Load Query</string>
     <string name="purchase_offer">To continue, please purchase the full application unlock to add more than one connection</string>
     <string name="no_saved_queries">You don\'t have any queries stored for this connection and collection</string>
+    <string name="message_no_databases">Unable to list databases. Check permissions.</string>
 </resources>

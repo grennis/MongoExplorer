@@ -4,6 +4,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Set;
 
+import android.util.Log;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -15,6 +17,7 @@ import com.mongodb.WriteConcern;
 public class MongoHelper {
 	private static Mongo Connection;
 	private static DB Database;
+	private static DB LoginDatabase;
 	private static String DatabaseName;
 	private static String Server;
 	private static int Port;
@@ -26,6 +29,7 @@ public class MongoHelper {
 		
 		Connection = new Mongo(server, port);
     	Database = Connection.getDB(dbname);
+    	LoginDatabase = Database;
     	Server = server;
     	Port = port;
     	DatabaseName = dbname;
@@ -57,6 +61,11 @@ public class MongoHelper {
     	connect(Server, Port, DatabaseName, User, Password);
     }
 
+    public static void changeDatabase(String name) {
+    	Log.i("MONGO", "CHange to database " + name);
+    	Database = LoginDatabase.getSisterDB(name);
+    }
+    
 	public static String[] getCollectionNames(boolean includeSystemPrefs) {
     	Set<String> names = Database.getCollectionNames();
     	ArrayList<String> list = new ArrayList<String>();
@@ -70,6 +79,15 @@ public class MongoHelper {
     	return namesArray;
     }
 
+	public static ArrayList<String> getDatabaseNames() {
+    	ArrayList<String> list = new ArrayList<String>();
+
+    	for (String str : Connection.getDatabaseNames())
+			list.add(str);
+
+    	return list;
+    }
+	
 	public static long getCollectionCount(String name) {
 		return Database.getCollection(name).getCount();
 	}
@@ -90,9 +108,8 @@ public class MongoHelper {
 
 	public static String[] getPageOfDocuments(String collection, String queryText, int start, int take) {
 		DBCollection coll = Database.getCollection(collection);
-		DBCursor cursor = (queryText == null) ? coll.find() : coll.find(parse(queryText));
-
-		cursor = cursor.skip(start).limit(take);
+		DBCursor main = (queryText == null) ? coll.find() : coll.find(parse(queryText));
+		DBCursor cursor = main.skip(start).limit(take);
 		
 		ArrayList<String> results = new ArrayList<String>();
 		
@@ -102,6 +119,7 @@ public class MongoHelper {
 		}
 		
 		cursor.close();
+		main.close();
 		String[] res = new String[results.size()];
 		results.toArray(res);
 		return res;
