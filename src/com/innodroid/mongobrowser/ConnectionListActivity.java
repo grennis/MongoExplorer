@@ -18,8 +18,6 @@ import com.innodroid.billing.BillingActivity;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.LeftMarginAnimation;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
-import com.innodroid.mongobrowser.util.UiUtils;
-import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 import com.innodroid.mongobrowser.util.WidthAnimation;
 
 public class ConnectionListActivity extends BillingActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
@@ -308,12 +306,13 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 	
     @Override
     public void onAddConnection() {
-    	ConnectionListFragment fragment = (ConnectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_1);
-    	if (fragment.getConnectionCount() == 0 || hasPurchased()) {
+    	//ConnectionListFragment fragment = (ConnectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_1);
+    	if (true) { //  (fragment.getConnectionCount() == 0 || hasPurchased()) {
     		addConnection();
     		return;
     	}
     	
+    	/*
     	UiUtils.confirm(this, R.string.purchase_offer, new ConfirmCallbacks() {
 			@Override
 			public boolean onConfirm() {
@@ -321,6 +320,7 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
 				return true;
 			}
     	});    	
+    	*/
     }
 
     private void addConnection() {
