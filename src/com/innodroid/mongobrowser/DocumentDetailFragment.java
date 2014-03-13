@@ -113,8 +113,9 @@ public class DocumentDetailFragment extends Fragment {
     		mContentText.setText("");
     		mFormattedText = null;
     	} else {
-    		mFormattedText = JsonUtils.prettyPrint(json);    	
-    		mContentText.setText(mFormattedText);
+    		mFormattedText = JsonUtils.prettyPrint(json);   
+    		//mContentText.setText(mFormattedText);
+    		mContentText.setText(JsonUtils.prettyPrint2(json));
     	}
     	
     	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)

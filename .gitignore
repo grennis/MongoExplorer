@@ -32,3 +32,4 @@ bin2/
 ant.properties
 local.properties
 key/*
+/.settings/
