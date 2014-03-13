@@ -1,0 +1,34 @@
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.0.1"
+
+    defaultConfig {
+        minSdkVersion 11
+        targetSdkVersion 19
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../key/mongoexplorer.keystore")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias "innodroid"
+            keyPassword System.getenv("KEYSTORE_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:+'
+    compile 'com.google.code.gson:gson:2.2.2'
+    compile 'org.mongodb:mongo-java-driver:2.11.4'
+}

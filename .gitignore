@@ -33,3 +33,5 @@ ant.properties
 local.properties
 key/*
 /.settings/
+buildapk.bat
+app/build/
