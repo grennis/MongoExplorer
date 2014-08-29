@@ -2,7 +2,7 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.1"
+    buildToolsVersion "20.0.0"
 
     defaultConfig {
         minSdkVersion 11
@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:+'
-    compile 'com.google.code.gson:gson:2.2.2'
-    compile 'org.mongodb:mongo-java-driver:2.11.4'
+    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.google.code.gson:gson:2.2.+'
+    compile 'org.mongodb:mongo-java-driver:2.12.+'
 }
