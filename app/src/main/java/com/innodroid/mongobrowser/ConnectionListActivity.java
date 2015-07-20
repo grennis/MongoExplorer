@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -14,13 +15,12 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.widget.FrameLayout;
 
-import com.innodroid.billing.BillingActivity;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.LeftMarginAnimation;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.WidthAnimation;
 
-public class ConnectionListActivity extends BillingActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
+public class ConnectionListActivity extends AppCompatActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
 	private static final String STATE_COLLECTION_NAME = "collname";
 	
 	private boolean mTwoPane;
@@ -90,8 +90,6 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
         	}
         }
 
-    	restoreTransactionsIfNecessary();
-    	
     	if (mHavePromptedToAddConnection)
     		setProgressBarIndeterminateVisibility(false);
     	else {
@@ -453,16 +451,6 @@ public class ConnectionListActivity extends BillingActivity implements Connectio
         CollectionListFragment collectionList = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
         if (collectionList != null)
         	collectionList.reloadList();
-	}
-	
-	@Override
-	protected String getProductId() {
-		return "mongoexp";
-	}
-
-	@Override
-	protected String getPurchaseCompleteMessage() {
-		return "Thank you for your purchase! You have unlocked the full application.";
 	}
 	
     private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {

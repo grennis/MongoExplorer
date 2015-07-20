@@ -36,14 +36,5 @@
         
         <provider android:name=".data.MongoBrowserProvider" android:authorities="com.innodroid.provider.mongobrowser" android:exported="false" />
 
-  		<service android:name="com.innodroid.billing.BillingService" />
-
-        <receiver android:name="com.innodroid.billing.BillingReceiver">
-            <intent-filter>
-                <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
-                <action android:name="com.android.vending.billing.RESPONSE_CODE" />
-                <action android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
 	</application>
 </manifest>
