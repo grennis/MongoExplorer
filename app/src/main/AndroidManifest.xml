@@ -1,13 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.innodroid.mongobrowser"
-    android:versionCode="9"
-    android:versionName="1.2.0" >
+    package="com.innodroid.mongobrowser">
 
     <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.android.vending.BILLING"></uses-permission>
     
-    <application android:uiOptions="splitActionBarWhenNarrow" android:icon="@drawable/ic_launcher" android:allowBackup="true" android:label="@string/app_name" android:theme="@style/AppTheme" >
+    <application android:uiOptions="splitActionBarWhenNarrow"
+        android:icon="@drawable/ic_launcher"
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
         <activity android:name=".ConnectionListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
