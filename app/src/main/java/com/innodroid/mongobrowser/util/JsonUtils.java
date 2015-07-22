@@ -1,10 +1,5 @@
 package com.innodroid.mongobrowser.util;
 
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -16,6 +11,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
 
 public class JsonUtils {
 	private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -124,29 +122,19 @@ public class JsonUtils {
 		return "<font color=\"#660000\">" + value + "</font>";
 	}
 
-	@SuppressLint("NewApi")
 	private static String formatString(String value) {
 		if (isUrl(value)) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-				value = Html.escapeHtml(value);
-			}
-
+			value = Html.escapeHtml(value);
 			value = "<a href=\"" + value + "\">" + value + "</a>";
 		} else {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-				value = Html.escapeHtml(value);
-			}
+			value = Html.escapeHtml(value);
 		}
 		return "<font color=\"#006600\">\"" + value + "\"</font>";
 	}
 
-	@SuppressLint("NewApi")
 	private static String formatObjectString(String value) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-			return "<font color=\"#004488\">\"" + Html.escapeHtml(value)
-					+ "\"</font>";
-		else
-			return "<font color=\"#004488\">\"" + value + "\"</font>";
+		return "<font color=\"#004488\">\"" + Html.escapeHtml(value)
+				+ "\"</font>";
 	}
 
 	private static boolean isObjectId(JsonObject object) {

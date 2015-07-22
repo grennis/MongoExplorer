@@ -1,13 +1,10 @@
 package com.innodroid.mongobrowser;
 
 
-import java.net.UnknownHostException;
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -28,6 +25,8 @@ import com.innodroid.mongobrowser.data.MongoQueryAdapter;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
+
+import java.net.UnknownHostException;
 
 public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, QueryEditTextDialogFragment.Callbacks, QueryEditNameDialogFragment.Callbacks {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
@@ -195,8 +194,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		mQueryName = cursor.getString(MongoBrowserProvider.INDEX_QUERY_NAME);
 		mQueryText = cursor.getString(MongoBrowserProvider.INDEX_QUERY_TEXT);
 		reloadList(true);
-    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-    		getActivity().invalidateOptionsMenu();
+		getActivity().invalidateOptionsMenu();
 	}
 	
     private void editQuery() {
@@ -222,8 +220,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		mQueryName = null;
 		mQueryText = null;
 		reloadList(true);
-    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-    		getActivity().invalidateOptionsMenu();
+		getActivity().invalidateOptionsMenu();
 	}
 	
 	@Override 
@@ -356,8 +353,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			mQueryID = -1;
 		
 		reloadList(true);
-    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-    		getActivity().invalidateOptionsMenu();
+		getActivity().invalidateOptionsMenu();
 	}
 
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {

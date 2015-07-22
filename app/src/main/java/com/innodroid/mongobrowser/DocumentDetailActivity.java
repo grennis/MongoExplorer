@@ -1,10 +1,7 @@
 package com.innodroid.mongobrowser;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.Window;
@@ -15,7 +12,6 @@ public class DocumentDetailActivity extends AppCompatActivity implements Documen
 
 	private static final int REQUEST_EDIT_DOCUMENT = 101;
 	
-    @SuppressLint("NewApi")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -23,8 +19,7 @@ public class DocumentDetailActivity extends AppCompatActivity implements Documen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document_detail);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         
         mCollectionName = getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME);
         

@@ -1,7 +1,6 @@
 package com.innodroid.mongobrowser;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -118,8 +117,7 @@ public class DocumentDetailFragment extends Fragment {
     		mContentText.setText(JsonUtils.prettyPrint2(json));
     	}
     	
-    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-    		getActivity().invalidateOptionsMenu();
+		getActivity().invalidateOptionsMenu();
     }
     
     private class DeleteDocumentTask extends SafeAsyncTask<Void, Void, Void> {
