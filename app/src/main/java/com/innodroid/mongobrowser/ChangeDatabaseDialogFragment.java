@@ -44,7 +44,7 @@ public class ChangeDatabaseDialogFragment extends DialogFragment {
     	mDatabaseListView.setAdapter(adapter);
     	
     	AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext())
-	        .setIcon(android.R.drawable.ic_menu_rotate)
+	        .setIcon(R.drawable.ic_rotate_right_black)
 	        .setView(view)
 	        .setTitle(R.string.title_change_database)
 	        .setNegativeButton(android.R.string.cancel,

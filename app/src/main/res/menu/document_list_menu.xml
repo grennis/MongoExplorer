@@ -1,46 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_document_list_refresh"
-          android:icon="@drawable/ic_menu_refresh"
+          android:icon="@drawable/ic_refresh"
           android:title="Refresh"
           android:orderInCategory="45"
-          android:showAsAction="withText|always"/>
+          app:showAsAction="withText|always"/>
     <item android:id="@+id/menu_document_list_add"
-          android:icon="@drawable/ic_menu_add"
+          android:icon="@drawable/ic_add_circle"
           android:title="Add Document"
           android:orderInCategory="50"
-          android:showAsAction="withText|ifRoom"/>
-    <item android:icon="@drawable/ic_menu_search"
+          app:showAsAction="withText|ifRoom"/>
+    <item android:icon="@drawable/ic_search"
           android:title="Queries"
           android:orderInCategory="55"
-          android:showAsAction="withText|always">
+          app:showAsAction="withText|always">
 		<menu>
 		    <item android:id="@+id/menu_document_list_new_query"
-                  android:icon="@drawable/ic_menu_add"
+                  android:icon="@drawable/ic_add_circle_black"
                   android:title="New Query" />
 		    <item android:id="@+id/menu_document_list_load_query"
-                  android:icon="@drawable/ic_menu_load"
+                  android:icon="@drawable/ic_file_download_black"
                   android:title="Load Query" />
 		    <item android:id="@+id/menu_document_list_edit_query"
-                  android:icon="@drawable/ic_menu_edit"
+                  android:icon="@drawable/ic_mode_edit_black"
                   android:title="Edit Query" />
 		    <item android:id="@+id/menu_document_list_save_query"
-                  android:icon="@drawable/ic_menu_save"
+                  android:icon="@drawable/ic_save_black"
                   android:title="Save Query" />
 		    <item android:id="@+id/menu_document_list_clear_query"
-                  android:icon="@drawable/ic_menu_close_clear_cancel"
+                  android:icon="@drawable/ic_cancel_black"
                   android:title="Clear Query" />
 		</menu>      
 	</item>
     <item android:id="@+id/menu_document_list_edit"
-          android:icon="@drawable/ic_menu_edit"
+          android:icon="@drawable/ic_mode_edit"
           android:title="Rename Collection"
           android:orderInCategory="80"
-          android:showAsAction="withText|never"/>
+          app:showAsAction="withText|never"/>
     <item android:id="@+id/menu_document_list_delete"
-          android:icon="@drawable/ic_menu_delete"
+          android:icon="@drawable/ic_delete"
           android:title="Drop Collection"
           android:orderInCategory="90"
-          android:showAsAction="withText|never"/>
+          app:showAsAction="withText|never"/>
 </menu>
 

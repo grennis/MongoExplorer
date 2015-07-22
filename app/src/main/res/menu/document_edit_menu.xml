@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_document_edit_save"
-          android:icon="@drawable/ic_menu_save"
           android:title="Save"
-          android:showAsAction="withText|ifRoom"/>
+          app:showAsAction="always"/>
 </menu>
 

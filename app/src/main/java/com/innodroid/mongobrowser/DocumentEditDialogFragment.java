@@ -45,7 +45,7 @@ public class DocumentEditDialogFragment extends DialogFragment {
     	mContentEdit = (EditText)view.findViewById(R.id.document_edit_content);
     	mContentEdit.setText(mContent);
     	
-    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, mCollectionName, true, 0, new UiUtils.AlertDialogCallbacks() {			
+    	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, mCollectionName, true, 0, new UiUtils.AlertDialogCallbacks() {
 			@Override
 			public boolean onOK() {
 				save();

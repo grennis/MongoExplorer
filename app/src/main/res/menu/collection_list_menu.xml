@@ -1,26 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_collection_list_add"
-          android:icon="@drawable/ic_menu_add"
+          android:icon="@drawable/ic_add_circle"
           android:title="Add Collection"
           android:orderInCategory="20"
-          android:showAsAction="withText|never"/>
+          app:showAsAction="withText|never"/>
     
      <item android:id="@+id/menu_collection_list_change_db"
-        android:icon="@drawable/ic_menu_load"
+        android:icon="@drawable/ic_file_download"
         android:title="Change Database"
         android:orderInCategory="22"
-        android:showAsAction="withText|never"/>
-
-     <!-- 
-    <item android:id="@+id/collection_detail_menu_edit"
-          android:icon="@android:drawable/ic_menu_edit"
-          android:title="Edit"
-          android:showAsAction="withText|ifRoom"/>
-    <item android:id="@+id/collection_detail_menu_delete"
-          android:icon="@android:drawable/ic_menu_delete"
-          android:title="Delete"
-          android:showAsAction="withText|ifRoom"/>
-           -->
+        app:showAsAction="withText|never"/>
 </menu>
 

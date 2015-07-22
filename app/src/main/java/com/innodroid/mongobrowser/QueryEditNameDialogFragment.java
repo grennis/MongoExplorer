@@ -36,7 +36,7 @@ public class QueryEditNameDialogFragment extends DialogFragment {
     	mContentEdit = (EditText)view.findViewById(R.id.query_edit_name);
     	mContentEdit.setText(mContent);
     	
-    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, "Query Name", true, 0, new UiUtils.AlertDialogCallbacks() {			
+    	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, "Query Name", true, 0, new UiUtils.AlertDialogCallbacks() {
 			@Override
 			public boolean onOK() {
 				((Callbacks)getTargetFragment()).onQueryNamed(mContentEdit.getText().toString());

@@ -110,7 +110,7 @@ public class UiUtils {
 
 	public static void message(Context context, int title, int message) {
         new AlertDialog.Builder(context)
-	        .setIcon(android.R.drawable.ic_dialog_info)
+	        .setIcon(R.drawable.ic_info_black)
 	        .setMessage(message)
 	        .setTitle(title)
 	        .setCancelable(true)
@@ -125,7 +125,7 @@ public class UiUtils {
 
 	public static void confirm(Context context, int message, final ConfirmCallbacks callbacks) {
         new AlertDialog.Builder(context)
-	        .setIcon(android.R.drawable.ic_dialog_alert)
+	        .setIcon(R.drawable.ic_warning_black)
 	        .setMessage(message)
 	        .setTitle(R.string.title_confirm)
 	        .setCancelable(true)

@@ -39,7 +39,7 @@ public class CollectionEditDialogFragment extends DialogFragment {
     	mNameView = (TextView)view.findViewById(R.id.edit_collection_name);
     	mNameView.setText(mName);
     	
-    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_menu_edit, R.string.title_edit_collection, true, 0, new UiUtils.AlertDialogCallbacks() {			
+    	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, R.string.title_edit_collection, true, 0, new UiUtils.AlertDialogCallbacks() {
 			@Override
 			public boolean onOK() {
 				return save();

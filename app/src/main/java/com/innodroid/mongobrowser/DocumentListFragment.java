@@ -187,7 +187,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			}		
 		};
 		
-		UiUtils.buildAlertDialog(getActivity(), adapter, listener, R.drawable.ic_menu_load, "Load Query").show();		
+		UiUtils.buildAlertDialog(getActivity(), adapter, listener, R.drawable.ic_file_download_black, "Load Query").show();
 	}
 	
 	private void loadQuery(Cursor cursor) {

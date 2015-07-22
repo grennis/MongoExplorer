@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.Window;
 
-public class CollectionListActivity extends FragmentActivity implements CollectionListFragment.Callbacks {	
+public class CollectionListActivity extends AppCompatActivity implements CollectionListFragment.Callbacks {
 	public static final int REQUEST_DOCUMENT_LIST = 101;
 	
 	@SuppressLint("NewApi")
@@ -22,7 +23,7 @@ public class CollectionListActivity extends FragmentActivity implements Collecti
         setContentView(R.layout.activity_collection_list);        
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-        	getActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
         	Bundle args = new Bundle();

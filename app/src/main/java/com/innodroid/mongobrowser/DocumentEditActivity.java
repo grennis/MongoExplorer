@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.Window;
 
-public class DocumentEditActivity extends FragmentActivity implements DocumentEditFragment.Callbacks {
+public class DocumentEditActivity extends AppCompatActivity implements DocumentEditFragment.Callbacks {
     @SuppressLint("NewApi")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +21,7 @@ public class DocumentEditActivity extends FragmentActivity implements DocumentEd
     	setTitle(getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-        	getActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
         	DocumentEditFragment fragment = new DocumentEditFragment();

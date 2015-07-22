@@ -35,7 +35,7 @@ public class ExceptionDetailDialogFragment extends DialogFragment {
     	title.setText(getArguments().getString(ARG_TITLE));
     	text.setText(getArguments().getString(ARG_MESSAGE));
 
-    	return UiUtils.buildAlertDialog(view, android.R.drawable.ic_dialog_alert, R.string.error_has_occurred, false, 0, UiUtils.EmptyAlertCallbacks);  	
+    	return UiUtils.buildAlertDialog(view, R.drawable.ic_warning_black, R.string.error_has_occurred, false, 0, UiUtils.EmptyAlertCallbacks);
     }
 }
 
