@@ -3,7 +3,7 @@
     <color name="theme_primary">#3090A0</color>
     <color name="theme_dark">#208090</color>
     <color name="theme_accent">#40A0B0</color>
-    <color name="list_item_background">#7CC9E6</color>
+    <color name="list_item_background">#60C0D0</color>
     <color name="frame_divider">#e7e7e7</color>
 </resources>
 

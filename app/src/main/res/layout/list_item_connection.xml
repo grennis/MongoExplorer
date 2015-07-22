@@ -1,42 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp"
-    android:paddingRight="6dp"
-    android:paddingLeft="@dimen/list_item_left_padding"
+    android:padding="@dimen/list_item_padding"
     android:background="@drawable/list_item_background"
-	android:descendantFocusability="blocksDescendants">
+    android:descendantFocusability="blocksDescendants">
 
 	<CheckBox
 	    android:id="@+id/list_item_connection_checked"
 	    android:layout_width="40dp"
 	    android:layout_height="40dp"
-	    android:layout_alignParentTop="true"
 	    android:layout_alignParentRight="true"
 	    android:button="@android:drawable/btn_star" 
-	    android:layout_alignParentBottom="true"
-	    android:layout_centerHorizontal="true" /> 
+        android:layout_centerVertical="true" />
 		    
 	<TextView android:id="@+id/list_item_connection_name"
+        tools:text="Connection Name"
+        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
 	    android:layout_alignParentTop="true"
-        android:textStyle="bold"
-        android:textSize="24sp"
-        android:layout_toLeftOf="@id/list_item_connection_checked" />
+        android:layout_toLeftOf="@id/list_item_connection_checked"
+        android:textSize="@dimen/text_size_list_item" />
 
 	<TextView android:id="@+id/list_item_connection_info"
+        tools:text="Connection Information"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:textStyle="italic"
-        android:textSize="18sp"
         android:ellipsize="end"
         android:singleLine="true"
         android:layout_toLeftOf="@id/list_item_connection_checked"
-        android:layout_below="@id/list_item_connection_name" />
-		
+        android:layout_below="@id/list_item_connection_name"
+        android:textSize="@dimen/text_size_list_item_small" />
+
 </RelativeLayout>
 
 
