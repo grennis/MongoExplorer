@@ -17,7 +17,7 @@ public class DocumentDetailActivity extends AppCompatActivity implements Documen
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_document_detail);
+        setContentView(R.layout.activity_single_pane);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         
@@ -28,7 +28,7 @@ public class DocumentDetailActivity extends AppCompatActivity implements Documen
         if (savedInstanceState == null) {
             DocumentDetailFragment fragment = new DocumentDetailFragment();
             fragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.document_detail_container, fragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.root_content, fragment).commit();
         }
     }
 
@@ -62,7 +62,7 @@ public class DocumentDetailActivity extends AppCompatActivity implements Documen
 	@Override
 	protected void onActivityResult(int request, int result, Intent data) {
 		if (request == REQUEST_EDIT_DOCUMENT && result == RESULT_OK) {
-			DocumentDetailFragment fragment = (DocumentDetailFragment)getSupportFragmentManager().findFragmentById(R.id.document_detail_container);
+			DocumentDetailFragment fragment = (DocumentDetailFragment)getSupportFragmentManager().findFragmentById(R.id.root_content);
 			String content = data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT);
 			updateResult(content);
 			fragment.updateContent(content);

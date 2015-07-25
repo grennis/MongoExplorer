@@ -21,7 +21,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
 
         String name = getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME);
         setTitle(name);
-        setContentView(R.layout.activity_document_list);
+        setContentView(R.layout.activity_single_pane);
         
         mConnectionId = getIntent().getExtras().getLong(Constants.ARG_CONNECTION_ID);
         mCollectionName = getIntent().getExtras().getString(Constants.ARG_COLLECTION_NAME);
@@ -34,7 +34,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
 	        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, false);
 	        args.putLong(Constants.ARG_CONNECTION_ID, mConnectionId);
 	        fragment.setArguments(args);
-	        getSupportFragmentManager().beginTransaction().add(R.id.document_list, fragment).commit();
+	        getSupportFragmentManager().beginTransaction().add(R.id.root_content, fragment).commit();
         }
         
         setProgressBarIndeterminateVisibility(false);        
@@ -63,7 +63,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
 	protected void onActivityResult(int request, int result, Intent data) {
 		if ((request == REQUEST_EDIT_DOCUMENT || request == REQUEST_VIEW_DOCUMENT) && result == RESULT_OK) {
 			String content = data.getStringExtra(Constants.ARG_DOCUMENT_CONTENT);
-			DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
+			DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.root_content);
 			
 			if (content == null)
 				fragment.onDocumentDeleted();
@@ -101,7 +101,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
 
 	@Override
 	public void onDocumentListRefreshRequested() {		
-		DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.document_list);
+		DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.root_content);
 		fragment.reloadList(false);
 	}
 }

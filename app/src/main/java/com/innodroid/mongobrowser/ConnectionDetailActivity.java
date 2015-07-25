@@ -13,14 +13,14 @@ public class ConnectionDetailActivity extends AppCompatActivity implements Conne
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connection_detail);
+        setContentView(R.layout.activity_single_pane);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             ConnectionDetailFragment fragment = new ConnectionDetailFragment();
             fragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.connection_detail_container, fragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.root_content, fragment).commit();
         }
     }
 

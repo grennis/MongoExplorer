@@ -12,7 +12,7 @@ public class DocumentEditActivity extends AppCompatActivity implements DocumentE
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_document_edit);
+        setContentView(R.layout.activity_single_pane);
         
     	setTitle(getIntent().getStringExtra(Constants.ARG_COLLECTION_NAME));
 
@@ -21,7 +21,7 @@ public class DocumentEditActivity extends AppCompatActivity implements DocumentE
         if (savedInstanceState == null) {
         	DocumentEditFragment fragment = new DocumentEditFragment();
             fragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.document_edit_container, fragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.root_content, fragment).commit();
         }
     }
 

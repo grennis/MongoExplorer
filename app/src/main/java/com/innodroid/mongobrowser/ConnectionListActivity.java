@@ -41,7 +41,7 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
 		
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_connection_list);
+        setContentView(R.layout.activity_generic);
 
         mFrame1 = (FrameLayout)findViewById(R.id.frame_1);
         mFrame2 = (FrameLayout)findViewById(R.id.frame_2);
@@ -148,7 +148,7 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
         ConnectionListFragment fragment = new ConnectionListFragment();
         args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
         fragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).commit();		
+        getSupportFragmentManager().beginTransaction().replace(mTwoPane ? R.id.frame_1 : R.id.root_content, fragment).commit();
 	}
 	
     private void loadConnectionDetailsPane(long id) {

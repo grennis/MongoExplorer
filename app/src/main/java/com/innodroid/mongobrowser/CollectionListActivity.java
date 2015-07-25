@@ -16,7 +16,7 @@ public class CollectionListActivity extends AppCompatActivity implements Collect
         super.onCreate(savedInstanceState);
 
         setTitle(R.string.title_collection_list);
-        setContentView(R.layout.activity_collection_list);        
+        setContentView(R.layout.activity_single_pane);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -26,7 +26,7 @@ public class CollectionListActivity extends AppCompatActivity implements Collect
 	        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, false);
 	        fragment.setArguments(args);
 	        getSupportFragmentManager().beginTransaction()
-	                .replace(R.id.collection_list, fragment)
+	                .replace(R.id.root_content, fragment)
 	                .commit();	        
         }
 	}
@@ -58,7 +58,7 @@ public class CollectionListActivity extends AppCompatActivity implements Collect
 
 		if (request == REQUEST_DOCUMENT_LIST) {
 			// The collection may have been renamed
-	        CollectionListFragment fragment = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.collection_list);
+	        CollectionListFragment fragment = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.root_content);
 	        fragment.reloadList();			
 		}
 	}

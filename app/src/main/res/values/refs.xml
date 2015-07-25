@@ -1,0 +1,3 @@
+<resources>
+    <item type="layout" name="activity_generic">@layout/activity_single_pane</item>
+</resources>
