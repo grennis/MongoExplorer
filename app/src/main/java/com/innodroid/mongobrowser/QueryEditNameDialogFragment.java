@@ -33,7 +33,7 @@ public class QueryEditNameDialogFragment extends DialogFragment {
     	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_query_name_edit, null);
 
     	mContent = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
-    	mContentEdit = (EditText)view.findViewById(R.id.query_edit_name);
+    	mContentEdit = (EditText)view.findViewById(R.id.edit_query_name);
     	mContentEdit.setText(mContent);
     	
     	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, "Query Name", true, 0, new UiUtils.AlertDialogCallbacks() {
