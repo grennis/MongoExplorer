@@ -2,14 +2,16 @@ package com.innodroid.mongobrowser;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.EditText;
 
 import com.innodroid.mongobrowser.util.UiUtils;
 
-public class QueryEditTextDialogFragment extends DialogFragment {
-	private EditText mContentEdit;
+import butterknife.Bind;
+
+public class QueryEditTextDialogFragment extends BaseDialogFragment {
+	@Bind(R.id.query_edit_content) EditText mContentEdit;
+
 	private String mContent;
 
     public interface Callbacks {
@@ -30,10 +32,9 @@ public class QueryEditTextDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_query_text_edit, null);
+    	View view = super.onCreateDialog(R.layout.fragment_query_text_edit);
 
     	mContent = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
-    	mContentEdit = (EditText)view.findViewById(R.id.query_edit_content);
     	mContentEdit.setText(mContent);
     	
     	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, "Edit Query", true, 0, new UiUtils.AlertDialogCallbacks() {

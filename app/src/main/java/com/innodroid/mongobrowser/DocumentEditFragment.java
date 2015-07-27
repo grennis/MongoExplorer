@@ -14,9 +14,11 @@ import android.widget.EditText;
 import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 
-public class DocumentEditFragment extends Fragment {
+import butterknife.Bind;
 
-	private EditText mContentEdit;
+public class DocumentEditFragment extends BaseFragment {
+	@Bind(R.id.document_edit_content) EditText mContentEdit;
+
 	private String mCollectionName;
 	private Callbacks mCallbacks;
 
@@ -33,27 +35,18 @@ public class DocumentEditFragment extends Fragment {
 
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME); 
 
-    	setHasOptionsMenu(true);    	
+    	setHasOptionsMenu(true);
     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	View view = inflater.inflate(R.layout.fragment_document_edit, container, false);
-    	
-    	mContentEdit = (EditText) view.findViewById(R.id.document_edit_content);
-    	
+    	View view = super.onCreateView(R.layout.fragment_document_edit, inflater, container, savedInstanceState);
+
     	String json = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
     	mContentEdit.setText(json);
 		getActivity().setProgressBarIndeterminateVisibility(false);
 
         return view;
-    }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-        
-        //getLoaderManager().initLoader(0, getArguments(), this);
     }
     
     @Override

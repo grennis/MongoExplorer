@@ -11,6 +11,8 @@ import android.widget.ListAdapter;
 
 import com.innodroid.mongobrowser.R;
 
+import butterknife.ButterKnife;
+
 public class UiUtils {
 	public interface AlertDialogCallbacks {
 		boolean onOK();
@@ -130,18 +132,18 @@ public class UiUtils {
 	        .setTitle(R.string.title_confirm)
 	        .setCancelable(true)
 	        .setPositiveButton(android.R.string.ok,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                	callbacks.onConfirm();
-	                }
-	            }
-	        )
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							callbacks.onConfirm();
+						}
+					}
+			)
 	        .setNegativeButton(android.R.string.cancel,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                }
-	            }
-	        )
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+						}
+					}
+			)
 	        .create().show();
 	}
 }

@@ -32,18 +32,21 @@ import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
-public class ConnectionDetailFragment extends Fragment implements LoaderCallbacks<Cursor>, ConnectionEditDialogFragment.Callbacks {
+import butterknife.Bind;
+import butterknife.OnClick;
+
+public class ConnectionDetailFragment extends BaseFragment implements LoaderCallbacks<Cursor>, ConnectionEditDialogFragment.Callbacks {
+	@Bind(R.id.connection_detail_title) TextView mTitle;
+	@Bind(R.id.connection_detail_server) TextView mServer;
+	@Bind(R.id.connection_detail_port) TextView mPort;
+	@Bind(R.id.connection_detail_db) TextView mDB;
+	@Bind(R.id.connection_detail_user) TextView mUser;
+	@Bind(R.id.connection_detail_last_connect) TextView mLastConnect;
 
 	private long mConnectionID;
-	private TextView mTitle;
-	private TextView mServer;
-	private TextView mPort;
-	private TextView mDB;
-	private TextView mUser;
-	private TextView mLastConnect;
 	private Callbacks mCallbacks;
 
-    public interface Callbacks {
+	public interface Callbacks {
     	public void onConnectionDeleted();
         public void onConnected(long id);
     }
@@ -61,29 +64,19 @@ public class ConnectionDetailFragment extends Fragment implements LoaderCallback
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	View view = inflater.inflate(R.layout.fragment_connection_detail, container, false);
-    	
-        mTitle = (TextView) view.findViewById(R.id.connection_detail_title);
-        mServer = (TextView) view.findViewById(R.id.connection_detail_server);
-        mPort = (TextView) view.findViewById(R.id.connection_detail_port);
-        mDB = (TextView) view.findViewById(R.id.connection_detail_db);
-        mUser = (TextView) view.findViewById(R.id.connection_detail_user);
-        mLastConnect = (TextView) view.findViewById(R.id.connection_detail_last_connect);
-        
-        Button button = (Button) view.findViewById(R.id.connection_detail_connect);
-        button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				new ConnectTask().execute();
-			}        	
-        });
+    	View view = super.onCreateView(R.layout.fragment_connection_detail, inflater, container, savedInstanceState);
 
         getLoaderManager().initLoader(0, getArguments(), this);
 
         return view;
     }
-    
-    @Override
+
+	@OnClick(R.id.connection_detail_connect)
+	public void clickConnect() {
+		new ConnectTask().execute();
+	}
+
+	@Override
     public void onAttach(Activity activity) {
     	super.onAttach(activity);
     	

@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,13 +17,15 @@ import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.UiUtils;
 
-public class ConnectionEditDialogFragment extends DialogFragment implements LoaderCallbacks<Cursor> {
-	private TextView mNameView;
-	private TextView mServerView;
-	private TextView mPortView;
-	private TextView mDatabaseView;
-	private TextView mUserView;
-	private TextView mPasswordView;
+import butterknife.Bind;
+
+public class ConnectionEditDialogFragment extends BaseDialogFragment implements LoaderCallbacks<Cursor> {
+	@Bind(R.id.edit_connection_name) TextView mNameView;
+	@Bind(R.id.edit_connection_server) TextView mServerView;
+	@Bind(R.id.edit_connection_port) TextView mPortView;
+	@Bind(R.id.edit_connection_db) TextView mDatabaseView;
+	@Bind(R.id.edit_connection_user) TextView mUserView;
+	@Bind(R.id.edit_connection_pass) TextView mPasswordView;
 	private Callbacks mCallbacks;
 
 	public interface Callbacks {
@@ -46,16 +47,10 @@ public class ConnectionEditDialogFragment extends DialogFragment implements Load
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_connection_edit, null);
+    	View view = super.onCreateDialog(R.layout.fragment_connection_edit);
 
     	long id = getArguments().getLong(Constants.ARG_CONNECTION_ID, 0);
-    	mNameView = (TextView)view.findViewById(R.id.edit_connection_name);
-    	mServerView = (TextView)view.findViewById(R.id.edit_connection_server);
-    	mPortView = (TextView)view.findViewById(R.id.edit_connection_port);
-    	mDatabaseView = (TextView)view.findViewById(R.id.edit_connection_db);
-    	mUserView = (TextView)view.findViewById(R.id.edit_connection_user);
-    	mPasswordView = (TextView)view.findViewById(R.id.edit_connection_pass);
-    	
+
     	if (id != 0)
     		getLoaderManager().initLoader(0, getArguments(), this);
 

@@ -17,12 +17,14 @@ import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
-public class DocumentDetailFragment extends Fragment {
+import butterknife.Bind;
+
+public class DocumentDetailFragment extends BaseFragment {
+	@Bind(R.id.document_detail_content) TextView mContentText;
 
 	private String mCollectionName;
 	private String mRawText;
 	private String mFormattedText;
-	private TextView mContentText;
 	private Callbacks mCallbacks;
 
     public interface Callbacks {
@@ -43,15 +45,14 @@ public class DocumentDetailFragment extends Fragment {
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	View view = inflater.inflate(R.layout.fragment_document_detail, container, false);
-    	
-    	mContentText = (TextView) view.findViewById(R.id.document_detail_content);
-    	updateContent(getArguments().getString(Constants.ARG_DOCUMENT_CONTENT));
+		View view = super.onCreateView(R.layout.fragment_document_detail, inflater, container, savedInstanceState);
+
+		updateContent(getArguments().getString(Constants.ARG_DOCUMENT_CONTENT));
 		getActivity().setProgressBarIndeterminateVisibility(false);
 
         return view;
     }
-    
+
     @Override
     public void onAttach(Activity activity) {
     	super.onAttach(activity);

@@ -4,13 +4,14 @@ import com.innodroid.mongobrowser.util.UiUtils;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CollectionEditDialogFragment extends DialogFragment {
-	private TextView mNameView;
+import butterknife.Bind;
+
+public class CollectionEditDialogFragment extends BaseDialogFragment {
+	@Bind(R.id.edit_collection_name) TextView mNameView;
 	private String mName;
 
 	public interface Callbacks {
@@ -33,13 +34,12 @@ public class CollectionEditDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_collection_name_edit, null);
+    	View view = super.onCreateDialog(R.layout.fragment_collection_name_edit);
 
     	mName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
-    	mNameView = (TextView)view.findViewById(R.id.edit_collection_name);
     	mNameView.setText(mName);
     	
-    	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, R.string.title_edit_collection, true, 0, new UiUtils.AlertDialogCallbacks() {
+    	Dialog dialog = UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, R.string.title_edit_collection, true, 0, new UiUtils.AlertDialogCallbacks() {
 			@Override
 			public boolean onOK() {
 				return save();
@@ -49,7 +49,10 @@ public class CollectionEditDialogFragment extends DialogFragment {
 			public boolean onNeutralButton() {
 				return false;
 			}
-		});    	
+		});
+
+
+		return dialog;
     }
 
     private boolean save() {

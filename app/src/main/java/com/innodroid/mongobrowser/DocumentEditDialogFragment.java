@@ -3,7 +3,6 @@ package com.innodroid.mongobrowser;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.EditText;
 
@@ -11,8 +10,11 @@ import com.innodroid.mongo.MongoHelper;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
-public class DocumentEditDialogFragment extends DialogFragment {
-	private EditText mContentEdit;
+import butterknife.Bind;
+
+public class DocumentEditDialogFragment extends BaseDialogFragment {
+	@Bind(R.id.document_edit_content) EditText mContentEdit;
+
 	private String mContent;
 	private String mCollectionName;
 	private Callbacks mCallbacks;
@@ -38,11 +40,10 @@ public class DocumentEditDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_document_edit, null);
+    	View view = super.onCreateDialog(R.layout.fragment_document_edit);
 
     	mContent = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
-    	mContentEdit = (EditText)view.findViewById(R.id.document_edit_content);
     	mContentEdit.setText(mContent);
     	
     	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, mCollectionName, true, 0, new UiUtils.AlertDialogCallbacks() {
