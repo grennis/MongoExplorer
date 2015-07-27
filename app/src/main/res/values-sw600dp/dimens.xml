@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="connection_detail_vert_spacing">8dp</dimen>
-    <dimen name="connection_detail_header_size">34sp</dimen>
-    <dimen name="connection_detail_text_size">24sp</dimen>
-    <dimen name="exception_detail_vert_spacing">8dp</dimen>
-    <dimen name="exception_detail_header_size">34sp</dimen>
-    <dimen name="exception_detail_text_size">24sp</dimen>
-    <dimen name="document_list_item_text_size">24sp</dimen>
-	<dimen name="document_detail_text_size">24sp</dimen>    
-	<dimen name="list_item_padding">24dp</dimen>
-    <dimen name="dialog_padding">24dp</dimen>
-    <item name="document_lines" type="integer">2</item>
-    <item name="default_document_page_size" type="integer">12</item>
+    <dimen name="standard_padding">24dp</dimen>
+    <dimen name="standard_padding_small">18dp</dimen>
+    <dimen name="standard_padding_tiny">4dp</dimen>
+
+
+    <dimen name="text_size_large">34sp</dimen>
+    <dimen name="text_size_medium">24sp</dimen>
+
+    <!--<dimen name="connection_detail_vert_spacing">8dp</dimen>-->
+    <!--<dimen name="exception_detail_vert_spacing">8dp</dimen>-->
+	<!--<dimen name="list_item_padding">24dp</dimen>-->
+    <!--<dimen name="dialog_padding">24dp</dimen>-->
 </resources>
 

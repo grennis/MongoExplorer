@@ -6,8 +6,8 @@
 
 	<TextView 
 	    android:id="@+id/document_detail_content"
-	    android:textSize="@dimen/document_detail_text_size"
-		android:padding="16dp"
+	    android:textSize="@dimen/text_size_medium"
+		android:padding="@dimen/standard_padding"
 	    android:singleLine="false"
 	    android:autoLink="web"
 	    android:linksClickable="true"

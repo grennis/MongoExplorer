@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <dimen name="connection_detail_vert_spacing">2dp</dimen>
-    <dimen name="connection_detail_header_size">24sp</dimen>
-    <dimen name="connection_detail_text_size">16sp</dimen>
-    <dimen name="document_detail_text_size">16sp</dimen>
-    <dimen name="document_edit_text_size">16sp</dimen>
-    <dimen name="document_list_item_text_size">16sp</dimen>
-    <dimen name="exception_detail_vert_spacing">2dp</dimen>
-    <dimen name="exception_detail_header_size">24sp</dimen>
-    <dimen name="exception_detail_text_size">16sp</dimen>
-	<dimen name="list_item_padding">12dp</dimen>
-    <dimen name="dialog_padding">12dp</dimen>
-    <dimen name="text_size_list_item">24sp</dimen>
-    <dimen name="text_size_list_item_small">18sp</dimen>
-    <item name="document_lines" type="integer">4</item>
-    <item name="default_document_page_size" type="integer">6</item>
+<resources>
+    <dimen name="standard_padding">16dp</dimen>
+    <dimen name="standard_padding_small">12dp</dimen>
+    <dimen name="standard_padding_xsmall">8dp</dimen>
+    <dimen name="standard_padding_tiny">2dp</dimen>
+
+    <dimen name="icon_size_small">38dp</dimen>
+    <dimen name="icon_size_large">80dp</dimen>
+
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_large">24sp</dimen>
 </resources>
 

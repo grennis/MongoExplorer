@@ -1,89 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="@dimen/dialog_padding"
-	android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-<LinearLayout 
+    android:padding="@dimen/standard_padding_small"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:layout_height="wrap_content">
+<LinearLayout android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/edit_connection_name"
+    <android.support.design.widget.TextInputLayout style="@style/EditLine">
+        <EditText android:id="@+id/edit_connection_name"
             android:hint="@string/name"
             android:inputType="textCapWords"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            style="@style/EditLine" />
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/edit_connection_server"
+    <android.support.design.widget.TextInputLayout style="@style/EditLine">
+        <EditText android:id="@+id/edit_connection_server"
             android:hint="@string/server"
             android:inputType="textNoSuggestions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            style="@style/EditLine" />
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/edit_connection_port"
+    <android.support.design.widget.TextInputLayout style="@style/EditLine">
+        <EditText android:id="@+id/edit_connection_port"
             android:hint="@string/port"
             android:inputType="numberDecimal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            style="@style/EditLine" />
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/edit_connection_db"
+    <android.support.design.widget.TextInputLayout style="@style/EditLine">
+        <EditText android:id="@+id/edit_connection_db"
             android:hint="@string/database"
             android:inputType="textNoSuggestions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            style="@style/EditLine" />
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/edit_connection_user"
+    <android.support.design.widget.TextInputLayout style="@style/EditLine">
+        <EditText android:id="@+id/edit_connection_user"
             android:hint="@string/user"
             android:inputType="textNoSuggestions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            style="@style/EditLine" />
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/edit_connection_pass"
+    <android.support.design.widget.TextInputLayout style="@style/EditLine">
+        <EditText android:id="@+id/edit_connection_pass"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            style="@style/EditLine" />
     </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>

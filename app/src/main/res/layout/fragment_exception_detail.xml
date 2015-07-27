@@ -2,24 +2,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-	android:padding="16dp"
+	android:padding="@dimen/standard_padding"
 	android:orientation="vertical"
 	tools:context=".ExceptionDetailFragment">
 
 	<TextView 
 	    android:id="@+id/exception_detail_title"
-	    android:textSize="@dimen/exception_detail_text_size"
+	    android:textSize="@dimen/text_size_medium"
 	    android:textStyle="bold"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content" />
 
     <ScrollView
-	    android:layout_marginTop="@dimen/exception_detail_vert_spacing"
+	    android:layout_marginTop="@dimen/standard_padding_tiny"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content">
 		<TextView
 	        android:id="@+id/exception_detail_text"
-		    android:textSize="@dimen/exception_detail_text_size"
+		    android:textSize="@dimen/text_size_medium"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content" />
 	</ScrollView>

@@ -33,7 +33,7 @@ public class CollectionEditDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_collection_edit, null);
+    	View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_collection_name_edit, null);
 
     	mName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
     	mNameView = (TextView)view.findViewById(R.id.edit_collection_name);

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="document_lines" type="integer">2</item>
+    <item name="default_document_page_size" type="integer">12</item>
+</resources>
+

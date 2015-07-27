@@ -1,38 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/list_item_padding"
-    android:background="@drawable/list_item_background">
+    android:orientation="horizontal"
+    style="@style/ListItem">
 
    	<ImageView android:id="@+id/list_item_collection_icon"
    	    android:contentDescription="@string/title_connection_list"
    	    android:src="@drawable/collection"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-	    android:layout_alignParentLeft="true"
-	    android:layout_centerVertical="true" />
+        android:layout_height="@dimen/icon_size_small"
+        android:layout_width="@dimen/icon_size_small" />
     
-	<TextView android:id="@+id/list_item_collection_count"
+	<TextView android:id="@+id/list_item_collection_name"
+        tools:text="Collection Name"
+        android:textSize="@dimen/text_size_large"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/standard_padding_xsmall"
+	    android:layout_gravity="center_vertical" />
+
+    <TextView android:id="@+id/list_item_collection_count"
         tools:text="X"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_marginRight="6dp"
-        android:layout_alignParentRight="true"
-	    android:layout_centerVertical="true"
-        android:textSize="@dimen/text_size_list_item" />
-   	
-	<TextView android:id="@+id/list_item_collection_name"
-        tools:text="Collection Name"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginLeft="6dp"
-        android:layout_toRightOf="@id/list_item_collection_icon"
-        android:layout_toLeftOf="@id/list_item_collection_count"
-	    android:layout_centerVertical="true"
-        android:textSize="@dimen/text_size_list_item" />
-			
-</RelativeLayout>
+        android:layout_marginLeft="@dimen/standard_padding_xsmall"
+        android:textSize="@dimen/text_size_large"
+        android:layout_gravity="center_vertical" />
+
+</LinearLayout>
 
 

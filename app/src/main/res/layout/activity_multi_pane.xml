@@ -1,28 +1,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MongoConnectionListActivity">
+    android:layout_height="match_parent">
 
-    <FrameLayout android:id="@+id/frame_1" 
-        android:background="@drawable/container_background"
-        android:layout_width="0dp"
-        android:layout_height="match_parent" />
-
-    <FrameLayout android:id="@+id/frame_2"
-        android:background="@drawable/container_background"
-        android:layout_width="0dp"
-        android:layout_height="match_parent" />
-
-	<FrameLayout android:id="@+id/frame_3"
-        android:background="@drawable/container_background"
-        android:layout_width="0dp"
-        android:layout_height="match_parent" />
-
-	<FrameLayout android:id="@+id/frame_4"
-        android:background="@drawable/container_background"
-        android:layout_width="0dp"
-        android:layout_height="match_parent" />
+    <FrameLayout android:id="@+id/frame_1" style="@style/FrameContainer" />
+    <FrameLayout android:id="@+id/frame_2" style="@style/FrameContainer" />
+    <FrameLayout android:id="@+id/frame_3" style="@style/FrameContainer" />
+    <FrameLayout android:id="@+id/frame_4" style="@style/FrameContainer" />
 
 </FrameLayout>
 

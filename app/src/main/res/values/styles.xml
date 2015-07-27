@@ -4,5 +4,47 @@
         <item name="colorPrimaryDark">@color/theme_dark</item>
         <item name="colorAccent">@color/theme_accent</item>
     </style>
+
+    <style name="FrameContainer">
+        <item name="android:background">@drawable/container_background</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="DetailLine">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:layout_marginTop">@dimen/standard_padding_tiny</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="EditLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="EditLine.Name" parent="EditLine">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <style name="EditLineMulti">
+        <item name="android:inputType">textNoSuggestions|textMultiLine</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:minLines">5</item>
+        <item name="android:maxLines">9999</item>
+        <item name="android:padding">@dimen/standard_padding</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+    </style>
+
+    <style name="ListItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/standard_padding_small</item>
+        <item name="android:background">@drawable/list_item_background</item>
+    </style>
 </resources>
 
