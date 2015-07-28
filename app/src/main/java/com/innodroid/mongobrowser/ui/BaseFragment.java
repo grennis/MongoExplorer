@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

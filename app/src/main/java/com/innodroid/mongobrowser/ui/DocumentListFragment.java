@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.ui;
 
 
 import android.app.Activity;
@@ -17,7 +17,9 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.innodroid.mongo.MongoHelper;
+import com.innodroid.mongobrowser.util.MongoHelper;
+import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.data.MongoDocumentAdapter;

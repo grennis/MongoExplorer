@@ -1,10 +1,11 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.ui;
 
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.util.UiUtils;
 
 import butterknife.Bind;

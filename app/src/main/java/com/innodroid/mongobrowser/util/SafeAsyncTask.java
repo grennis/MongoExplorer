@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 
-import com.innodroid.mongobrowser.ExceptionDetailDialogFragment;
+import com.innodroid.mongobrowser.ui.ExceptionDetailDialogFragment;
 
 public abstract class SafeAsyncTask<T, U, V> extends AsyncTask<T, U, V>{
 	private Exception mException;

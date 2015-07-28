@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

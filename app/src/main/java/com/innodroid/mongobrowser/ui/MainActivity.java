@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,12 +15,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.widget.FrameLayout;
 
+import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.LeftMarginAnimation;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.WidthAnimation;
 
-public class ConnectionListActivity extends AppCompatActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
+public class MainActivity extends AppCompatActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
 	private static final String STATE_COLLECTION_NAME = "collname";
 	
 	private boolean mTwoPane;
@@ -117,30 +119,34 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
 		super.onSaveInstanceState(outState);
 		outState.putString(STATE_COLLECTION_NAME, mCollectionName);
 	}
-	
+
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-				hideDocumentDetailPane();
-				return true;
+	public void onBackPressed() {
+		FragmentManager fm = getSupportFragmentManager();
+
+		if (!mTwoPane) {
+			if (fm.getBackStackEntryCount() > 0) {
+				fm.popBackStack();
+				return;
 			}
-			if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+		} else {
+			if (fm.getBackStackEntryCount() > 1) {
+				hideDocumentDetailPane();
+				return;
+			}
+
+			if (fm.getBackStackEntryCount() > 0) {
 				hideDocumentListPane();
-				return true;
+				return;
 			}
 		}
-		
-		return super.onKeyDown(keyCode, event);
+
+		super.onBackPressed();
 	}
 
 	@Override
     public void onConnectionItemSelected(int position, long id) {
-        if (mTwoPane) {
-        	loadConnectionDetailsPane(id);
-        } else {
-        	showDetailsActivity(id);
-        }
+		loadConnectionDetailsPane(id);
     }
 	
 	private void loadConnectionListPane() {
@@ -148,7 +154,8 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
         ConnectionListFragment fragment = new ConnectionListFragment();
         args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
         fragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(mTwoPane ? R.id.frame_1 : R.id.root_content, fragment).commit();
+
+		getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).commit();
 	}
 	
     private void loadConnectionDetailsPane(long id) {
@@ -156,35 +163,29 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
         arguments.putLong(Constants.ARG_CONNECTION_ID, id);
         ConnectionDetailFragment fragment = new ConnectionDetailFragment();
         fragment.setArguments(arguments);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_2, fragment)
-                .commit();
+
+		if (mTwoPane) {
+			getSupportFragmentManager().beginTransaction().replace(R.id.frame_2, fragment).commit();
+		} else {
+			getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).addToBackStack(null).commit();
+		}
 	}
-    
-    private void showDetailsActivity(long id) {
-        Intent detailIntent = new Intent(this, ConnectionDetailActivity.class);
-        detailIntent.putExtra(Constants.ARG_CONNECTION_ID, id);
-        startActivity(detailIntent);
-    }
-    
+
     private void loadCollectionListPane(long connectionId) {
         Bundle arguments = new Bundle();
         CollectionListFragment fragment = new CollectionListFragment();
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
         arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
         fragment.setArguments(arguments);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_2, fragment)
-                .commit();
+
+		if (mTwoPane) {
+			getSupportFragmentManager().beginTransaction().replace(R.id.frame_2, fragment).commit();
+		} else {
+			getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).addToBackStack(null).commit();
+		}
     }
 
     private void loadDocumentListPane(long connectionId, String collection) {
-        FragmentManager fm = getSupportFragmentManager();
-    	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 0;
-
-    	if (!alreadyShiftedFrames)
-    		shiftAllLeft(mFrame1, mFrame2, mFrame3);
-    	
     	Bundle arguments = new Bundle();
         DocumentListFragment fragment = new DocumentListFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
@@ -192,25 +193,30 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
         fragment.setArguments(arguments);
 
-    	Fragment connectionList = fm.findFragmentById(R.id.frame_1);
-    	FragmentTransaction ft = fm.beginTransaction();
-    	ft.replace(R.id.frame_3, fragment);
+		FragmentManager fm = getSupportFragmentManager();
 
-    	if (!alreadyShiftedFrames) {
-    		ft.remove(connectionList);
-        	ft.addToBackStack("doclist");
-    	}
-    	
-    	ft.commit();    	
+		if (mTwoPane) {
+			boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 0;
+
+			if (!alreadyShiftedFrames)
+				shiftAllLeft(mFrame1, mFrame2, mFrame3);
+
+			Fragment connectionList = fm.findFragmentById(R.id.frame_1);
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.replace(R.id.frame_3, fragment);
+
+			if (!alreadyShiftedFrames) {
+				ft.remove(connectionList);
+				ft.addToBackStack("doclist");
+			}
+
+			ft.commit();
+		} else {
+			getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).addToBackStack(null).commit();
+		}
     }
     
 	private void loadDocumentDetailsPane(String content) {
-        FragmentManager fm = getSupportFragmentManager();
-    	boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 1;
-
-    	if (!alreadyShiftedFrames)
-    		shiftAllLeft(mFrame2, mFrame3, mFrame4);
-    	
     	Bundle arguments = new Bundle();
         DocumentDetailFragment fragment = new DocumentDetailFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, mCollectionName);
@@ -218,16 +224,27 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
         arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
         fragment.setArguments(arguments);
 
-    	Fragment collectionList = fm.findFragmentById(R.id.frame_2);
-    	FragmentTransaction ft = fm.beginTransaction();
-    	ft.replace(R.id.frame_4, fragment);
+		FragmentManager fm = getSupportFragmentManager();
 
-    	if (!alreadyShiftedFrames) {
-    		ft.remove(collectionList);
-        	ft.addToBackStack("docdetails");
-    	}
-    	
-    	ft.commit();    	
+		if (mTwoPane) {
+			boolean alreadyShiftedFrames = fm.getBackStackEntryCount() > 1;
+
+			if (!alreadyShiftedFrames)
+				shiftAllLeft(mFrame2, mFrame3, mFrame4);
+
+			Fragment collectionList = fm.findFragmentById(R.id.frame_2);
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.replace(R.id.frame_4, fragment);
+
+			if (!alreadyShiftedFrames) {
+				ft.remove(collectionList);
+				ft.addToBackStack("docdetails");
+			}
+
+			ft.commit();
+		} else {
+			getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).addToBackStack(null).commit();
+		}
     }
 
     private void hideDocumentListPane() {
@@ -304,24 +321,6 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
 	
     @Override
     public void onAddConnection() {
-    	//ConnectionListFragment fragment = (ConnectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_1);
-    	if (true) { //  (fragment.getConnectionCount() == 0 || hasPurchased()) {
-    		addConnection();
-    		return;
-    	}
-    	
-    	/*
-    	UiUtils.confirm(this, R.string.purchase_offer, new ConfirmCallbacks() {
-			@Override
-			public boolean onConfirm() {
-				beginPurchase();
-				return true;
-			}
-    	});    	
-    	*/
-    }
-
-    private void addConnection() {
         DialogFragment fragment = ConnectionEditDialogFragment.create(0);
         fragment.show(getSupportFragmentManager(), null);
     }
@@ -339,6 +338,10 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
 
 	@Override
 	public void onDocumentItemActivated(String content) {
+		if (content == null && !mTwoPane) {
+			return;
+		}
+
 		// If nothing was selected (i.e., refresh) and we aren't showing the details pane, then dont shift to it
 		if (content == null && getSupportFragmentManager().getBackStackEntryCount() < 2)
 			return;
@@ -415,13 +418,15 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
 
 	@Override
 	public void onDocumentCreated(String content) {
-        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
-        fragment.onDocumentCreated(content);
+		if (mTwoPane) {
+			DocumentListFragment fragment = (DocumentListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_3);
+			fragment.onDocumentCreated(content);
 
-        CollectionListFragment collectionList = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
-        if (collectionList != null)
-        	collectionList.reloadList();
-}
+			CollectionListFragment collectionList = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
+			if (collectionList != null)
+				collectionList.reloadList();
+		}
+	}
 
 	@Override
 	public void onDocumentUpdated(String content) {
@@ -444,18 +449,24 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
 
 	@Override 
 	public void onDocumentListRefreshRequested() {
-        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
+		if (mTwoPane) {
+			DocumentListFragment fragment = (DocumentListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_3);
 
-        fragment.reloadList(getSupportFragmentManager().getBackStackEntryCount() > 1);		
+			fragment.reloadList(getSupportFragmentManager().getBackStackEntryCount() > 1);
 
-        CollectionListFragment collectionList = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
-        if (collectionList != null)
-        	collectionList.reloadList();
+			CollectionListFragment collectionList = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
+			if (collectionList != null)
+				collectionList.reloadList();
+		} else {
+			DocumentListFragment fragment = (DocumentListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
+			fragment.reloadList(false);
+
+		}
 	}
 	
     private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {
 		public AddConnectionIfNoneExistTask() {
-			super(ConnectionListActivity.this);
+			super(MainActivity.this);
 		}
 
 		@Override
@@ -465,8 +476,9 @@ public class ConnectionListActivity extends AppCompatActivity implements Connect
 
 		@Override
 		protected void safeOnPostExecute(Boolean res) {
-			if (res)
-				addConnection();
+			if (res) {
+				onAddConnection();
+			}
 		}
 
 		@Override

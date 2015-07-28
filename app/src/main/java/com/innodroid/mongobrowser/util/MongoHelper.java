@@ -1,4 +1,4 @@
-package com.innodroid.mongo;
+package com.innodroid.mongobrowser.util;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

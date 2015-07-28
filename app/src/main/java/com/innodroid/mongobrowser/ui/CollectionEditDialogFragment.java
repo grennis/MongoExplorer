@@ -1,5 +1,7 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.ui;
 
+import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.util.UiUtils;
 
 import android.app.Dialog;

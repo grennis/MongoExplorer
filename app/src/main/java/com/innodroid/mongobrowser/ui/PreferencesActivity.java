@@ -1,7 +1,9 @@
-package com.innodroid.mongobrowser;
+package com.innodroid.mongobrowser.ui;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
+import com.innodroid.mongobrowser.R;
 
 public class PreferencesActivity extends PreferenceActivity {    
     @SuppressWarnings("deprecation")
@@ -9,7 +11,7 @@ public class PreferencesActivity extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {        
         super.onCreate(savedInstanceState);        
         
-        addPreferencesFromResource(R.xml.preferences);        
+        addPreferencesFromResource(R.xml.preferences);
     }
     
 //    @Override
