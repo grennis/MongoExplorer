@@ -1,6 +1,7 @@
 package com.innodroid.mongobrowser.ui;
 
 import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.util.UiUtils;
 
@@ -16,11 +17,6 @@ public class CollectionEditDialogFragment extends BaseDialogFragment {
 	@Bind(R.id.edit_collection_name) TextView mNameView;
 	private String mName;
 
-	public interface Callbacks {
-		void onCreateCollection(String name);
-		void onRenameCollection(String name);
-	}
-	
 	public CollectionEditDialogFragment() {
 		super();
 	}
@@ -65,11 +61,10 @@ public class CollectionEditDialogFragment extends BaseDialogFragment {
     		return false;
     	}
 
-    	Callbacks callbacks = (Callbacks)getTargetFragment();
     	if (getArguments().getBoolean(Constants.ARG_IS_NEW))
-    		callbacks.onCreateCollection(name);
+			Events.postCreateCollection(name);
     	else
-    		callbacks.onRenameCollection(name);
+    		Events.postRenameCollection(name);
 
     	return true;
     }

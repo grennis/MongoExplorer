@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
@@ -28,13 +29,7 @@ public class ConnectionEditDialogFragment extends BaseDialogFragment implements 
 	@Bind(R.id.edit_connection_db) TextView mDatabaseView;
 	@Bind(R.id.edit_connection_user) TextView mUserView;
 	@Bind(R.id.edit_connection_pass) TextView mPasswordView;
-	private Callbacks mCallbacks;
 
-	public interface Callbacks {
-		void onConnectionAdded(long id);
-		void onConnectionUpdated(long id);
-	}
-	
 	public ConnectionEditDialogFragment() {
 		super();
 	}
@@ -69,17 +64,7 @@ public class ConnectionEditDialogFragment extends BaseDialogFragment implements 
 		});    	
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-    	super.onAttach(activity);
-
-    	if (getTargetFragment() != null)
-    		mCallbacks = (Callbacks)getTargetFragment();
-    	else
-    		mCallbacks = (Callbacks)activity;
-    }
-    
-    private boolean save() {    	
+    private boolean save() {
     	String name = mNameView.getText().toString();
     	String server = mServerView.getText().toString();
     	String porttxt = mPortView.getText().toString();
@@ -106,11 +91,11 @@ public class ConnectionEditDialogFragment extends BaseDialogFragment implements 
 
     	if (id == 0) {
     		id = helper.addConnection(name, server, port, db, user, pass);
-    		mCallbacks.onConnectionAdded(id);
+    		Events.postConnectionAdded(id);
     	}
     	else {
     		helper.updateConnection(id, name, server, port, db, user, pass);
-        	mCallbacks.onConnectionUpdated(id);
+        	Events.postConnectionUpdated(id);
     	}
     	
     	return true;

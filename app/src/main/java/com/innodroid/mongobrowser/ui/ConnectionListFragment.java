@@ -15,24 +15,21 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
+
+import de.greenrobot.event.EventBus;
 
 public class ConnectionListFragment extends ListFragment implements LoaderCallbacks<Cursor> {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private MongoConnectionAdapter mAdapter;
-    private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private long mSelectAfterLoad;
 
-    public interface Callbacks {
-    	public void onAddConnection();
-        public void onConnectionItemSelected(int position, long id);
-    }
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +54,7 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_connection_list_add:
-            	mCallbacks.onAddConnection();
+                Events.postAddConnection();
                 return true;
             case R.id.menu_connection_list_configure:
             	Intent intent = new Intent(getActivity(), PreferencesActivity.class);
@@ -81,26 +78,12 @@ public class ConnectionListFragment extends ListFragment implements LoaderCallba
     }
     
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        mCallbacks = (Callbacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        mCallbacks = null;
-        super.onDetach();
-    }
-
-    @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         
         setActivatedPosition(position);
-        
-        if (mCallbacks != null)
-        	mCallbacks.onConnectionItemSelected(position, mAdapter.getItemId(position));
+
+        Events.postConnectionSelected(mAdapter.getItemId(position));
     }
 
     @Override

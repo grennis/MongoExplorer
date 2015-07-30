@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -19,12 +20,6 @@ public class DocumentEditDialogFragment extends BaseDialogFragment {
 
 	private String mContent;
 	private String mCollectionName;
-	private Callbacks mCallbacks;
-
-    public interface Callbacks {
-    	void onDocumentCreated(String content);
-    	void onDocumentUpdated(String content);
-    }
 
 	public DocumentEditDialogFragment() {
 		super();
@@ -62,13 +57,6 @@ public class DocumentEditDialogFragment extends BaseDialogFragment {
 		});    	
     }
     
-    @Override
-    public void onAttach(Activity activity) {
-    	super.onAttach(activity);
-    	
-    	mCallbacks = (Callbacks)activity;
-    }
-    
     public void save() {
     	String doc = mContentEdit.getText().toString();
     	new SaveDocumentTask().execute(doc);
@@ -87,9 +75,9 @@ public class DocumentEditDialogFragment extends BaseDialogFragment {
 		@Override
 		protected void safeOnPostExecute(String result) {
 			if (getArguments().getBoolean(Constants.ARG_IS_NEW))
-				mCallbacks.onDocumentCreated(result);
+				Events.postDocumentCreated(result);
 			else
-				mCallbacks.onDocumentUpdated(result);
+				Events.postDocumentEdited(result);
 		}
 
 		@Override

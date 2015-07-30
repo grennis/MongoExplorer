@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -33,8 +34,9 @@ import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 
-public class ConnectionDetailFragment extends BaseFragment implements LoaderCallbacks<Cursor>, ConnectionEditDialogFragment.Callbacks {
+public class ConnectionDetailFragment extends BaseFragment implements LoaderCallbacks<Cursor> {
 	@Bind(R.id.connection_detail_title) TextView mTitle;
 	@Bind(R.id.connection_detail_server) TextView mServer;
 	@Bind(R.id.connection_detail_port) TextView mPort;
@@ -43,12 +45,6 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
 	@Bind(R.id.connection_detail_last_connect) TextView mLastConnect;
 
 	private long mConnectionID;
-	private Callbacks mCallbacks;
-
-	public interface Callbacks {
-    	public void onConnectionDeleted();
-        public void onConnected(long id);
-    }
 
     public ConnectionDetailFragment() {
     }
@@ -75,20 +71,6 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
 		new ConnectTask().execute();
 	}
 
-	@Override
-    public void onAttach(Activity activity) {
-    	super.onAttach(activity);
-    	
-    	mCallbacks = (Callbacks)activity;
-    }
-    
-    @Override
-    public void onDetach() {
-    	super.onDetach();
-    	
-    	mCallbacks = null;
-    }
-    
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.connection_detail_menu, menu);
@@ -154,13 +136,7 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
     	});
     }
 
-	@Override
-	public void onConnectionAdded(long id) {
-		Log.e("ERR", "Should never get here");
-	}
-
-	@Override
-	public void onConnectionUpdated(long id) {
+	public void onEvent(Events.ConnectionUpdated e) {
 		// Gets detached on orientation change
 		if (super.isAdded())
 			getLoaderManager().initLoader(0, getArguments(), this);
@@ -191,7 +167,7 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			mCallbacks.onConnected(mConnectionID);
+			Events.postConnected(mConnectionID);
 		}
 
 		@Override
@@ -218,7 +194,7 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
 		
 		@Override
 		protected void safeOnPostExecute(Boolean result) {
-			mCallbacks.onConnectionDeleted();
+			Events.postConnectionDeleted();
 		}
 
 		@Override

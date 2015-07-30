@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 public class BaseFragment extends Fragment {
     protected View onCreateView(int layout, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -23,5 +24,19 @@ public class BaseFragment extends Fragment {
         super.onDestroyView();
 
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        EventBus.getDefault().unregister(this);
     }
 }

@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -22,18 +23,12 @@ import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
-public class CollectionListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, ChangeDatabaseDialogFragment.Callbacks {
-
+public class CollectionListFragment extends ListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private long mConnectionId;
     private MongoCollectionAdapter mAdapter;
-    private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
-
-    public interface Callbacks {
-        public void onCollectionItemSelected(long connectionId, String name);
-    }
 
     public CollectionListFragment() {
     }
@@ -52,6 +47,10 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 
 		reloadList();
     }
+
+	public void onEvent(Events.DocumentDeleted e) {
+		reloadList();
+	}
 
 	public void reloadList() {
     	new LoadNamesTask().execute();
@@ -91,38 +90,20 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
         super.onViewCreated(view, savedInstanceState);
 
         getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
+				? ListView.CHOICE_MODE_SINGLE
+				: ListView.CHOICE_MODE_NONE);
         
         if (mActivatedPosition != ListView.INVALID_POSITION)
             setActivatedPosition(mActivatedPosition);
     }
     
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
-
-        mCallbacks = (Callbacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        mCallbacks = null;
-        super.onDetach();
-    }
-
-    @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         
         setActivatedPosition(position);
-        
-        if (mCallbacks != null)
-        	mCallbacks.onCollectionItemSelected(mConnectionId, mAdapter.getCollectionName(position));
+
+		Events.postCollectionSelected(mConnectionId, mAdapter.getCollectionName(position));
     }
 
     @Override
@@ -143,32 +124,25 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
         mActivatedPosition = position;
     }
     
-	@Override
-	public void onCreateCollection(String name) {
-		new AddCollectionTask().execute(name);
+	public void onEvent(Events.CreateCollection e) {
+		new AddCollectionTask().execute(e.Name);
 	}
 
-	@Override
-	public void onRenameCollection(String name) {
-		Log.e("ERR", "Shouldnt get here");
+	public void onEvent(Events.CollectionRenamed e) {
+		mAdapter.setItemName(mActivatedPosition, e.Name);
 	}
 	
-	public void onCollectionEdited(String name) {
-		mAdapter.setItemName(mActivatedPosition, name);
-	}
-	
-	@Override
-	public void onChangeDatabase(String name) {
-		new ChangeDatabaseTask().execute(name);
+	public void onEvent(Events.ChangeDatabase e) {
+		new ChangeDatabaseTask().execute(e.Name);
 	}
 
-	public void onCollectionDropped() {
+	public void onEvent(Events.CollectionDropped e) {
 		mAdapter.delete(mActivatedPosition);
 
 		if (mActivatedPosition < mAdapter.getCount())
-			mCallbacks.onCollectionItemSelected(mConnectionId, mAdapter.getItem(mActivatedPosition).Name);
+			Events.postCollectionSelected(mConnectionId, mAdapter.getItem(mActivatedPosition).Name);
 		else {
-			mCallbacks.onCollectionItemSelected(mConnectionId, null);
+			Events.postCollectionSelected(mConnectionId, null);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
 	}
@@ -188,7 +162,7 @@ public class CollectionListFragment extends ListFragment implements CollectionEd
 		protected void safeOnPostExecute(String result) {
 			mAdapter.add(0, result);
 			setActivatedPosition(0);
-			mCallbacks.onCollectionItemSelected(mConnectionId, result);
+			Events.postCollectionSelected(mConnectionId, result);
 		}
 
 		@Override

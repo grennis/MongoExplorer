@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -26,12 +27,6 @@ public class DocumentDetailFragment extends BaseFragment {
 	private String mCollectionName;
 	private String mRawText;
 	private String mFormattedText;
-	private Callbacks mCallbacks;
-
-    public interface Callbacks {
-    	void onEditDocument(String content);
-		void onDeleteDocument();
-    }
 
     public DocumentDetailFragment() {
     }
@@ -55,20 +50,6 @@ public class DocumentDetailFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-    	super.onAttach(activity);
-    	
-    	mCallbacks = (Callbacks)activity;
-    }
-    
-    @Override
-    public void onDetach() {
-    	super.onDetach();
-    	
-    	mCallbacks = null;
-    }
-    
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.document_detail_menu, menu);
     }    
@@ -78,7 +59,7 @@ public class DocumentDetailFragment extends BaseFragment {
     	switch (item.getItemId()) {
     		case R.id.menu_document_detail_edit:
     			if (mRawText != null)
-    				mCallbacks.onEditDocument(mFormattedText);
+    				Events.postEditDocument(mFormattedText);
     			return true;
     		case R.id.menu_document_detail_delete:
     			if (mRawText != null)
@@ -135,7 +116,7 @@ public class DocumentDetailFragment extends BaseFragment {
 
 		@Override
 		protected void safeOnPostExecute(Void result) {
-			mCallbacks.onDeleteDocument();
+			Events.postDocumentDeleted();
 		}
 
 		@Override

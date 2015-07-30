@@ -1,13 +1,11 @@
 package com.innodroid.mongobrowser.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
@@ -16,13 +14,16 @@ import android.view.animation.AnimationSet;
 import android.widget.FrameLayout;
 
 import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.util.LeftMarginAnimation;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.WidthAnimation;
 
-public class MainActivity extends AppCompatActivity implements ConnectionListFragment.Callbacks, ConnectionDetailFragment.Callbacks, CollectionListFragment.Callbacks, DocumentListFragment.Callbacks, ConnectionEditDialogFragment.Callbacks, DocumentDetailFragment.Callbacks, DocumentEditDialogFragment.Callbacks {
+import de.greenrobot.event.EventBus;
+
+public class MainActivity extends AppCompatActivity {
 	private static final String STATE_COLLECTION_NAME = "collname";
 	
 	private boolean mTwoPane;
@@ -100,7 +101,21 @@ public class MainActivity extends AppCompatActivity implements ConnectionListFra
     	}
     }
 
-	private void moveOffscreenToLeft(View view) {		
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		EventBus.getDefault().register(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		EventBus.getDefault().unregister(this);
+	}
+
+	private void moveOffscreenToLeft(View view) {
 		((MarginLayoutParams)view.getLayoutParams()).leftMargin = mScreenWidth + 1;
 	}
 
@@ -144,11 +159,10 @@ public class MainActivity extends AppCompatActivity implements ConnectionListFra
 		super.onBackPressed();
 	}
 
-	@Override
-    public void onConnectionItemSelected(int position, long id) {
-		loadConnectionDetailsPane(id);
-    }
-	
+	public void onEvent(Events.ConnectionSelected e) {
+		loadConnectionDetailsPane(e.ConnectionId);
+	}
+
 	private void loadConnectionListPane() {
     	Bundle args = new Bundle();
         ConnectionListFragment fragment = new ConnectionListFragment();
@@ -184,6 +198,11 @@ public class MainActivity extends AppCompatActivity implements ConnectionListFra
 			getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).addToBackStack(null).commit();
 		}
     }
+
+	private void showAddConnection() {
+		DialogFragment fragment = ConnectionEditDialogFragment.create(0);
+		fragment.show(getSupportFragmentManager(), null);
+	}
 
     private void loadDocumentListPane(long connectionId, String collection) {
     	Bundle arguments = new Bundle();
@@ -318,57 +337,53 @@ public class MainActivity extends AppCompatActivity implements ConnectionListFra
 		Animation animation = new LeftMarginAnimation(view, mLeftPaneWidth, mScreenWidth+1);
 		view.startAnimation(animation);
 	}
-	
-    @Override
-    public void onAddConnection() {
-        DialogFragment fragment = ConnectionEditDialogFragment.create(0);
-        fragment.show(getSupportFragmentManager(), null);
+
+    public void onEvent(Events.AddConnection e) {
+		showAddConnection();
     }
 
-	@Override
-	public void onCollectionItemSelected(long connectionId, String name) {
-		mCollectionName = name;
-		loadDocumentListPane(connectionId, name);
+	public void onEvent(Events.AddDocument e) {
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED);
+		fragment.show(getSupportFragmentManager(), null);
 	}
 
-	@Override
-	public void onDocumentItemClicked(String content) {
-		loadDocumentDetailsPane(content);
+	public void onEvent(Events.CollectionSelected e) {
+		mCollectionName = e.CollectionName;
+		loadDocumentListPane(e.ConnectionId, e.CollectionName);
 	}
 
-	@Override
-	public void onDocumentItemActivated(String content) {
-		if (content == null && !mTwoPane) {
+	public void onEvent(Events.DocumentClicked e) {
+		loadDocumentDetailsPane(e.Content);
+	}
+
+	public void onEvent(Events.DocumentSelected e) {
+		if (e.Content == null && !mTwoPane) {
 			return;
 		}
 
 		// If nothing was selected (i.e., refresh) and we aren't showing the details pane, then dont shift to it
-		if (content == null && getSupportFragmentManager().getBackStackEntryCount() < 2)
+		if (e.Content == null && getSupportFragmentManager().getBackStackEntryCount() < 2)
 			return;
 		
-		loadDocumentDetailsPane(content);
+		loadDocumentDetailsPane(e.Content);
 	}
 
-	@Override
-	public void onConnected(long connectionId) {
-		loadCollectionListPane(connectionId);
+	public void onEvent(Events.Connected e) {
+		loadCollectionListPane(e.ConnectionId);
 	}
 
-	@Override
-	public void onConnectionDeleted() {
+	public void onEvent(Events.ConnectionDeleted e) {
         getSupportFragmentManager().beginTransaction()
 	        .remove(getSupportFragmentManager().findFragmentById(R.id.frame_2))
 	        .commit();        
 	}
 
-	@Override
-	public void onConnectionAdded(long id) {
-		reloadConnectionListAndSelect(id);
+	public void onEvent(Events.ConnectionAdded e) {
+		reloadConnectionListAndSelect(e.ConnectionId);
 	}
 
-	@Override
-	public void onConnectionUpdated(long id) {
-		reloadConnectionListAndSelect(id);
+	public void onEvent(Events.ConnectionUpdated e) {
+		reloadConnectionListAndSelect(e.ConnectionId);
 	}
 
 	private void reloadConnectionListAndSelect(long id) {
@@ -384,14 +399,7 @@ public class MainActivity extends AppCompatActivity implements ConnectionListFra
         	loadConnectionDetailsPane(id);
 	}
 
-	@Override
-	public void onCollectionEdited(String name) {
-        CollectionListFragment fragment = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
-        fragment.onCollectionEdited(name);		
-	}
-
-	@Override
-	public void onCollectionDropped(String name) {
+	public void onEvent(Events.CollectionDropped e) {
         FragmentManager fm = getSupportFragmentManager();
 
         if (fm.getBackStackEntryCount() > 1) {
@@ -399,56 +407,22 @@ public class MainActivity extends AppCompatActivity implements ConnectionListFra
         }
         
         fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_3)).commit();
-
-    	CollectionListFragment fragment = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
-        fragment.onCollectionDropped();
 	}
 	
-	@Override
-	public void onAddDocument() {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED);
+	public void onEvent(Events.EditDocument e) {
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, false, e.Content);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 
-	@Override
-	public void onEditDocument(String content) {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, false, content);
-		fragment.show(getSupportFragmentManager(), null);
-	}
-
-	@Override
-	public void onDocumentCreated(String content) {
+	public void onEvent(Events.DocumentCreated e) {
 		if (mTwoPane) {
-			DocumentListFragment fragment = (DocumentListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_3);
-			fragment.onDocumentCreated(content);
-
 			CollectionListFragment collectionList = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
 			if (collectionList != null)
 				collectionList.reloadList();
 		}
 	}
 
-	@Override
-	public void onDocumentUpdated(String content) {
-        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
-        fragment.onDocumentUpdated(content);
-	}
-
-	@Override
-	public void onDeleteDocument() {
-        DocumentListFragment fragment = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_3);
-        fragment.onDocumentDeleted();
-        
-        if (fragment.getItemCount() == 0)
-        	hideDocumentDetailPane();
-
-        CollectionListFragment collectionList = (CollectionListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_2);
-        if (collectionList != null)
-        	collectionList.reloadList();
-	}
-
-	@Override 
-	public void onDocumentListRefreshRequested() {
+	public void onEvent(Events.RefreshDocumentList e) {
 		if (mTwoPane) {
 			DocumentListFragment fragment = (DocumentListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_3);
 
@@ -477,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements ConnectionListFra
 		@Override
 		protected void safeOnPostExecute(Boolean res) {
 			if (res) {
-				onAddConnection();
+				showAddConnection();
 			}
 		}
 

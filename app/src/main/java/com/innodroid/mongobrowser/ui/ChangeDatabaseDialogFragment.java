@@ -12,6 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 
 import butterknife.Bind;
@@ -20,10 +21,6 @@ public class ChangeDatabaseDialogFragment extends BaseDialogFragment {
 	@Bind(R.id.change_database_list) ListView mDatabaseListView;
 
 	private static String ARG_DATABASES = "databases";
-	
-	public interface Callbacks {
-		void onChangeDatabase(String name);
-	}
 	
 	public ChangeDatabaseDialogFragment() {
 		super();
@@ -62,7 +59,7 @@ public class ChangeDatabaseDialogFragment extends BaseDialogFragment {
 		mDatabaseListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				((Callbacks) getTargetFragment()).onChangeDatabase(adapter.getItem(position));
+				Events.postChangeDatabase(adapter.getItem(position));
 				dialog.dismiss();
 			}
 		});

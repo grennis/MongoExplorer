@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.innodroid.mongobrowser.Constants;
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.util.UiUtils;
 
@@ -16,10 +17,6 @@ public class QueryEditTextDialogFragment extends BaseDialogFragment {
 
 	private String mContent;
 
-    public interface Callbacks {
-    	void onQueryUpdated(String query);
-    }
-    
     public QueryEditTextDialogFragment() {
     	super();
     }
@@ -42,7 +39,7 @@ public class QueryEditTextDialogFragment extends BaseDialogFragment {
     	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, "Edit Query", true, 0, new UiUtils.AlertDialogCallbacks() {
 			@Override
 			public boolean onOK() {
-				((Callbacks)getTargetFragment()).onQueryUpdated(mContentEdit.getText().toString());
+				Events.postQueryUpdated(mContentEdit.getText().toString());
 				return true;
 			}
 

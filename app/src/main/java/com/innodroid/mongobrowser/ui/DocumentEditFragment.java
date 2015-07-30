@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -21,11 +22,6 @@ public class DocumentEditFragment extends BaseFragment {
 	@Bind(R.id.document_edit_content) EditText mContentEdit;
 
 	private String mCollectionName;
-	private Callbacks mCallbacks;
-
-    public interface Callbacks {
-    	void onDocumentSaved(String content);
-    }
 
     public DocumentEditFragment() {
     }
@@ -48,20 +44,6 @@ public class DocumentEditFragment extends BaseFragment {
 		getActivity().setProgressBarIndeterminateVisibility(false);
 
         return view;
-    }
-    
-    @Override
-    public void onAttach(Activity activity) {
-    	super.onAttach(activity);
-    	
-    	mCallbacks = (Callbacks)activity;
-    }
-    
-    @Override
-    public void onDetach() {
-    	super.onDetach();
-    	
-    	mCallbacks = null;
     }
     
     @Override
@@ -92,7 +74,7 @@ public class DocumentEditFragment extends BaseFragment {
 		
 		@Override
 		protected void safeOnPostExecute(String result) {			
-			mCallbacks.onDocumentSaved(result);
+			Events.postDocumentEdited(result);
 		}
 
 		@Override

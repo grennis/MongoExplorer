@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -30,7 +31,7 @@ import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 import java.net.UnknownHostException;
 
-public class DocumentListFragment extends ListFragment implements CollectionEditDialogFragment.Callbacks, QueryEditTextDialogFragment.Callbacks, QueryEditNameDialogFragment.Callbacks {
+public class DocumentListFragment extends ListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String STATE_QUERY_ID = "query_id";
     private static final String STATE_QUERY_NAME = "query_name";
@@ -42,19 +43,9 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     private String mQueryName;
     private String mQueryText;
     private MongoDocumentAdapter mAdapter;
-    private Callbacks mCallbacks = null;
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private int mStart = 0;
     private int mTake = 5;
-
-    public interface Callbacks {
-    	public void onDocumentListRefreshRequested();
-    	public void onAddDocument();
-        public void onDocumentItemClicked(String content);
-        public void onDocumentItemActivated(String content);
-        public void onCollectionEdited(String name);
-        public void onCollectionDropped(String name);
-    }
 
     public DocumentListFragment() {
     }
@@ -92,26 +83,13 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         super.onViewCreated(view, savedInstanceState);
 
         getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
+				? ListView.CHOICE_MODE_SINGLE
+				: ListView.CHOICE_MODE_NONE);
         
         if (mActivatedPosition != ListView.INVALID_POSITION)
             setActivatedPosition(mActivatedPosition);
     }
     
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        mCallbacks = (Callbacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        mCallbacks = null;
-        super.onDetach();
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.document_list_menu, menu);
@@ -131,7 +109,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     public boolean onOptionsItemSelected(MenuItem item) {    	
         switch (item.getItemId()) {
     		case R.id.menu_document_list_add:
-    			mCallbacks.onAddDocument();
+    			Events.postAddDocument();
     			return true;
     		case R.id.menu_document_list_new_query:
     			newQuery();
@@ -155,7 +133,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
     			dropCollection();
     			return true;
     		case R.id.menu_document_list_refresh:
-    			mCallbacks.onDocumentListRefreshRequested();
+    			Events.postRefreshDocumentList();
     			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);
@@ -225,30 +203,29 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		getActivity().invalidateOptionsMenu();
 	}
 	
-	@Override 
-	public void onQueryNamed(String name) {
-		mQueryName = name;
+	public void onEvent(Events.QueryNamed e) {
+		mQueryName = e.Name;
 		new SaveQuery().execute();
 	}
 
-	public void onDocumentCreated(String content) {
-		mAdapter.insert(0, content);
+	public void onEvent(Events.DocumentCreated e) {
+		mAdapter.insert(0, e.Content);
 		setActivatedPosition(0);
-		mCallbacks.onDocumentItemActivated(content);
-	}
-	
-	public void onDocumentUpdated(String content) {
-		mAdapter.update(mActivatedPosition, content);
-		mCallbacks.onDocumentItemActivated(content);
+		Events.postDocumentSelected(e.Content);
 	}
 
-	public void onDocumentDeleted() {
+	public void onEvent(Events.DocumentEdited e) {
+		mAdapter.update(mActivatedPosition, e.Content);
+		Events.postDocumentSelected(e.Content);
+	}
+
+	public void onEvent(Events.DocumentDeleted e) {
 		mAdapter.delete(mActivatedPosition);
 
 		if (mActivatedPosition < mAdapter.getActualCount())
-			mCallbacks.onDocumentItemActivated(mAdapter.getItem(mActivatedPosition));
+			Events.postDocumentSelected(mAdapter.getItem(mActivatedPosition));
 		else {
-			mCallbacks.onDocumentItemActivated(null);
+			Events.postDocumentSelected(null);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
 	}
@@ -294,8 +271,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         } else {
         	setActivatedPosition(position);
         	
-        	if (mCallbacks != null)
-        		mCallbacks.onDocumentItemClicked(mAdapter.getItem(position));
+			Events.postDocumentClicked(mAdapter.getItem(position));
         }
     }
 
@@ -320,14 +296,8 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
         mActivatedPosition = position;
     }
 
-	@Override
-	public void onCreateCollection(String name) {
-		Log.e("ERROR", "Shouldnt get here");
-	}
-    
-	@Override
-	public void onRenameCollection(String name) {
-		new RenameCollectionTask().execute(name);
+	public void onEvent(Events.RenameCollection e) {
+		new RenameCollectionTask().execute(e.Name);
 	}
 	
 	public int getItemCount() {
@@ -341,15 +311,14 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 	public void reloadList(boolean trySelectAfterLoad) {
 		boolean selectAfterLoad = trySelectAfterLoad && (mActivatedPosition != ListView.INVALID_POSITION);
 		setActivatedPosition(ListView.INVALID_POSITION);
-		mCallbacks.onDocumentItemActivated(null);
+		Events.postDocumentSelected(null);
 		mAdapter.removeAll();
 		mStart = 0;
 		new LoadNextDocumentsTask(selectAfterLoad).execute();		
 	}
 
-	@Override
-	public void onQueryUpdated(String query) {
-		mQueryText = query;
+	public void onEvent(Events.QueryUpdated e) {
+		mQueryText = e.Content;
 		
 		if (mQueryID == 0)
 			mQueryID = -1;
@@ -372,7 +341,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 		@Override
 		protected void safeOnPostExecute(String result) {
 			mCollectionName = result;
-			mCallbacks.onCollectionEdited(result);
+			Events.postCollectionRenamed(result);
 		}
 
 		@Override
@@ -394,7 +363,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 
 		@Override
 		protected void safeOnPostExecute(Void result) {
-			mCallbacks.onCollectionDropped(mCollectionName);
+			Events.postCollectionDropped(mCollectionName);
 		}
 
 		@Override
@@ -430,7 +399,7 @@ public class DocumentListFragment extends ListFragment implements CollectionEdit
 			
 			if (mSelectAfterLoad && results.length > 0) {
 				setActivatedPosition(0);
-				mCallbacks.onDocumentItemActivated(results[0]);
+				Events.postDocumentSelected(results[0]);
 			}
 		}
 
