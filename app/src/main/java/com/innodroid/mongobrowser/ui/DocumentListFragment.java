@@ -10,14 +10,17 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.innodroid.mongobrowser.Events;
+import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -31,7 +34,12 @@ import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 import java.net.UnknownHostException;
 
-public class DocumentListFragment extends ListFragment {
+import butterknife.Bind;
+import butterknife.OnItemClick;
+
+public class DocumentListFragment extends BaseFragment {
+	@Bind(android.R.id.list) ListView mList;
+
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String STATE_QUERY_ID = "query_id";
     private static final String STATE_QUERY_NAME = "query_name";
@@ -44,6 +52,7 @@ public class DocumentListFragment extends ListFragment {
     private String mQueryText;
     private MongoDocumentAdapter mAdapter;
     private int mActivatedPosition = ListView.INVALID_POSITION;
+	private boolean mActivateOnClick;
     private int mStart = 0;
     private int mTake = 5;
 
@@ -54,14 +63,8 @@ public class DocumentListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		mAdapter = new MongoDocumentAdapter(getActivity());
-		setListAdapter(mAdapter);
-		
 		setHasOptionsMenu(true);
 		
-		// Need to preserve the state of the list... the user may have hit "load more" a few times and need to preserve that
-    	setRetainInstance(true);
-
 		int take = getResources().getInteger(R.integer.default_document_page_size);
 		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
@@ -74,23 +77,33 @@ public class DocumentListFragment extends ListFragment {
 			mQueryText = savedInstanceState.getString(STATE_QUERY_TEXT);
 			getActivity().invalidateOptionsMenu();
 		}
-		
-		new LoadNextDocumentsTask(false).execute();
-    }
+	}
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = super.onCreateView(R.layout.fragment_generic_list, inflater, container, savedInstanceState);
 
-        getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
+		mActivateOnClick = getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK);
+
+		if (mAdapter == null) {
+			mAdapter = new MongoDocumentAdapter(getActivity());
+			new LoadNextDocumentsTask(false).execute();
+		}
+
+		mList.setAdapter(mAdapter);
+
+		mList.setChoiceMode(mActivateOnClick
 				? ListView.CHOICE_MODE_SINGLE
 				: ListView.CHOICE_MODE_NONE);
-        
-        if (mActivatedPosition != ListView.INVALID_POSITION)
-            setActivatedPosition(mActivatedPosition);
-    }
-    
-    @Override
+
+		if (mActivatedPosition != ListView.INVALID_POSITION) {
+			setActivatedPosition(mActivatedPosition);
+		}
+
+		return view;
+	}
+
+	@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.document_list_menu, menu);
     }    
@@ -211,7 +224,10 @@ public class DocumentListFragment extends ListFragment {
 	public void onEvent(Events.DocumentCreated e) {
 		mAdapter.insert(0, e.Content);
 		setActivatedPosition(0);
-		Events.postDocumentSelected(e.Content);
+
+		if (mActivateOnClick) {
+			Events.postDocumentSelected(e.Content);
+		}
 	}
 
 	public void onEvent(Events.DocumentEdited e) {
@@ -222,14 +238,28 @@ public class DocumentListFragment extends ListFragment {
 	public void onEvent(Events.DocumentDeleted e) {
 		mAdapter.delete(mActivatedPosition);
 
-		if (mActivatedPosition < mAdapter.getActualCount())
+		if (mActivateOnClick && mActivatedPosition < mAdapter.getActualCount()) {
 			Events.postDocumentSelected(mAdapter.getItem(mActivatedPosition));
-		else {
+		} else {
 			Events.postDocumentSelected(null);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
 	}
-	
+
+	public void onEvent(Events.RenameCollection e) {
+		new RenameCollectionTask().execute(e.Name);
+	}
+
+	public void onEvent(Events.QueryUpdated e) {
+		mQueryText = e.Content;
+
+		if (mQueryID == 0)
+			mQueryID = -1;
+
+		reloadList(true);
+		getActivity().invalidateOptionsMenu();
+	}
+
 	private void editCollection() {
         DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, false);
         fragment.setTargetFragment(this, 0);
@@ -239,32 +269,30 @@ public class DocumentListFragment extends ListFragment {
     private void dropCollection() {
     	UiUtils.confirm(getActivity(), R.string.confirm_drop_collection, new ConfirmCallbacks() {
 			@Override
-			public boolean onConfirm() {				
+			public boolean onConfirm() {
 				if (mAdapter.getCount() == 0) {
 					new DropCollectionTask().execute();
 					return true;
 				}
-				
+
 				reconfirmDropCollection();
 				return true;
 			}
-    	});
+		});
 	}
 
     private void reconfirmDropCollection() {
     	UiUtils.confirm(getActivity(), R.string.really_confirm_drop_collection, new ConfirmCallbacks() {
 			@Override
-			public boolean onConfirm() {				
+			public boolean onConfirm() {
 				new DropCollectionTask().execute();
 				return true;
 			}
-    	});
+		});
 	}
 
-	@Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-        
+	@OnItemClick(android.R.id.list)
+	public void onItemClick(int position) {
         if ((mAdapter.isShowingLoadMore()) && (position == mAdapter.getCount()-1)) {
         	mStart += mTake;
         	new LoadNextDocumentsTask(false).execute();
@@ -288,18 +316,14 @@ public class DocumentListFragment extends ListFragment {
     
     public void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
+            mList.setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChecked(position, true);
+			mList.setItemChecked(position, true);
         }
 
         mActivatedPosition = position;
     }
 
-	public void onEvent(Events.RenameCollection e) {
-		new RenameCollectionTask().execute(e.Name);
-	}
-	
 	public int getItemCount() {
 		return mAdapter.getActualCount();
 	}
@@ -315,16 +339,6 @@ public class DocumentListFragment extends ListFragment {
 		mAdapter.removeAll();
 		mStart = 0;
 		new LoadNextDocumentsTask(selectAfterLoad).execute();		
-	}
-
-	public void onEvent(Events.QueryUpdated e) {
-		mQueryText = e.Content;
-		
-		if (mQueryID == 0)
-			mQueryID = -1;
-		
-		reloadList(true);
-		getActivity().invalidateOptionsMenu();
 	}
 
     private class RenameCollectionTask extends SafeAsyncTask<String, Void, String> {

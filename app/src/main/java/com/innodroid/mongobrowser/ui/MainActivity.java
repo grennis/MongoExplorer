@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadCollectionListPane(long connectionId) {
         Bundle arguments = new Bundle();
         CollectionListFragment fragment = new CollectionListFragment();
-        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
+        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
         arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
         fragment.setArguments(arguments);
 
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         DocumentListFragment fragment = new DocumentListFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
         arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
-        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
+        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
         fragment.setArguments(arguments);
 
 		FragmentManager fm = getSupportFragmentManager();
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         DocumentDetailFragment fragment = new DocumentDetailFragment();
         arguments.putString(Constants.ARG_COLLECTION_NAME, mCollectionName);
         arguments.putString(Constants.ARG_DOCUMENT_CONTENT, content);
-        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, true);
+        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
         fragment.setArguments(arguments);
 
 		FragmentManager fm = getSupportFragmentManager();
@@ -273,11 +273,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideDocumentDetailPane() {
     	getSupportFragmentManager().popBackStack();
-    	
-    	// Pop the back stack isnt really enough since the fragment added in the transaction may have been replaced
-    	FragmentManager fm = getSupportFragmentManager();
-    	fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_4)).commit();
-    	shiftAllRight(mFrame2, mFrame3, mFrame4);    	
+
+		if (mTwoPane) {
+			// Pop the back stack isnt really enough since the fragment added in the transaction may have been replaced
+			FragmentManager fm = getSupportFragmentManager();
+			fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_4)).commit();
+			shiftAllRight(mFrame2, mFrame3, mFrame4);
+		}
     }
 
     private void shiftAllLeft(View view1, View view2, View view3) {
@@ -348,8 +350,10 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void onEvent(Events.CollectionSelected e) {
-		mCollectionName = e.CollectionName;
-		loadDocumentListPane(e.ConnectionId, e.CollectionName);
+		if (e.CollectionName != null) {
+			mCollectionName = e.CollectionName;
+			loadDocumentListPane(e.ConnectionId, e.CollectionName);
+		}
 	}
 
 	public void onEvent(Events.DocumentClicked e) {
@@ -399,27 +403,35 @@ public class MainActivity extends AppCompatActivity {
         	loadConnectionDetailsPane(id);
 	}
 
+	public void onEvent(Events.DocumentDeleted e) {
+		hideDocumentDetailPane();
+		getSupportFragmentManager().executePendingTransactions();
+
+		if (!mTwoPane) {
+			DocumentListFragment f = (DocumentListFragment)getSupportFragmentManager().findFragmentById(R.id.frame_1);
+			f.onEvent(e);
+		}
+	}
+
 	public void onEvent(Events.CollectionDropped e) {
         FragmentManager fm = getSupportFragmentManager();
 
-        if (fm.getBackStackEntryCount() > 1) {
-        	hideDocumentDetailPane();
-        }
-        
-        fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_3)).commit();
+		if (mTwoPane) {
+			if (fm.getBackStackEntryCount() > 1) {
+				hideDocumentDetailPane();
+			}
+
+			fm.beginTransaction().remove(fm.findFragmentById(R.id.frame_3)).commit();
+		} else {
+			fm.popBackStackImmediate();
+			CollectionListFragment fragment = (CollectionListFragment)fm.findFragmentById(R.id.frame_1);
+			fragment.onEvent(e);
+		}
 	}
 	
 	public void onEvent(Events.EditDocument e) {
 		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, false, e.Content);
 		fragment.show(getSupportFragmentManager(), null);
-	}
-
-	public void onEvent(Events.DocumentCreated e) {
-		if (mTwoPane) {
-			CollectionListFragment collectionList = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
-			if (collectionList != null)
-				collectionList.reloadList();
-		}
 	}
 
 	public void onEvent(Events.RefreshDocumentList e) {

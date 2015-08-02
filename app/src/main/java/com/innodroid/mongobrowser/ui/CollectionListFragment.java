@@ -9,11 +9,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
@@ -23,10 +26,16 @@ import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
-public class CollectionListFragment extends ListFragment {
+import butterknife.Bind;
+import butterknife.OnItemClick;
+
+public class CollectionListFragment extends BaseFragment {
+	@Bind(android.R.id.list) ListView mList;
+
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private long mConnectionId;
+	private boolean mActivateOnClick;
     private MongoCollectionAdapter mAdapter;
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
@@ -37,16 +46,40 @@ public class CollectionListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+		mActivateOnClick = getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK);
         mConnectionId = getArguments().getLong(Constants.ARG_CONNECTION_ID);
-		mAdapter = new MongoCollectionAdapter(getActivity());
-		setListAdapter(mAdapter);
 		setHasOptionsMenu(true);
 
-		if (savedInstanceState != null)
+		if (savedInstanceState != null) {
 			mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
+		}
+	}
 
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = super.onCreateView(R.layout.fragment_generic_list, inflater, container, savedInstanceState);
+
+		if (mAdapter == null) {
+			mAdapter = new MongoCollectionAdapter(getActivity());
+			reloadList();
+		}
+
+		mList.setAdapter(mAdapter);
+
+		mList.setChoiceMode(mActivateOnClick
+				? ListView.CHOICE_MODE_SINGLE
+				: ListView.CHOICE_MODE_NONE);
+
+		if (mActivatedPosition != ListView.INVALID_POSITION) {
+			setActivatedPosition(mActivatedPosition);
+		}
+
+		return view;
+	}
+
+	public void onEvent(Events.DocumentCreated e) {
 		reloadList();
-    }
+	}
 
 	public void onEvent(Events.DocumentDeleted e) {
 		reloadList();
@@ -80,27 +113,22 @@ public class CollectionListFragment extends ListFragment {
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
 	}
-    
+
+	private void insertCollection(String name) {
+		mAdapter.add(0, name);
+
+		if (mActivateOnClick) {
+			setActivatedPosition(0);
+			Events.postCollectionSelected(mConnectionId, name);
+		}
+	}
+
     private void changeDatabase() {
     	new GetDatabasesTask().execute();
     }
-    
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-        getListView().setChoiceMode(getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK)
-				? ListView.CHOICE_MODE_SINGLE
-				: ListView.CHOICE_MODE_NONE);
-        
-        if (mActivatedPosition != ListView.INVALID_POSITION)
-            setActivatedPosition(mActivatedPosition);
-    }
-    
-    @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-        
+	@OnItemClick(android.R.id.list)
+    public void onItemClick(int position) {
         setActivatedPosition(position);
 
 		Events.postCollectionSelected(mConnectionId, mAdapter.getCollectionName(position));
@@ -116,14 +144,14 @@ public class CollectionListFragment extends ListFragment {
     
     public void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
+            mList.setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChecked(position, true);
+			mList.setItemChecked(position, true);
         }
 
         mActivatedPosition = position;
     }
-    
+
 	public void onEvent(Events.CreateCollection e) {
 		new AddCollectionTask().execute(e.Name);
 	}
@@ -139,7 +167,7 @@ public class CollectionListFragment extends ListFragment {
 	public void onEvent(Events.CollectionDropped e) {
 		mAdapter.delete(mActivatedPosition);
 
-		if (mActivatedPosition < mAdapter.getCount())
+		if (mActivateOnClick && mActivatedPosition < mAdapter.getCount())
 			Events.postCollectionSelected(mConnectionId, mAdapter.getItem(mActivatedPosition).Name);
 		else {
 			Events.postCollectionSelected(mConnectionId, null);
@@ -160,9 +188,7 @@ public class CollectionListFragment extends ListFragment {
 
 		@Override
 		protected void safeOnPostExecute(String result) {
-			mAdapter.add(0, result);
-			setActivatedPosition(0);
-			Events.postCollectionSelected(mConnectionId, result);
+			insertCollection(result);
 		}
 
 		@Override

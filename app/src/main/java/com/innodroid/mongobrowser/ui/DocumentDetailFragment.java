@@ -78,6 +78,10 @@ public class DocumentDetailFragment extends BaseFragment {
     	menu.findItem(R.id.menu_document_detail_delete).setEnabled(mRawText != null);
     }
 
+	public void onEvent(Events.DocumentEdited e) {
+		updateContent(e.Content);
+	}
+
     private void deleteDocument() {
 		UiUtils.confirm(getActivity(), R.string.confirm_delete_document, new ConfirmCallbacks() {					
 			@Override

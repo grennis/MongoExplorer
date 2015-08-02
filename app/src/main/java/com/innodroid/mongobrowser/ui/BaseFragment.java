@@ -39,4 +39,8 @@ public class BaseFragment extends Fragment {
 
         EventBus.getDefault().unregister(this);
     }
+
+    public void onEvent(Object e) {
+        // Prevents event bus from firing exception that fragment has not event handlers
+    }
 }
