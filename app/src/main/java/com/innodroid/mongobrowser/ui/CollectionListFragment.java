@@ -3,12 +3,10 @@ package com.innodroid.mongobrowser.ui;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.util.MongoHelper;
@@ -29,13 +26,10 @@ import com.innodroid.mongobrowser.util.UiUtils;
 import butterknife.Bind;
 import butterknife.OnItemClick;
 
-public class CollectionListFragment extends BaseFragment {
-	@Bind(android.R.id.list) ListView mList;
-
+public class CollectionListFragment extends BaseListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private long mConnectionId;
-	private boolean mActivateOnClick;
     private MongoCollectionAdapter mAdapter;
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
@@ -56,7 +50,6 @@ public class CollectionListFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		mActivateOnClick = getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK);
         mConnectionId = getArguments().getLong(Constants.ARG_CONNECTION_ID);
 		setHasOptionsMenu(true);
 
@@ -67,11 +60,11 @@ public class CollectionListFragment extends BaseFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = super.onCreateView(R.layout.fragment_generic_list, inflater, container, savedInstanceState);
+		View view = super.onCreateView(inflater, container, savedInstanceState);
 
 		if (mAdapter == null) {
 			mAdapter = new MongoCollectionAdapter(getActivity());
-			reloadList();
+			onRefresh();
 		}
 
 		mList.setAdapter(mAdapter);
@@ -88,14 +81,15 @@ public class CollectionListFragment extends BaseFragment {
 	}
 
 	public void onEvent(Events.DocumentCreated e) {
-		reloadList();
+		onRefresh();
 	}
 
 	public void onEvent(Events.DocumentDeleted e) {
-		reloadList();
+		onRefresh();
 	}
 
-	public void reloadList() {
+	@Override
+	public void onRefresh() {
     	new LoadNamesTask().execute();
 	}
 
@@ -220,6 +214,7 @@ public class CollectionListFragment extends BaseFragment {
 
 		@Override
 		protected void safeOnPostExecute(String[] result) {
+			mSwipeRefresh.setRefreshing(false);
 			mAdapter.loadItems(result);
 			new LoadCountsTask().execute(result);
 		}
@@ -303,7 +298,7 @@ public class CollectionListFragment extends BaseFragment {
 
 		@Override
 		protected void safeOnPostExecute(String result) {
-			reloadList();
+			onRefresh();
 		}
 
 		@Override

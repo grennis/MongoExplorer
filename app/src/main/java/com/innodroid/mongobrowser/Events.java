@@ -27,10 +27,6 @@ public class Events {
         EventBus.getDefault().post(new AddDocument());
     }
 
-    public static void postRefreshDocumentList() {
-        EventBus.getDefault().post(new RefreshDocumentList());
-    }
-
     public static void postDocumentSelected(String content) {
         EventBus.getDefault().post(new DocumentSelected(content));
     }
@@ -109,9 +105,6 @@ public class Events {
     }
 
     public static class ConnectionDeleted {
-    }
-
-    public static class RefreshDocumentList {
     }
 
     public static class Connected {

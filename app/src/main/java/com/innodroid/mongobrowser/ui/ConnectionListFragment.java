@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -27,9 +28,7 @@ import butterknife.Bind;
 import butterknife.OnItemClick;
 import de.greenrobot.event.EventBus;
 
-public class ConnectionListFragment extends BaseFragment implements LoaderCallbacks<Cursor> {
-    @Bind(android.R.id.list) ListView mList;
-
+public class ConnectionListFragment extends BaseListFragment implements LoaderCallbacks<Cursor> {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private MongoConnectionAdapter mAdapter;
@@ -61,11 +60,11 @@ public class ConnectionListFragment extends BaseFragment implements LoaderCallba
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(R.layout.fragment_generic_list, inflater, container, savedInstanceState);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         if (mAdapter == null) {
             mAdapter = new MongoConnectionAdapter(getActivity(), null, true);
-            getLoaderManager().initLoader(0, null, this);
+            onRefresh();
         }
 
         mList.setAdapter(mAdapter);
@@ -79,6 +78,11 @@ public class ConnectionListFragment extends BaseFragment implements LoaderCallba
         }
 
         return view;
+    }
+
+    @Override
+    public void onRefresh() {
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -131,6 +135,7 @@ public class ConnectionListFragment extends BaseFragment implements LoaderCallba
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mSwipeRefresh.setRefreshing(false);
 		mAdapter.swapCursor(cursor);
 		
 		if (mSelectAfterLoad > 0)
@@ -142,7 +147,7 @@ public class ConnectionListFragment extends BaseFragment implements LoaderCallba
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
-		mAdapter.swapCursor(null);
+        mAdapter.swapCursor(null);
 	}
 
 	private void selectItem(Cursor cursor, long id) {
@@ -158,16 +163,12 @@ public class ConnectionListFragment extends BaseFragment implements LoaderCallba
 		} while (cursor.moveToNext());
 		
 		cursor.moveToPosition(original);
-		
-		setActivatedPosition(pos);
+
+        setActivatedPosition(pos);
 	}
 
 	public void reloadAndSelect(long id) {
 		mSelectAfterLoad = id;
 		getLoaderManager().initLoader(0, null, this);		
-	}
-
-	public int getConnectionCount() {
-		return mAdapter.getCount();
 	}
 }

@@ -1,15 +1,13 @@
 package com.innodroid.mongobrowser.ui;
 
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +18,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.innodroid.mongobrowser.Events;
-import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -37,9 +34,7 @@ import java.net.UnknownHostException;
 import butterknife.Bind;
 import butterknife.OnItemClick;
 
-public class DocumentListFragment extends BaseFragment {
-	@Bind(android.R.id.list) ListView mList;
-
+public class DocumentListFragment extends BaseListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String STATE_QUERY_ID = "query_id";
     private static final String STATE_QUERY_NAME = "query_name";
@@ -52,7 +47,6 @@ public class DocumentListFragment extends BaseFragment {
     private String mQueryText;
     private MongoDocumentAdapter mAdapter;
     private int mActivatedPosition = ListView.INVALID_POSITION;
-	private boolean mActivateOnClick;
     private int mStart = 0;
     private int mTake = 5;
 
@@ -92,13 +86,11 @@ public class DocumentListFragment extends BaseFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = super.onCreateView(R.layout.fragment_generic_list, inflater, container, savedInstanceState);
-
-		mActivateOnClick = getArguments().getBoolean(Constants.ARG_ACTIVATE_ON_CLICK);
+		View view = super.onCreateView(inflater, container, savedInstanceState);
 
 		if (mAdapter == null) {
 			mAdapter = new MongoDocumentAdapter(getActivity());
-			new LoadNextDocumentsTask(false).execute();
+			onRefresh();
 		}
 
 		mList.setAdapter(mAdapter);
@@ -112,6 +104,13 @@ public class DocumentListFragment extends BaseFragment {
 		}
 
 		return view;
+	}
+
+	@Override
+	public void onRefresh() {
+		mStart = 0;
+		mAdapter.removeAll();
+		new LoadNextDocumentsTask(false).execute();
 	}
 
 	@Override
@@ -155,9 +154,6 @@ public class DocumentListFragment extends BaseFragment {
     			return true;
     		case R.id.menu_document_list_delete:
     			dropCollection();
-    			return true;
-    		case R.id.menu_document_list_refresh:
-    			Events.postRefreshDocumentList();
     			return true;
     		default:
     	    	return super.onOptionsItemSelected(item);
@@ -417,6 +413,8 @@ public class DocumentListFragment extends BaseFragment {
 
 		@Override
 		protected void safeOnPostExecute(String[] results) {
+			mSwipeRefresh.setRefreshing(false);
+
 			mAdapter.addAll(results);
 			
 			if (results.length < mTake)

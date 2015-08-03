@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_document_list_refresh"
-          android:icon="@drawable/ic_refresh"
-          android:title="Refresh"
-          android:orderInCategory="45"
-          app:showAsAction="withText|always"/>
     <item android:id="@+id/menu_document_list_add"
           android:icon="@drawable/ic_add_circle"
           android:title="Add Document"
