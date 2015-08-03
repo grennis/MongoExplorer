@@ -1,3 +1,0 @@
-<resources>
-    <item type="layout" name="activity_generic">@layout/activity_multi_pane</item>
-</resources>
