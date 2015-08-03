@@ -2,6 +2,7 @@ package com.innodroid.mongobrowser.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +32,17 @@ public class DocumentDetailFragment extends BaseFragment {
     public DocumentDetailFragment() {
     }
 
-    @Override
+	@NonNull
+	public static DocumentDetailFragment newInstance(String content, String collectionName) {
+		Bundle arguments = new Bundle();
+		DocumentDetailFragment fragment = new DocumentDetailFragment();
+		arguments.putString(Constants.ARG_COLLECTION_NAME, collectionName);
+		arguments.putString(Constants.ARG_DOCUMENT_CONTENT, content);
+		fragment.setArguments(arguments);
+		return fragment;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);

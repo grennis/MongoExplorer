@@ -56,7 +56,7 @@ public abstract class SafeAsyncTask<T, U, V> extends AsyncTask<T, U, V>{
 		if (mException == null)
 			safeOnPostExecute(result);
 		else
-			ExceptionDetailDialogFragment.create(getErrorTitle(), mException).show(mFragmentActivity.getSupportFragmentManager(), null);
+			ExceptionDetailDialogFragment.newInstance(getErrorTitle(), mException).show(mFragmentActivity.getSupportFragmentManager(), null);
 	}
 
 	protected String getProgressMessage() {

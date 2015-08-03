@@ -34,7 +34,7 @@ public class ConnectionEditDialogFragment extends BaseDialogFragment implements 
 		super();
 	}
 	
-    static ConnectionEditDialogFragment create(long id) {
+    public static ConnectionEditDialogFragment newInstance(long id) {
     	ConnectionEditDialogFragment fragment = new ConnectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putLong(Constants.ARG_CONNECTION_ID, id);

@@ -42,7 +42,17 @@ public class CollectionListFragment extends BaseFragment {
     public CollectionListFragment() {
     }
 
-    @Override
+	@NonNull
+	public static CollectionListFragment newInstance(long connectionId, boolean activateOnClick) {
+		Bundle arguments = new Bundle();
+		CollectionListFragment fragment = new CollectionListFragment();
+		arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, activateOnClick);
+		arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
+		fragment.setArguments(arguments);
+		return fragment;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -109,7 +119,7 @@ public class CollectionListFragment extends BaseFragment {
     }
     
     private void addCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.create("", true);
+        DialogFragment fragment = CollectionEditDialogFragment.newInstance("", true);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
 	}
@@ -269,7 +279,7 @@ public class CollectionListFragment extends BaseFragment {
 				return;
 			}
 
-	        DialogFragment fragment = ChangeDatabaseDialogFragment.create(result);
+	        DialogFragment fragment = ChangeDatabaseDialogFragment.newInstance(result);
 	        fragment.setTargetFragment(CollectionListFragment.this, 0);
 	        fragment.show(getFragmentManager(), null);    	
 		}

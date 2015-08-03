@@ -26,7 +26,7 @@ public class ChangeDatabaseDialogFragment extends BaseDialogFragment {
 		super();
 	}
 	
-    static ChangeDatabaseDialogFragment create(ArrayList<String> databases) {
+    public static ChangeDatabaseDialogFragment newInstance(ArrayList<String> databases) {
     	ChangeDatabaseDialogFragment fragment = new ChangeDatabaseDialogFragment();
     	Bundle args = new Bundle();
     	args.putStringArrayList(ARG_DATABASES, databases);

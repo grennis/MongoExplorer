@@ -25,7 +25,7 @@ public class DocumentEditDialogFragment extends BaseDialogFragment {
 		super();
 	}
 	
-    static DocumentEditDialogFragment create(String collectionName, boolean isNew, String content) {
+    public static DocumentEditDialogFragment newInstance(String collectionName, boolean isNew, String content) {
     	DocumentEditDialogFragment fragment = new DocumentEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_DOCUMENT_CONTENT, content);

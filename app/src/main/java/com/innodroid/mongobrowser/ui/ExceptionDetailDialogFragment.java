@@ -21,7 +21,7 @@ public class ExceptionDetailDialogFragment extends BaseDialogFragment {
 		super();
 	}
 	
-    public static ExceptionDetailDialogFragment create(String title, Exception ex) {
+    public static ExceptionDetailDialogFragment newInstance(String title, Exception ex) {
     	ExceptionDetailDialogFragment fragment = new ExceptionDetailDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(ARG_TITLE, title);

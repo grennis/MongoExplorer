@@ -1,6 +1,7 @@
 package com.innodroid.mongobrowser.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -164,19 +165,13 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void loadConnectionListPane() {
-    	Bundle args = new Bundle();
-        ConnectionListFragment fragment = new ConnectionListFragment();
-        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
-        fragment.setArguments(args);
+		ConnectionListFragment fragment = ConnectionListFragment.newInstance(mTwoPane);
 
 		getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).commit();
 	}
-	
-    private void loadConnectionDetailsPane(long id) {
-        Bundle arguments = new Bundle();
-        arguments.putLong(Constants.ARG_CONNECTION_ID, id);
-        ConnectionDetailFragment fragment = new ConnectionDetailFragment();
-        fragment.setArguments(arguments);
+
+	private void loadConnectionDetailsPane(long id) {
+		ConnectionDetailFragment fragment = ConnectionDetailFragment.newInstance(id);
 
 		if (mTwoPane) {
 			getSupportFragmentManager().beginTransaction().replace(R.id.frame_2, fragment).commit();
@@ -185,12 +180,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-    private void loadCollectionListPane(long connectionId) {
-        Bundle arguments = new Bundle();
-        CollectionListFragment fragment = new CollectionListFragment();
-        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
-        arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
-        fragment.setArguments(arguments);
+	private void loadCollectionListPane(long connectionId) {
+		CollectionListFragment fragment = CollectionListFragment.newInstance(connectionId, mTwoPane);
 
 		if (mTwoPane) {
 			getSupportFragmentManager().beginTransaction().replace(R.id.frame_2, fragment).commit();
@@ -200,17 +191,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 	private void showAddConnection() {
-		DialogFragment fragment = ConnectionEditDialogFragment.create(0);
+		DialogFragment fragment = ConnectionEditDialogFragment.newInstance(0);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 
     private void loadDocumentListPane(long connectionId, String collection) {
-    	Bundle arguments = new Bundle();
-        DocumentListFragment fragment = new DocumentListFragment();
-        arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
-        arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
-        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
-        fragment.setArguments(arguments);
+		DocumentListFragment fragment = DocumentListFragment.newInstance(connectionId, collection, mTwoPane);
 
 		FragmentManager fm = getSupportFragmentManager();
 
@@ -234,14 +220,9 @@ public class MainActivity extends AppCompatActivity {
 			getSupportFragmentManager().beginTransaction().replace(R.id.frame_1, fragment).addToBackStack(null).commit();
 		}
     }
-    
+
 	private void loadDocumentDetailsPane(String content) {
-    	Bundle arguments = new Bundle();
-        DocumentDetailFragment fragment = new DocumentDetailFragment();
-        arguments.putString(Constants.ARG_COLLECTION_NAME, mCollectionName);
-        arguments.putString(Constants.ARG_DOCUMENT_CONTENT, content);
-        arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
-        fragment.setArguments(arguments);
+		DocumentDetailFragment fragment = DocumentDetailFragment.newInstance(content, mCollectionName);
 
 		FragmentManager fm = getSupportFragmentManager();
 
@@ -266,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
 		}
     }
 
-    private void hideDocumentListPane() {
+	private void hideDocumentListPane() {
     	getSupportFragmentManager().popBackStack();
     	shiftAllRight(mFrame1, mFrame2, mFrame3);
     }
@@ -345,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 	public void onEvent(Events.AddDocument e) {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED);
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.newInstance(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 
@@ -430,26 +411,10 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	public void onEvent(Events.EditDocument e) {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.create(mCollectionName, false, e.Content);
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.newInstance(mCollectionName, false, e.Content);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 
-	public void onEvent(Events.RefreshDocumentList e) {
-		if (mTwoPane) {
-			DocumentListFragment fragment = (DocumentListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_3);
-
-			fragment.reloadList(getSupportFragmentManager().getBackStackEntryCount() > 1);
-
-			CollectionListFragment collectionList = (CollectionListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_2);
-			if (collectionList != null)
-				collectionList.reloadList();
-		} else {
-			DocumentListFragment fragment = (DocumentListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
-			fragment.reloadList(false);
-
-		}
-	}
-	
     private class AddConnectionIfNoneExistTask extends SafeAsyncTask<Void, Void, Boolean> {
 		public AddConnectionIfNoneExistTask() {
 			super(MainActivity.this);

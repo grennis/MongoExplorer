@@ -21,7 +21,7 @@ public class CollectionEditDialogFragment extends BaseDialogFragment {
 		super();
 	}
 	
-    static CollectionEditDialogFragment create(String name, boolean isNew) {
+    public static CollectionEditDialogFragment newInstance(String name, boolean isNew) {
     	CollectionEditDialogFragment fragment = new CollectionEditDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_COLLECTION_NAME, name);

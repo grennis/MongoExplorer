@@ -21,7 +21,7 @@ public class QueryEditNameDialogFragment extends BaseDialogFragment {
     	super();
     }
 
-    static QueryEditNameDialogFragment create(String content) {
+    public static QueryEditNameDialogFragment newInstance(String content) {
     	QueryEditNameDialogFragment fragment = new QueryEditNameDialogFragment();
     	Bundle args = new Bundle();
     	args.putString(Constants.ARG_DOCUMENT_CONTENT, content);

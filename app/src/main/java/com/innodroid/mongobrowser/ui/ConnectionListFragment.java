@@ -36,6 +36,18 @@ public class ConnectionListFragment extends BaseFragment implements LoaderCallba
     private int mActivatedPosition = ListView.INVALID_POSITION;
     private long mSelectAfterLoad;
 
+    public ConnectionListFragment() {
+    }
+
+    @NonNull
+    public static ConnectionListFragment newInstance(boolean activateOnClick) {
+        Bundle args = new Bundle();
+        ConnectionListFragment fragment = new ConnectionListFragment();
+        args.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, activateOnClick);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

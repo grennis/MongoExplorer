@@ -59,7 +59,18 @@ public class DocumentListFragment extends BaseFragment {
     public DocumentListFragment() {
     }
 
-    @Override
+	@NonNull
+	public static DocumentListFragment newInstance(long connectionId, String collection, boolean mTwoPane) {
+		Bundle arguments = new Bundle();
+		DocumentListFragment fragment = new DocumentListFragment();
+		arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
+		arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
+		arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
+		fragment.setArguments(arguments);
+		return fragment;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -192,7 +203,7 @@ public class DocumentListFragment extends BaseFragment {
 	
     private void editQuery() {
 		String query = (mQueryText == null) ? Constants.NEW_DOCUMENT_CONTENT_PADDED : mQueryText;
-		QueryEditTextDialogFragment dialog = QueryEditTextDialogFragment.create(query);
+		QueryEditTextDialogFragment dialog = QueryEditTextDialogFragment.newInstance(query);
 		dialog.setTargetFragment(this, 0);
 		dialog.show(getFragmentManager(), null);
 	}
@@ -203,7 +214,7 @@ public class DocumentListFragment extends BaseFragment {
     		return;
     	}
     	
-    	QueryEditNameDialogFragment dialog = QueryEditNameDialogFragment.create(mQueryName);
+    	QueryEditNameDialogFragment dialog = QueryEditNameDialogFragment.newInstance(mQueryName);
     	dialog.setTargetFragment(this, 0);
     	dialog.show(getFragmentManager(), null);
 	}
@@ -261,7 +272,7 @@ public class DocumentListFragment extends BaseFragment {
 	}
 
 	private void editCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.create(mCollectionName, false);
+        DialogFragment fragment = CollectionEditDialogFragment.newInstance(mCollectionName, false);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
 	}

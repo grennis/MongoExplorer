@@ -2,18 +2,17 @@ package com.innodroid.mongobrowser.ui;
 
 import java.net.UnknownHostException;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +33,6 @@ import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
 
 public class ConnectionDetailFragment extends BaseFragment implements LoaderCallbacks<Cursor> {
 	@Bind(R.id.connection_detail_title) TextView mTitle;
@@ -49,7 +47,16 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
     public ConnectionDetailFragment() {
     }
 
-    @Override
+	@NonNull
+	public static ConnectionDetailFragment newInstance(long id) {
+		Bundle arguments = new Bundle();
+		arguments.putLong(Constants.ARG_CONNECTION_ID, id);
+		ConnectionDetailFragment fragment = new ConnectionDetailFragment();
+		fragment.setArguments(arguments);
+		return fragment;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);
@@ -121,7 +128,7 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
 	}
 	
     private void editConnection() {
-        DialogFragment fragment = ConnectionEditDialogFragment.create(mConnectionID);
+        DialogFragment fragment = ConnectionEditDialogFragment.newInstance(mConnectionID);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
