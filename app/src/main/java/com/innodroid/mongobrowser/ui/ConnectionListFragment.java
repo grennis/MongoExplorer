@@ -1,11 +1,9 @@
 package com.innodroid.mongobrowser.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -21,12 +19,9 @@ import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
-import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
 import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
 
-import butterknife.Bind;
 import butterknife.OnItemClick;
-import de.greenrobot.event.EventBus;
 
 public class ConnectionListFragment extends BaseListFragment implements LoaderCallbacks<Cursor> {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
@@ -97,8 +92,7 @@ public class ConnectionListFragment extends BaseListFragment implements LoaderCa
                 Events.postAddConnection();
                 return true;
             case R.id.menu_connection_list_configure:
-            	Intent intent = new Intent(getActivity(), PreferencesActivity.class);
-            	startActivity(intent);
+                Events.postShowSettings();
                 return true;
         }
 

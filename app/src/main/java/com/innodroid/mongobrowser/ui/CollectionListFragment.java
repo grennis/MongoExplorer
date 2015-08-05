@@ -20,6 +20,7 @@ import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
+import com.innodroid.mongobrowser.util.Preferences;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
@@ -85,6 +86,10 @@ public class CollectionListFragment extends BaseListFragment {
 	}
 
 	public void onEvent(Events.DocumentDeleted e) {
+		onRefresh();
+	}
+
+	public void onEvent(Events.SettingsChanged e) {
 		onRefresh();
 	}
 
@@ -202,14 +207,17 @@ public class CollectionListFragment extends BaseListFragment {
     }
 	
     private class LoadNamesTask extends SafeAsyncTask<Void, Void, String[]> {
+		boolean mShowSystemCollections;
+
     	public LoadNamesTask() {
 			super(getActivity());
+
+			mShowSystemCollections = new Preferences(getActivity()).getShowSystemCollections();
 		}
 
     	@Override
 		protected String[] safeDoInBackground(Void... arg0) {
-			boolean includeSystem = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PrefShowSystemCollections, false);
-			return MongoHelper.getCollectionNames(includeSystem);
+			return MongoHelper.getCollectionNames(mShowSystemCollections);
 		}
 
 		@Override

@@ -25,6 +25,7 @@ import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
 import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
 import com.innodroid.mongobrowser.data.MongoQueryAdapter;
+import com.innodroid.mongobrowser.util.Preferences;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
@@ -70,8 +71,7 @@ public class DocumentListFragment extends BaseListFragment {
 
 		setHasOptionsMenu(true);
 		
-		int take = getResources().getInteger(R.integer.default_document_page_size);
-		mTake = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(Constants.PrefDocumentPageSize, take);
+		mTake = new Preferences(getActivity()).getDocumentPageSize();
     	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
     	mConnectionId = getArguments().getLong(Constants.ARG_CONNECTION_ID);
 
@@ -200,7 +200,6 @@ public class DocumentListFragment extends BaseListFragment {
     private void editQuery() {
 		String query = (mQueryText == null) ? Constants.NEW_DOCUMENT_CONTENT_PADDED : mQueryText;
 		QueryEditTextDialogFragment dialog = QueryEditTextDialogFragment.newInstance(query);
-		dialog.setTargetFragment(this, 0);
 		dialog.show(getFragmentManager(), null);
 	}
 
@@ -211,7 +210,6 @@ public class DocumentListFragment extends BaseListFragment {
     	}
     	
     	QueryEditNameDialogFragment dialog = QueryEditNameDialogFragment.newInstance(mQueryName);
-    	dialog.setTargetFragment(this, 0);
     	dialog.show(getFragmentManager(), null);
 	}
 

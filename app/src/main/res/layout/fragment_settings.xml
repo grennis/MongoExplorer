@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="@dimen/standard_padding_small"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TableRow>
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/standard_padding"
+            android:text="@string/show_system_collections" />
+        <CheckBox android:id="@+id/settings_show_system_collections"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow>
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/standard_padding"
+            android:text="@string/document_load_size" />
+        <EditText android:id="@+id/settings_document_load_size"
+            android:inputType="number"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+</TableLayout>
+

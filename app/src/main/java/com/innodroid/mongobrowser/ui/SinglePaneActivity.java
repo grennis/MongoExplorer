@@ -1,5 +1,6 @@
 package com.innodroid.mongobrowser.ui;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.innodroid.mongobrowser.Events;

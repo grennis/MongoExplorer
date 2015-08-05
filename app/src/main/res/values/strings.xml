@@ -23,7 +23,6 @@
     <string name="last_connected">Last connected %s</string>
     <string name="connect_failed">Connect Failed</string>
     <string name="title_collection_list">Collections</string>
-    <string name="title_preferences">Preferences</string>
     <string name="load_more">Load More &#8230;</string>
     <string name="document">Document</string>
     <string name="edit_document">Edit Document</string>
@@ -33,4 +32,7 @@
     <string name="load_query">Load Query</string>
     <string name="no_saved_queries">You don\'t have any queries stored for this connection and collection</string>
     <string name="message_no_databases">Unable to list databases. Check permissions.</string>
+    <string name="show_system_collections">Show System Collections</string>
+    <string name="document_load_size">Document Load Size</string>
+    <string name="collections">Collections</string>
 </resources>

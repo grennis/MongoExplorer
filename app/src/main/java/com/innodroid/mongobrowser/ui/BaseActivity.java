@@ -1,5 +1,6 @@
 package com.innodroid.mongobrowser.ui;
 
+import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -113,6 +114,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 	public void onEvent(Events.ConnectionUpdated e) {
 		reloadConnectionListAndSelect(e.ConnectionId);
+	}
+
+	public void onEvent(Events.ShowSettings e) {
+		DialogFragment fragment = SettingsFragment.newInstance();
+		fragment.show(getSupportFragmentManager(), null);
 	}
 
 	protected void reloadConnectionListAndSelect(long id) {
