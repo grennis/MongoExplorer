@@ -21,6 +21,7 @@ import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
 
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 
 public class ConnectionListFragment extends BaseListFragment implements LoaderCallbacks<Cursor> {
@@ -49,8 +50,6 @@ public class ConnectionListFragment extends BaseListFragment implements LoaderCa
 		if (savedInstanceState != null) {
             mActivatedPosition = savedInstanceState.getInt(STATE_ACTIVATED_POSITION);
         }
-
-		setHasOptionsMenu(true);
     }
 
     @Override
@@ -80,23 +79,9 @@ public class ConnectionListFragment extends BaseListFragment implements LoaderCa
         getLoaderManager().initLoader(0, null, this);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    	inflater.inflate(R.menu.connection_list_menu, menu);
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_connection_list_add:
-                Events.postAddConnection();
-                return true;
-            case R.id.menu_connection_list_configure:
-                Events.postShowSettings();
-                return true;
-        }
-
-    	return super.onOptionsItemSelected(item);
+    @OnClick(R.id.fab_add)
+    public void clickAdd() {
+        Events.postAddConnection();
     }
 
     @OnItemClick(android.R.id.list)

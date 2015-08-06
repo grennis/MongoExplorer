@@ -33,6 +33,7 @@ import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 import java.net.UnknownHostException;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 
 public class DocumentListFragment extends BaseListFragment {
@@ -131,9 +132,6 @@ public class DocumentListFragment extends BaseListFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {    	
         switch (item.getItemId()) {
-    		case R.id.menu_document_list_add:
-    			Events.postAddDocument();
-    			return true;
     		case R.id.menu_document_list_new_query:
     			newQuery();
     			return true;
@@ -220,7 +218,12 @@ public class DocumentListFragment extends BaseListFragment {
 		reloadList(true);
 		getActivity().invalidateOptionsMenu();
 	}
-	
+
+	@OnClick(R.id.fab_add)
+	public void clickAdd() {
+		Events.postAddDocument();
+	}
+
 	public void onEvent(Events.QueryNamed e) {
 		mQueryName = e.Name;
 		new SaveQuery().execute();

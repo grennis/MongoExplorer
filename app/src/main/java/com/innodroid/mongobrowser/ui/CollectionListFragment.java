@@ -25,6 +25,7 @@ import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 
 public class CollectionListFragment extends BaseListFragment {
@@ -93,6 +94,11 @@ public class CollectionListFragment extends BaseListFragment {
 		onRefresh();
 	}
 
+	@OnClick(R.id.fab_add)
+	public void clickAdd() {
+		addCollection();
+	}
+
 	@Override
 	public void onRefresh() {
     	new LoadNamesTask().execute();
@@ -106,9 +112,6 @@ public class CollectionListFragment extends BaseListFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_collection_list_add:
-            	addCollection();
-                return true;
             case R.id.menu_collection_list_change_db:
             	changeDatabase();
                 return true;
