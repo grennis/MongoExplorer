@@ -35,4 +35,9 @@
     <string name="show_system_collections">Show System Collections</string>
     <string name="document_load_size">Document Load Size</string>
     <string name="collections">Collections</string>
+    <string name="settings">Settings</string>
+    <string name="home">Home</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="rate_this_app">Rate This App</string>
 </resources>

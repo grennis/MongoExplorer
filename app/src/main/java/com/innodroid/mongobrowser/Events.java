@@ -7,10 +7,6 @@ public class Events {
         EventBus.getDefault().post(new AddConnection());
     }
 
-    public static void postShowSettings() {
-        EventBus.getDefault().post(new ShowSettings());
-    }
-
     public static void postConnectionSelected(long connectionID) {
         EventBus.getDefault().post(new ConnectionSelected(connectionID));
     }
@@ -93,9 +89,6 @@ public class Events {
 
     public static void postSettingsChanged() {
         EventBus.getDefault().post(new SettingsChanged());
-    }
-
-    public static class ShowSettings {
     }
 
     public static class AddConnection {

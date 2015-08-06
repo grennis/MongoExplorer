@@ -6,10 +6,5 @@
           android:title="Add Connection"
           android:orderInCategory="10"
           app:showAsAction="withText|ifRoom"/>
-	<item android:id="@+id/menu_connection_list_configure"
-          android:icon="@drawable/ic_settings"
-          android:title="Settings"
-          android:orderInCategory="999"
-          app:showAsAction="withText|ifRoom"/>
 </menu>
 

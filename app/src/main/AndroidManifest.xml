@@ -25,9 +25,6 @@
         <activity android:name=".ui.MultiPaneActivity" android:screenOrientation="landscape">
         </activity>
 
-        <activity android:name=".ui.PreferencesActivity" android:label="@string/title_preferences" >
-        </activity>
-        
         <provider android:name=".data.MongoBrowserProvider" android:authorities="com.innodroid.provider.mongobrowser" android:exported="false" />
 
 	</application>

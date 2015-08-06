@@ -24,7 +24,7 @@
                   android:icon="@drawable/ic_save_black"
                   android:title="Save Query" />
 		    <item android:id="@+id/menu_document_list_clear_query"
-                  android:icon="@drawable/ic_cancel_black"
+                  android:icon="@drawable/ic_clear_black"
                   android:title="Clear Query" />
 		</menu>      
 	</item>
