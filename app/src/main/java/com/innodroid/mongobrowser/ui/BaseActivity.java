@@ -105,7 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 					rateApp();
 					return true;
 				case R.id.menu_drawer_settings:
-					DialogFragment fragment = SettingsFragment.newInstance();
+					DialogFragment fragment = SettingsDialogFragment.newInstance();
 					fragment.show(getSupportFragmentManager(), null);
 					return true;
 				default:

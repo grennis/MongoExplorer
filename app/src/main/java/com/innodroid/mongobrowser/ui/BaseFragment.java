@@ -7,10 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.innodroid.mongobrowser.R;
+
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
 public class BaseFragment extends Fragment {
+    public int getTitleText() {
+        return R.string.app_name;
+    }
+
     protected View onCreateView(int layout, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(layout, container, false);
 

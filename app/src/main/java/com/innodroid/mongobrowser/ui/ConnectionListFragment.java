@@ -44,6 +44,11 @@ public class ConnectionListFragment extends BaseListFragment implements LoaderCa
     }
 
     @Override
+    public int getTitleText() {
+        return R.string.connections;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

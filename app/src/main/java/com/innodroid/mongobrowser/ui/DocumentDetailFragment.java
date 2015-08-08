@@ -43,6 +43,11 @@ public class DocumentDetailFragment extends BaseFragment {
 	}
 
 	@Override
+	public int getTitleText() {
+		return R.string.document;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setHasOptionsMenu(true);

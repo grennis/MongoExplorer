@@ -49,6 +49,11 @@ public class CollectionListFragment extends BaseListFragment {
 	}
 
 	@Override
+	public int getTitleText() {
+		return R.string.collections;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

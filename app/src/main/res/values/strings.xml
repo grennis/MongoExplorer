@@ -40,4 +40,7 @@
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="rate_this_app">Rate This App</string>
+    <string name="connection_detail">Connection Detail</string>
+    <string name="connections">Connections</string>
+    <string name="documents">Documents</string>
 </resources>

@@ -67,6 +67,11 @@ public class DocumentListFragment extends BaseListFragment {
 	}
 
 	@Override
+	public int getTitleText() {
+		return R.string.documents;
+	}
+
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

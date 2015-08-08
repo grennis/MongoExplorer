@@ -1,5 +1,6 @@
 package com.innodroid.mongobrowser.ui;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -10,6 +11,13 @@ public class SinglePaneActivity extends BaseActivity {
 	@Override
 	protected int getLayoutResource() {
 		return R.layout.activity_single_pane;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		getSupportFragmentManager().addOnBackStackChangedListener(BackStackListener);
 	}
 
 	@Override
@@ -86,5 +94,16 @@ public class SinglePaneActivity extends BaseActivity {
 				.addToBackStack(null)
 				.commit();
 	}
+
+	private FragmentManager.OnBackStackChangedListener BackStackListener = new FragmentManager.OnBackStackChangedListener() {
+		@Override
+		public void onBackStackChanged() {
+			BaseFragment fragment = (BaseFragment) getSupportFragmentManager().findFragmentById(R.id.frame_1);
+
+			if (fragment != null) {
+				setTitle(fragment.getTitleText());
+			}
+		}
+	};
 }
 
