@@ -230,9 +230,14 @@ public class CollectionListFragment extends BaseListFragment {
 
 		@Override
 		protected void safeOnPostExecute(String[] result) {
-			mSwipeRefresh.setRefreshing(false);
-			mAdapter.loadItems(result);
-			new LoadCountsTask().execute(result);
+			if (mSwipeRefresh != null) {
+				mSwipeRefresh.setRefreshing(false);
+			}
+
+			if (mAdapter != null) {
+				mAdapter.loadItems(result);
+				new LoadCountsTask().execute(result);
+			}
 		}
 
 		@Override

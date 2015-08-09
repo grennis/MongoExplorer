@@ -109,7 +109,11 @@ public class ConnectionEditDialogFragment extends BaseDialogFragment implements 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (!cursor.moveToFirst())
 			return;
-		
+
+		if (mNameView == null) {
+			return;
+		}
+
     	mNameView.setText(cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_NAME));
     	mServerView.setText(cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_SERVER));
     	mPortView.setText(cursor.getString(MongoBrowserProvider.INDEX_CONNECTION_PORT));

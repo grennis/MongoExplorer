@@ -251,9 +251,7 @@ public class DocumentListFragment extends BaseListFragment {
 	public void onEvent(Events.DocumentDeleted e) {
 		mAdapter.delete(mActivatedPosition);
 
-		if (mActivateOnClick && mActivatedPosition < mAdapter.getActualCount()) {
-			Events.postDocumentSelected(mAdapter.getItem(mActivatedPosition));
-		} else {
+		if (!mActivateOnClick) {
 			Events.postDocumentSelected(null);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
