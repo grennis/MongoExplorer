@@ -80,8 +80,21 @@ public class SinglePaneActivity extends BaseActivity {
 		f.onEvent(e);
 	}
 
+	@Override
+	protected void home() {
+		clearBackStack();
+	}
+
+	private void clearBackStack() {
+		FragmentManager fm = getSupportFragmentManager();
+
+		while (fm.getBackStackEntryCount() > 0) {
+			fm.popBackStackImmediate();
+		}
+	}
+
 	public void onEvent(Events.CollectionDropped e) {
-        FragmentManager fm = getSupportFragmentManager();
+		FragmentManager fm = getSupportFragmentManager();
 		fm.popBackStackImmediate();
 		CollectionListFragment fragment = (CollectionListFragment)fm.findFragmentById(R.id.frame_1);
 		fragment.onEvent(e);

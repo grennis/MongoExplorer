@@ -43,4 +43,6 @@
     <string name="connection_detail">Connection Detail</string>
     <string name="connections">Connections</string>
     <string name="documents">Documents</string>
+    <string name="new_version">New Version!</string>
+    <string name="new_version_detail">* Material design updates\n* Pull to refresh list views\n* Use floating action button to add new items\n* Bug fixes</string>
 </resources>

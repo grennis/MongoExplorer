@@ -8,12 +8,15 @@ import com.innodroid.mongobrowser.R;
 
 public class Preferences {
     private SharedPreferences mPrefs;
+    private Context mContext;
     private int mDefaultDocumentPageSize;
 
     private static final String KEY_SHOW_SYSTEM_COLLECTIONS = "show_system_collections";
     private static final String KEY_DOCUMENT_PAGE_SIZE = "document_page_size";
+    private static final String KEY_UPDATE_NOTICE_APPVER = "update_notice_ver";
 
     public Preferences(Context context) {
+        mContext = context;
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         mDefaultDocumentPageSize = context.getResources().getInteger(R.integer.default_document_page_size);
     }
@@ -32,5 +35,17 @@ public class Preferences {
 
     public void setDocumentPageSize(int value) {
         mPrefs.edit().putInt(KEY_DOCUMENT_PAGE_SIZE, value).apply();
+    }
+
+    public boolean showUpdateNotice() {
+        String lastShownVersion = mPrefs.getString(KEY_UPDATE_NOTICE_APPVER, "");
+        String actualVersion = UiUtils.getAppVersionString(mContext);
+
+        if (actualVersion.equals(lastShownVersion)) {
+            return false;
+        }
+
+        mPrefs.edit().putString(KEY_UPDATE_NOTICE_APPVER, actualVersion).apply();
+        return true;
     }
 }

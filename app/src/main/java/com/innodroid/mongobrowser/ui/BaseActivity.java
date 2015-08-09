@@ -1,5 +1,6 @@
 package com.innodroid.mongobrowser.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,7 +21,9 @@ import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
+import com.innodroid.mongobrowser.util.Preferences;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
+import com.innodroid.mongobrowser.util.UiUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -46,7 +49,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 		ButterKnife.bind(this);
 
-		mAppVersion.setText(getAppVersionString());
+		mAppVersion.setText(UiUtils.getAppVersionString(this));
 
 		mDrawerToggle = new CustomDrawerToggle();
 		mDrawer.setDrawerListener(mDrawerToggle);
@@ -61,11 +64,27 @@ public abstract class BaseActivity extends AppCompatActivity {
         	mCollectionName = savedInstanceState.getString(STATE_COLLECTION_NAME);
         }
 
-    	if (!mHavePromptedToAddConnection) {
-    		mHavePromptedToAddConnection = true;
-    		new AddConnectionIfNoneExistTask().execute();
-    	}
+		if (new Preferences(this).showUpdateNotice()) {
+			UiUtils.message(this, R.string.new_version, R.string.new_version_detail, DismissNewVersion);
+		}
+    	else {
+			checkAddConnection();
+		}
     }
+
+	private DialogInterface.OnClickListener DismissNewVersion = new DialogInterface.OnClickListener() {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			checkAddConnection();
+		}
+	};
+
+	private void checkAddConnection() {
+		if (!mHavePromptedToAddConnection) {
+			mHavePromptedToAddConnection = true;
+			new AddConnectionIfNoneExistTask().execute();
+		}
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -101,6 +120,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 			menuItem.setChecked(true);
 
 			switch (menuItem.getItemId()) {
+				case R.id.menu_drawer_home:
+					home();
+					return true;
 				case R.id.menu_drawer_rate:
 					rateApp();
 					return true;
@@ -151,6 +173,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected abstract void loadDocumentListPane(long connectionId, String collection);
 	protected abstract void loadDocumentDetailsPane(String content);
 	protected abstract void hideDocumentDetailPane();
+
+	protected void home() {
+		// Handle in derived class
+	}
 
 	public void onEvent(Events.ConnectionSelected e) {
 		loadConnectionDetailsPane(e.ConnectionId);
@@ -217,16 +243,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 	public void onEvent(Events.EditDocument e) {
 		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.newInstance(mCollectionName, false, e.Content);
 		fragment.show(getSupportFragmentManager(), null);
-	}
-
-	private String getAppVersionString() {
-		try {
-			PackageInfo info = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
-			return "v" + info.versionName + " (Build " + info.versionCode + ")";
-		} catch (PackageManager.NameNotFoundException e) {
-			e.printStackTrace();
-			return "";
-		}
 	}
 
 	private void rateApp() {

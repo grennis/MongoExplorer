@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListAdapter;
@@ -111,18 +113,22 @@ public class UiUtils {
 	}
 
 	public static void message(Context context, int title, int message) {
-        new AlertDialog.Builder(context)
-	        .setIcon(R.drawable.ic_info_black)
-	        .setMessage(message)
-	        .setTitle(title)
-	        .setCancelable(true)
-	        .setPositiveButton(android.R.string.ok,
-	            new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int whichButton) {
-	                }
-	            }
-	        )
-	        .create().show();
+        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+			}
+		};
+
+		message(context, title, message, onClick);
+	}
+
+	public static void message(Context context, int title, int message, DialogInterface.OnClickListener onClick) {
+		new AlertDialog.Builder(context)
+				.setIcon(R.drawable.ic_info_black)
+				.setMessage(message)
+				.setTitle(title)
+				.setCancelable(true)
+				.setPositiveButton(android.R.string.ok, onClick)
+				.create().show();
 	}
 
 	public static void confirm(Context context, int message, final ConfirmCallbacks callbacks) {
@@ -145,5 +151,15 @@ public class UiUtils {
 					}
 			)
 	        .create().show();
+	}
+
+	public static String getAppVersionString(Context context) {
+		try {
+			PackageInfo info = context.getApplicationContext().getPackageManager().getPackageInfo(context.getPackageName(), 0);
+			return "v" + info.versionName + " (Build " + info.versionCode + ")";
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 }

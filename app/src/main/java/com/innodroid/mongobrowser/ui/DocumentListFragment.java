@@ -97,6 +97,8 @@ public class DocumentListFragment extends BaseListFragment {
 		if (mAdapter == null) {
 			mAdapter = new MongoDocumentAdapter(getActivity());
 			onRefresh();
+		} else {
+			mAdapter.notifyDataSetChanged();
 		}
 
 		mList.setAdapter(mAdapter);
