@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser.data;
+package com.innodroid.mongobrowser.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 
 public class MongoQueryAdapter extends android.support.v4.widget.CursorAdapter {
 	public MongoQueryAdapter(Context context, Cursor c, boolean autoRequery) {

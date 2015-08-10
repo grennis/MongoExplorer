@@ -2,9 +2,9 @@ package com.innodroid.mongobrowser.ui;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -16,15 +16,16 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.innodroid.mongobrowser.Events;
+import com.innodroid.mongobrowser.data.MongoCollection;
+import com.innodroid.mongobrowser.data.MongoData;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
-import com.innodroid.mongobrowser.data.MongoCollectionAdapter;
+import com.innodroid.mongobrowser.adapters.MongoCollectionAdapter;
 import com.innodroid.mongobrowser.util.Preferences;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 
-import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
@@ -72,6 +73,8 @@ public class CollectionListFragment extends BaseListFragment {
 		if (mAdapter == null) {
 			mAdapter = new MongoCollectionAdapter(getActivity());
 			onRefresh();
+		} else {
+			mAdapter.notifyDataSetChanged();
 		}
 
 		mList.setAdapter(mAdapter);
@@ -126,8 +129,7 @@ public class CollectionListFragment extends BaseListFragment {
     }
     
     private void addCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.newInstance("", true);
-        fragment.setTargetFragment(this, 0);
+        DialogFragment fragment = CollectionEditDialogFragment.newInstance(-1);
         fragment.show(getFragmentManager(), null);
 	}
 
@@ -136,7 +138,7 @@ public class CollectionListFragment extends BaseListFragment {
 
 		if (mActivateOnClick) {
 			setActivatedPosition(0);
-			Events.postCollectionSelected(mConnectionId, name);
+			Events.postCollectionSelected(mConnectionId, 0);
 		}
 	}
 
@@ -148,12 +150,13 @@ public class CollectionListFragment extends BaseListFragment {
     public void onItemClick(int position) {
         setActivatedPosition(position);
 
-		Events.postCollectionSelected(mConnectionId, mAdapter.getCollectionName(position));
+		Events.postCollectionSelected(mConnectionId, position);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
@@ -174,7 +177,7 @@ public class CollectionListFragment extends BaseListFragment {
 	}
 
 	public void onEvent(Events.CollectionRenamed e) {
-		mAdapter.setItemName(mActivatedPosition, e.Name);
+		mAdapter.notifyDataSetChanged();
 	}
 	
 	public void onEvent(Events.ChangeDatabase e) {
@@ -182,12 +185,12 @@ public class CollectionListFragment extends BaseListFragment {
 	}
 
 	public void onEvent(Events.CollectionDropped e) {
-		mAdapter.delete(mActivatedPosition);
+		mAdapter.notifyDataSetChanged();
 
 		if (mActivateOnClick && mActivatedPosition < mAdapter.getCount())
-			Events.postCollectionSelected(mConnectionId, mAdapter.getItem(mActivatedPosition).Name);
+			Events.postCollectionSelected(mConnectionId, mActivatedPosition);
 		else {
-			Events.postCollectionSelected(mConnectionId, null);
+			Events.postCollectionSelected(mConnectionId, -1);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
 	}
@@ -214,7 +217,7 @@ public class CollectionListFragment extends BaseListFragment {
 		}		
     }
 	
-    private class LoadNamesTask extends SafeAsyncTask<Void, Void, String[]> {
+    private class LoadNamesTask extends SafeAsyncTask<Void, Void, List<MongoCollection>> {
 		boolean mShowSystemCollections;
 
     	public LoadNamesTask() {
@@ -224,19 +227,20 @@ public class CollectionListFragment extends BaseListFragment {
 		}
 
     	@Override
-		protected String[] safeDoInBackground(Void... arg0) {
+		protected List<MongoCollection> safeDoInBackground(Void... arg0) {
 			return MongoHelper.getCollectionNames(mShowSystemCollections);
 		}
 
 		@Override
-		protected void safeOnPostExecute(String[] result) {
+		protected void safeOnPostExecute(List<MongoCollection> result) {
 			if (mSwipeRefresh != null) {
 				mSwipeRefresh.setRefreshing(false);
 			}
 
 			if (mAdapter != null) {
-				mAdapter.loadItems(result);
-				new LoadCountsTask().execute(result);
+				MongoData.Collections = result;
+				mAdapter.setItems(result);
+				new LoadCountsTask(result).execute();
 			}
 		}
 
@@ -246,26 +250,31 @@ public class CollectionListFragment extends BaseListFragment {
 		}		
     }
 
-    private class LoadCountsTask extends SafeAsyncTask<String, Long, Void> {
-    	public LoadCountsTask() {
+    private class LoadCountsTask extends SafeAsyncTask<Void, Integer, Void> {
+		private List<MongoCollection> mCollections;
+
+		public LoadCountsTask(List<MongoCollection> list) {
 			super(getActivity());
+
+			mCollections = list;
 		}
 
     	@Override
-		protected Void safeDoInBackground(String... names) {    		
-			for (int i = 0; i<names.length; i++) {
-				publishProgress(new Long[] { (long)i, MongoHelper.getCollectionCount(names[i])});
+		protected Void safeDoInBackground(Void... voids) {
+			for (int i = 0; i<mCollections.size(); i++) {
+				long count = MongoHelper.getCollectionCount(mCollections.get(i).Name);
+				mCollections.get(i).Count = count;
+				publishProgress(i);
 			}
 			
 			return null;
 		}
 		
 		@Override
-		protected void onProgressUpdate(Long... values) {
+		protected void onProgressUpdate(Integer... values) {
 			super.onProgressUpdate(values);
 			
-			int index = (int)(long)values[0];
-			mAdapter.setItemCount(index, values[1]);
+			mAdapter.notifyCountChanged(values[0]);
 		}
 		
 		@Override
@@ -296,8 +305,7 @@ public class CollectionListFragment extends BaseListFragment {
 			}
 
 	        DialogFragment fragment = ChangeDatabaseDialogFragment.newInstance(result);
-	        fragment.setTargetFragment(CollectionListFragment.this, 0);
-	        fragment.show(getFragmentManager(), null);    	
+	        fragment.show(getFragmentManager(), null);
 		}
 
 		@Override

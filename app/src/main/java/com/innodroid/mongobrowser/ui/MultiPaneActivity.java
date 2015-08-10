@@ -118,8 +118,8 @@ public class MultiPaneActivity extends BaseActivity {
 	}
 
 	@Override
-	protected void loadDocumentListPane(long connectionId, String collection) {
-		DocumentListFragment fragment = DocumentListFragment.newInstance(connectionId, collection, true);
+	protected void loadDocumentListPane(long connectionId, int collectionIndex) {
+		DocumentListFragment fragment = DocumentListFragment.newInstance(connectionId, collectionIndex, true);
 
 		FragmentManager fm = getSupportFragmentManager();
 
@@ -141,8 +141,8 @@ public class MultiPaneActivity extends BaseActivity {
     }
 
 	@Override
-	protected void loadDocumentDetailsPane(String content) {
-		DocumentDetailFragment fragment = DocumentDetailFragment.newInstance(content, mCollectionName);
+	protected void loadDocumentDetailsPane(int documentIndex) {
+		DocumentDetailFragment fragment = DocumentDetailFragment.newInstance(mSelectedCollectionIndex, documentIndex);
 
 		FragmentManager fm = getSupportFragmentManager();
 
@@ -238,10 +238,16 @@ public class MultiPaneActivity extends BaseActivity {
 
 	public void onEvent(Events.DocumentSelected e) {
 		// If nothing was selected (i.e., refresh) and we aren't showing the details pane, then dont shift to it
-		if (e.Content == null && getSupportFragmentManager().getBackStackEntryCount() < 2)
+		if (e.Index < 0 && getSupportFragmentManager().getBackStackEntryCount() < 2)
 			return;
 		
-		loadDocumentDetailsPane(e.Content);
+		loadDocumentDetailsPane(e.Index);
+	}
+
+	public void onEvent(Events.ConnectionDeleted e) {
+		getSupportFragmentManager().beginTransaction()
+			.remove(getSupportFragmentManager().findFragmentById(R.id.frame_2))
+			.commit();
 	}
 
 	@Override

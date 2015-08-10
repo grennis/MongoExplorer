@@ -1,6 +1,7 @@
-package com.innodroid.mongobrowser.data;
+package com.innodroid.mongobrowser.adapters;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,25 +11,22 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.innodroid.mongobrowser.R;
+import com.innodroid.mongobrowser.data.MongoDocument;
 
 public class MongoDocumentAdapter extends BaseAdapter {
 	private Context mContext;
 	private boolean mShowLoadMore;
-	private ArrayList<String> mItems = new ArrayList<String>();
+	private List<MongoDocument> mItems = new ArrayList<>();
 	
 	public MongoDocumentAdapter(Context context) {
 		mContext = context;
 		mShowLoadMore = true;
 	}
 
-	public void addAll(String[] names) {
-		for (String name : names) {
-			mItems.add(name);
-		}
-		
-		notifyDataSetChanged();
+	public void setItems(List<MongoDocument> documents) {
+		mItems = documents;
 	}
-	
+
 	@Override
 	public int getItemViewType(int position) {
 		if (!mShowLoadMore)
@@ -79,24 +77,24 @@ public class MongoDocumentAdapter extends BaseAdapter {
 			view = inflater.inflate(R.layout.list_item_document, null);
 			
 			ViewHolder holder = new ViewHolder();
-			holder.NameView = (TextView)view.findViewById(R.id.list_item_document_text);
+			holder.ContentView = (TextView)view.findViewById(R.id.list_item_document_text);
 			view.setTag(holder);
 		}
 		
 		ViewHolder holder = (ViewHolder)view.getTag();
-		String item = mItems.get(position);
-		holder.NameView.setText(item);
+		MongoDocument item = mItems.get(position);
+		holder.ContentView.setText(item.Content);
 
 		return view;
 	}
 	
-	public void insert(int position, String content) {
-		mItems.add(position, content);
+	public void insert(int position, MongoDocument doc) {
+		mItems.add(position, doc);
 		notifyDataSetChanged();
 	}
 
-	public void update(int position, String content) {
-		mItems.set(position, content);
+	public void update(int position, MongoDocument doc) {
+		mItems.set(position, doc);
 		notifyDataSetChanged();
 	}
 
@@ -122,11 +120,11 @@ public class MongoDocumentAdapter extends BaseAdapter {
 	}
 
 	private class ViewHolder {
-		public TextView NameView;
+		public TextView ContentView;
 	}
 
 	@Override
-	public String getItem(int position) {
+	public MongoDocument getItem(int position) {
 		return mItems.get(position);
 	}
 

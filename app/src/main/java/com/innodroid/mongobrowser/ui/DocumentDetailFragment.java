@@ -1,6 +1,5 @@
 package com.innodroid.mongobrowser.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.innodroid.mongobrowser.Events;
+import com.innodroid.mongobrowser.data.MongoData;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
@@ -25,19 +25,17 @@ import butterknife.Bind;
 public class DocumentDetailFragment extends BaseFragment {
 	@Bind(R.id.document_detail_content) TextView mContentText;
 
-	private String mCollectionName;
 	private String mRawText;
-	private String mFormattedText;
 
     public DocumentDetailFragment() {
     }
 
 	@NonNull
-	public static DocumentDetailFragment newInstance(String content, String collectionName) {
+	public static DocumentDetailFragment newInstance(int collectionIndex, int documentIndex) {
 		Bundle arguments = new Bundle();
 		DocumentDetailFragment fragment = new DocumentDetailFragment();
-		arguments.putString(Constants.ARG_COLLECTION_NAME, collectionName);
-		arguments.putString(Constants.ARG_DOCUMENT_CONTENT, content);
+		arguments.putInt(Constants.ARG_COLLECTION_INDEX, collectionIndex);
+		arguments.putInt(Constants.ARG_DOCUMENT_INDEX, documentIndex);
 		fragment.setArguments(arguments);
 		return fragment;
 	}
@@ -50,17 +48,15 @@ public class DocumentDetailFragment extends BaseFragment {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setHasOptionsMenu(true);
 
-    	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
+    	setHasOptionsMenu(true);
     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(R.layout.fragment_document_detail, inflater, container, savedInstanceState);
 
-		updateContent(getArguments().getString(Constants.ARG_DOCUMENT_CONTENT));
-		getActivity().setProgressBarIndeterminateVisibility(false);
+		updateContent();
 
         return view;
     }
@@ -75,7 +71,7 @@ public class DocumentDetailFragment extends BaseFragment {
     	switch (item.getItemId()) {
     		case R.id.menu_document_detail_edit:
     			if (mRawText != null)
-    				Events.postEditDocument(mFormattedText);
+    				Events.postEditDocument(getArguments().getInt(Constants.ARG_DOCUMENT_INDEX));
     			return true;
     		case R.id.menu_document_detail_delete:
     			if (mRawText != null)
@@ -95,7 +91,7 @@ public class DocumentDetailFragment extends BaseFragment {
     }
 
 	public void onEvent(Events.DocumentEdited e) {
-		updateContent(e.Content);
+		updateContent();
 	}
 
     private void deleteDocument() {
@@ -108,15 +104,15 @@ public class DocumentDetailFragment extends BaseFragment {
 		});
     }
     
-    public void updateContent(String json) {
+    public void updateContent() {
+		int index = getArguments().getInt(Constants.ARG_DOCUMENT_INDEX);
+		String json = MongoData.Documents.get(index).Content;
+
     	mRawText = json;
     	
     	if (mRawText == null) {
     		mContentText.setText("");
-    		mFormattedText = null;
     	} else {
-    		mFormattedText = JsonUtils.prettyPrint(json);   
-    		//mContentText.setText(mFormattedText);
     		mContentText.setText(JsonUtils.prettyPrint2(json));
     	}
     	
@@ -130,7 +126,9 @@ public class DocumentDetailFragment extends BaseFragment {
 
 		@Override
 		protected Void safeDoInBackground(Void... params) throws Exception {
-			MongoHelper.deleteDocument(mCollectionName, mRawText);
+			int index = getArguments().getInt(Constants.ARG_COLLECTION_INDEX);
+			String collectionName = MongoData.Collections.get(index).Name;
+			MongoHelper.deleteDocument(collectionName, mRawText);
 			return null;
 		}
 

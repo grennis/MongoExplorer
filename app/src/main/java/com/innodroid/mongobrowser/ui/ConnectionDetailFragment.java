@@ -83,6 +83,11 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
 		new ConnectTask().execute();
 	}
 
+	@OnClick(R.id.fab_edit)
+	public void clickEdit() {
+		editConnection();
+	}
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate(R.menu.connection_detail_menu, menu);
@@ -91,9 +96,6 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-    		case R.id.menu_connection_detail_edit:
-    			editConnection();
-    			return true;
     		case R.id.menu_connection_detail_delete:
     			deleteConnection();
     			return true;
@@ -103,14 +105,11 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
     }
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle args) {
-		getActivity().setProgressBarIndeterminateVisibility(true);
 		Uri uri = ContentUris.withAppendedId(MongoBrowserProvider.CONNECTION_URI, mConnectionID);
 	    return new CursorLoader(getActivity(), uri, null, null, null, null);
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		getActivity().setProgressBarIndeterminateVisibility(false);
-
 		Resources res = getResources();
 		
 		if (!cursor.moveToFirst())
@@ -134,7 +133,6 @@ public class ConnectionDetailFragment extends BaseFragment implements LoaderCall
 	
     private void editConnection() {
         DialogFragment fragment = ConnectionEditDialogFragment.newInstance(mConnectionID);
-        fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 

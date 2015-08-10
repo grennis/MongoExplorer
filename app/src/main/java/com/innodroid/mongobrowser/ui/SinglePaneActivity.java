@@ -1,7 +1,6 @@
 package com.innodroid.mongobrowser.ui;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.innodroid.mongobrowser.Events;
@@ -54,15 +53,15 @@ public class SinglePaneActivity extends BaseActivity {
     }
 
 	@Override
-    protected void loadDocumentListPane(long connectionId, String collection) {
-		DocumentListFragment fragment = DocumentListFragment.newInstance(connectionId, collection, false);
+    protected void loadDocumentListPane(long connectionId, int collectionIndex) {
+		DocumentListFragment fragment = DocumentListFragment.newInstance(connectionId, collectionIndex, false);
 
 		loadContentPane(fragment);
     }
 
 	@Override
-	protected void loadDocumentDetailsPane(String content) {
-		DocumentDetailFragment fragment = DocumentDetailFragment.newInstance(content, mCollectionName);
+	protected void loadDocumentDetailsPane(int documentIndex) {
+		DocumentDetailFragment fragment = DocumentDetailFragment.newInstance(mSelectedCollectionIndex, documentIndex);
 
 		loadContentPane(fragment);
     }
@@ -99,7 +98,14 @@ public class SinglePaneActivity extends BaseActivity {
 		CollectionListFragment fragment = (CollectionListFragment)fm.findFragmentById(R.id.frame_1);
 		fragment.onEvent(e);
 	}
-	
+
+	public void onEvent(Events.ConnectionDeleted e) {
+		FragmentManager fm = getSupportFragmentManager();
+		fm.popBackStackImmediate();
+		ConnectionListFragment fragment = (ConnectionListFragment)fm.findFragmentById(R.id.frame_1);
+		fragment.onEvent(e);
+	}
+
 	private void loadContentPane(BaseFragment fragment) {
 		getSupportFragmentManager()
 				.beginTransaction()

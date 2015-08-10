@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -18,21 +17,25 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.innodroid.mongobrowser.Events;
+import com.innodroid.mongobrowser.data.MongoCollection;
+import com.innodroid.mongobrowser.data.MongoData;
+import com.innodroid.mongobrowser.data.MongoDocument;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
-import com.innodroid.mongobrowser.data.MongoDocumentAdapter;
-import com.innodroid.mongobrowser.data.MongoQueryAdapter;
+import com.innodroid.mongobrowser.adapters.MongoDocumentAdapter;
+import com.innodroid.mongobrowser.adapters.MongoQueryAdapter;
 import com.innodroid.mongobrowser.util.Preferences;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
 import com.innodroid.mongobrowser.util.UiUtils.ConfirmCallbacks;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
-import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
@@ -43,7 +46,7 @@ public class DocumentListFragment extends BaseListFragment {
     private static final String STATE_QUERY_TEXT = "query_text";
 
     private long mConnectionId;
-    private String mCollectionName;
+    private int mCollectionIndex;
     private long mQueryID;
     private String mQueryName;
     private String mQueryText;
@@ -56,10 +59,10 @@ public class DocumentListFragment extends BaseListFragment {
     }
 
 	@NonNull
-	public static DocumentListFragment newInstance(long connectionId, String collection, boolean mTwoPane) {
+	public static DocumentListFragment newInstance(long connectionId, int collectionIndex, boolean mTwoPane) {
 		Bundle arguments = new Bundle();
 		DocumentListFragment fragment = new DocumentListFragment();
-		arguments.putString(Constants.ARG_COLLECTION_NAME, collection);
+		arguments.putInt(Constants.ARG_COLLECTION_INDEX, collectionIndex);
 		arguments.putLong(Constants.ARG_CONNECTION_ID, connectionId);
 		arguments.putBoolean(Constants.ARG_ACTIVATE_ON_CLICK, mTwoPane);
 		fragment.setArguments(arguments);
@@ -78,7 +81,7 @@ public class DocumentListFragment extends BaseListFragment {
 		setHasOptionsMenu(true);
 		
 		mTake = new Preferences(getActivity()).getDocumentPageSize();
-    	mCollectionName = getArguments().getString(Constants.ARG_COLLECTION_NAME);
+    	mCollectionIndex = getArguments().getInt(Constants.ARG_COLLECTION_INDEX);
     	mConnectionId = getArguments().getLong(Constants.ARG_CONNECTION_ID);
 
 		if (savedInstanceState != null) {
@@ -96,6 +99,7 @@ public class DocumentListFragment extends BaseListFragment {
 
 		if (mAdapter == null) {
 			mAdapter = new MongoDocumentAdapter(getActivity());
+			mAdapter.setItems(MongoData.Documents);
 			onRefresh();
 		} else {
 			mAdapter.notifyDataSetChanged();
@@ -173,7 +177,8 @@ public class DocumentListFragment extends BaseListFragment {
 	}
 	
 	private void loadQuery() {
-		Cursor cursor = new MongoBrowserProviderHelper(getActivity().getContentResolver()).getNamedQueries(mConnectionId, mCollectionName);
+		String collectionName = MongoData.Collections.get(mCollectionIndex).Name;
+		Cursor cursor = new MongoBrowserProviderHelper(getActivity().getContentResolver()).getNamedQueries(mConnectionId, collectionName);
 		
 		if (cursor.getCount() == 0) {
 			UiUtils.message(getActivity(), R.string.load_query, R.string.no_saved_queries);
@@ -237,24 +242,25 @@ public class DocumentListFragment extends BaseListFragment {
 	}
 
 	public void onEvent(Events.DocumentCreated e) {
-		mAdapter.insert(0, e.Content);
+		mAdapter.insert(0, new MongoDocument(e.Content));
 		setActivatedPosition(0);
 
 		if (mActivateOnClick) {
-			Events.postDocumentSelected(e.Content);
+			Events.postDocumentSelected(0);
 		}
 	}
 
 	public void onEvent(Events.DocumentEdited e) {
-		mAdapter.update(mActivatedPosition, e.Content);
-		Events.postDocumentSelected(e.Content);
+		mAdapter.notifyDataSetChanged();
+
+		Events.postDocumentSelected(e.Index);
 	}
 
 	public void onEvent(Events.DocumentDeleted e) {
 		mAdapter.delete(mActivatedPosition);
 
 		if (!mActivateOnClick) {
-			Events.postDocumentSelected(null);
+			Events.postDocumentSelected(-1);
 			mActivatedPosition = ListView.INVALID_POSITION;
 		}
 	}
@@ -274,8 +280,7 @@ public class DocumentListFragment extends BaseListFragment {
 	}
 
 	private void editCollection() {
-        DialogFragment fragment = CollectionEditDialogFragment.newInstance(mCollectionName, false);
-        fragment.setTargetFragment(this, 0);
+        DialogFragment fragment = CollectionEditDialogFragment.newInstance(mCollectionIndex);
         fragment.show(getFragmentManager(), null);
 	}
 
@@ -312,7 +317,7 @@ public class DocumentListFragment extends BaseListFragment {
         } else {
         	setActivatedPosition(position);
         	
-			Events.postDocumentClicked(mAdapter.getItem(position));
+			Events.postDocumentClicked(position);
         }
     }
 
@@ -337,18 +342,10 @@ public class DocumentListFragment extends BaseListFragment {
         mActivatedPosition = position;
     }
 
-	public int getItemCount() {
-		return mAdapter.getActualCount();
-	}
-	
-	public String getItem(int position) {
-		return mAdapter.getItem(position);
-	}
-
 	public void reloadList(boolean trySelectAfterLoad) {
 		boolean selectAfterLoad = trySelectAfterLoad && (mActivatedPosition != ListView.INVALID_POSITION);
 		setActivatedPosition(ListView.INVALID_POSITION);
-		Events.postDocumentSelected(null);
+		Events.postDocumentSelected(0);
 		mAdapter.removeAll();
 		mStart = 0;
 		new LoadNextDocumentsTask(selectAfterLoad).execute();		
@@ -361,13 +358,15 @@ public class DocumentListFragment extends BaseListFragment {
 
 		@Override
 		protected String safeDoInBackground(String... args) throws UnknownHostException {
-			MongoHelper.renameCollection(mCollectionName, args[0]);
-			return args[0];
+			String newName = args[0];
+			MongoCollection collection = MongoData.Collections.get(mCollectionIndex);
+			MongoHelper.renameCollection(collection.Name, newName);
+			collection.Name = newName;
+			return newName;
 		}
 
 		@Override
 		protected void safeOnPostExecute(String result) {
-			mCollectionName = result;
 			Events.postCollectionRenamed(result);
 		}
 
@@ -384,13 +383,15 @@ public class DocumentListFragment extends BaseListFragment {
 
 		@Override
 		protected Void safeDoInBackground(Void... args) {
-			MongoHelper.dropCollection(mCollectionName);
+			String collectionName = MongoData.Collections.get(mCollectionIndex).Name;
+			MongoHelper.dropCollection(collectionName);
+			MongoData.Collections.remove(mCollectionIndex);
 			return null;
 		}
 
 		@Override
 		protected void safeOnPostExecute(Void result) {
-			Events.postCollectionDropped(mCollectionName);
+			Events.postCollectionDropped();
 		}
 
 		@Override
@@ -399,7 +400,7 @@ public class DocumentListFragment extends BaseListFragment {
 		}		
     }
 
-    private class LoadNextDocumentsTask extends SafeAsyncTask<Void, Void, String[]> {
+    private class LoadNextDocumentsTask extends SafeAsyncTask<Void, Void, List<MongoDocument>> {
     	private boolean mSelectAfterLoad;
     	
     	public LoadNextDocumentsTask(boolean selectAfterLoad) {
@@ -409,26 +410,27 @@ public class DocumentListFragment extends BaseListFragment {
 		}
 
 		@Override
-		protected String[] safeDoInBackground(Void... args) {
-			if (mCollectionName == null)
-				return new String[0];
-			
-			String[] docs = MongoHelper.getPageOfDocuments(mCollectionName, mQueryText, mStart, mTake);
-			return docs;
+		protected List<MongoDocument> safeDoInBackground(Void... args) {
+			if (mCollectionIndex < 0)
+				return new ArrayList<>();
+
+			String collectionName = MongoData.Collections.get(mCollectionIndex).Name;
+			return MongoHelper.getPageOfDocuments(collectionName, mQueryText, mStart, mTake);
 		}
 
 		@Override
-		protected void safeOnPostExecute(String[] results) {
+		protected void safeOnPostExecute(List<MongoDocument> results) {
 			mSwipeRefresh.setRefreshing(false);
 
-			mAdapter.addAll(results);
-			
-			if (results.length < mTake)
+			MongoData.Documents.addAll(results);
+			mAdapter.notifyDataSetChanged();
+
+			if (results.size() < mTake)
 				mAdapter.showLoadMore(false);
 			
-			if (mSelectAfterLoad && results.length > 0) {
+			if (mSelectAfterLoad && results.size() > 0) {
 				setActivatedPosition(0);
-				Events.postDocumentSelected(results[0]);
+				Events.postDocumentSelected(0);
 			}
 		}
 
@@ -446,13 +448,14 @@ public class DocumentListFragment extends BaseListFragment {
 		@Override
 		protected String safeDoInBackground(Void... args) {
 			String name = "Query ";
+			String collectionName = MongoData.Collections.get(mCollectionIndex).Name;
 			MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
 			
 			int i = 1;
 			while (true)
 			{
 				String tryName = name + i;
-				Cursor cursor = helper.findQuery(tryName, mConnectionId, mCollectionName);
+				Cursor cursor = helper.findQuery(tryName, mConnectionId, collectionName);
 				boolean taken = cursor.moveToFirst();
 				cursor.close();
 				
@@ -482,8 +485,9 @@ public class DocumentListFragment extends BaseListFragment {
 
 		@Override
 		protected Void safeDoInBackground(Void... args) {
+			String collectionName = MongoData.Collections.get(mCollectionIndex).Name;
 			MongoBrowserProviderHelper helper = new MongoBrowserProviderHelper(getActivity().getContentResolver());
-			mQueryID = helper.saveQuery(mQueryID, mQueryName, mConnectionId, mCollectionName, mQueryText);
+			mQueryID = helper.saveQuery(mQueryID, mQueryName, mConnectionId, collectionName, mQueryText);
 			return null;
 		}
 

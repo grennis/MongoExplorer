@@ -2,10 +2,13 @@ package com.innodroid.mongobrowser.util;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import android.util.Log;
 
+import com.innodroid.mongobrowser.data.MongoCollection;
+import com.innodroid.mongobrowser.data.MongoDocument;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -66,17 +69,15 @@ public class MongoHelper {
     	Database = LoginDatabase.getSisterDB(name);
     }
     
-	public static String[] getCollectionNames(boolean includeSystemPrefs) {
+	public static List<MongoCollection> getCollectionNames(boolean includeSystemPrefs) {
     	Set<String> names = Database.getCollectionNames();
-    	ArrayList<String> list = new ArrayList<String>();
+    	ArrayList<MongoCollection> list = new ArrayList<>();
     	
     	for (String str : names)
     		if (includeSystemPrefs || !str.startsWith("system."))
-    			list.add(str);
+    			list.add(new MongoCollection(str));
 
-    	String[] namesArray = new String[list.size()];
-    	list.toArray(namesArray);
-    	return namesArray;
+		return list;
     }
 
 	public static ArrayList<String> getDatabaseNames() {
@@ -106,23 +107,21 @@ public class MongoHelper {
 		Database.getCollection(oldName).rename(newName);
 	}
 
-	public static String[] getPageOfDocuments(String collection, String queryText, int start, int take) {
+	public static List<MongoDocument> getPageOfDocuments(String collection, String queryText, int start, int take) {
 		DBCollection coll = Database.getCollection(collection);
 		DBCursor main = (queryText == null) ? coll.find() : coll.find(parse(queryText));
 		DBCursor cursor = main.skip(start).limit(take);
 		
-		ArrayList<String> results = new ArrayList<String>();
+		ArrayList<MongoDocument> results = new ArrayList<>();
 		
 		while (cursor.hasNext()) {
 			cursor.next();
-			results.add(cursor.curr().toString());
+			results.add(new MongoDocument(cursor.curr().toString()));
 		}
 		
 		cursor.close();
 		main.close();
-		String[] res = new String[results.size()];
-		results.toArray(res);
-		return res;
+		return results;
 	}
 
 	public static void dropCollection(String name) {

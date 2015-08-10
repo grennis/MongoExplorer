@@ -1,23 +1,26 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
 	android:padding="@dimen/standard_padding"
-	android:orientation="vertical"
-	tools:context=".ConnectionDetailFragment">
+	android:orientation="vertical">
 
 	<LinearLayout android:id="@+id/connection_detail_header"
 		android:orientation="horizontal"
 		android:layout_marginBottom="@dimen/standard_padding_small"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content">
-    
+
 	   	<ImageView android:id="@+id/connection_detail_image"
 		    android:contentDescription="@string/title_connection_detail"
 		    android:src="@drawable/database"
 		    android:layout_width="@dimen/icon_size_large"
 		    android:layout_height="@dimen/icon_size_large" />
-	
+
 		<TextView android:id="@+id/connection_detail_title"
 			tools:text="Connection Name"
 		    android:textSize="@dimen/text_size_large"
@@ -26,9 +29,9 @@
 			android:layout_weight="1"
 		    android:layout_width="0dp"
 		    android:layout_height="wrap_content" />
-	
+
 	</LinearLayout>
-	
+
 	<TextView android:id="@+id/connection_detail_last_connect"
 		tools:text="Last Connected"
 		style="@style/DetailLine" />
@@ -44,7 +47,7 @@
     <TextView android:id="@+id/connection_detail_db"
 		tools:text="Database Name"
 		style="@style/DetailLine" />
-    
+
     <TextView android:id="@+id/connection_detail_user"
 		tools:text="User Information"
 		style="@style/DetailLine" />
@@ -57,5 +60,16 @@
 	    android:padding="@dimen/standard_padding"
 	    android:text="@string/connect" />
 
-</LinearLayout>    
+</LinearLayout>
 
+<android.support.design.widget.FloatingActionButton android:id="@+id/fab_edit"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:src="@drawable/ic_mode_edit"
+	android:layout_gravity="bottom|end"
+	android:layout_margin="@dimen/fab_compat_margin"
+	app:borderWidth="0dp"
+	app:elevation="6dp"
+	app:pressedTranslationZ="12dp"/>
+
+</FrameLayout>

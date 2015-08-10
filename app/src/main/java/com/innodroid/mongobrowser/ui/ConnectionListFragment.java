@@ -1,6 +1,5 @@
 package com.innodroid.mongobrowser.ui;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,9 +7,6 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -19,7 +15,7 @@ import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProvider;
-import com.innodroid.mongobrowser.data.MongoConnectionAdapter;
+import com.innodroid.mongobrowser.adapters.MongoConnectionAdapter;
 
 import butterknife.OnClick;
 import butterknife.OnItemClick;
@@ -64,6 +60,8 @@ public class ConnectionListFragment extends BaseListFragment implements LoaderCa
         if (mAdapter == null) {
             mAdapter = new MongoConnectionAdapter(getActivity(), null, true);
             onRefresh();
+        } else {
+            mAdapter.notifyDataSetChanged();
         }
 
         mList.setAdapter(mAdapter);
@@ -133,6 +131,10 @@ public class ConnectionListFragment extends BaseListFragment implements LoaderCa
 	public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
 	}
+
+    public void onEvent(Events.ConnectionDeleted e) {
+        mAdapter.notifyDataSetChanged();
+    }
 
 	private void selectItem(Cursor cursor, long id) {
 		int pos = 0;

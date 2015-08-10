@@ -2,8 +2,6 @@ package com.innodroid.mongobrowser.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,10 +15,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.innodroid.mongobrowser.Constants;
 import com.innodroid.mongobrowser.Events;
 import com.innodroid.mongobrowser.R;
 import com.innodroid.mongobrowser.data.MongoBrowserProviderHelper;
+import com.innodroid.mongobrowser.data.MongoData;
 import com.innodroid.mongobrowser.util.Preferences;
 import com.innodroid.mongobrowser.util.SafeAsyncTask;
 import com.innodroid.mongobrowser.util.UiUtils;
@@ -30,14 +28,14 @@ import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
 public abstract class BaseActivity extends AppCompatActivity {
-	private static final String STATE_COLLECTION_NAME = "collname";
+	private static final String STATE_COLLECTION_INDEX = "collname";
 
 	@Bind(R.id.drawer_version) public TextView mAppVersion;
 	@Bind(R.id.drawer_navigation) NavigationView mNavigationView;
 	@Bind(R.id.drawer_layout) DrawerLayout mDrawer;
 	@Bind(R.id.frame_1) public FrameLayout mFrame1;
 
-	protected String mCollectionName;
+	protected int mSelectedCollectionIndex;
 	protected static boolean mHavePromptedToAddConnection = false;
 	private CustomDrawerToggle mDrawerToggle;
 
@@ -61,7 +59,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 		if (savedInstanceState == null) {
         	loadConnectionListPane();
         } else {
-        	mCollectionName = savedInstanceState.getString(STATE_COLLECTION_NAME);
+        	mSelectedCollectionIndex = savedInstanceState.getInt(STATE_COLLECTION_INDEX);
         }
 
 		if (new Preferences(this).showUpdateNotice()) {
@@ -110,7 +108,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString(STATE_COLLECTION_NAME, mCollectionName);
+		outState.putInt(STATE_COLLECTION_INDEX, mSelectedCollectionIndex);
 	}
 
 	private NavigationView.OnNavigationItemSelectedListener NavigationItemSelected = new NavigationView.OnNavigationItemSelectedListener() {
@@ -170,8 +168,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected abstract void loadConnectionListPane();
 	protected abstract void loadConnectionDetailsPane(long id);
 	protected abstract void loadCollectionListPane(long connectionId);
-	protected abstract void loadDocumentListPane(long connectionId, String collection);
-	protected abstract void loadDocumentDetailsPane(String content);
+	protected abstract void loadDocumentListPane(long connectionId, int collectionIndex);
+	protected abstract void loadDocumentDetailsPane(int documentIndex);
 	protected abstract void hideDocumentDetailPane();
 
 	protected void home() {
@@ -192,29 +190,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 	public void onEvent(Events.AddDocument e) {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.newInstance(mCollectionName, true, Constants.NEW_DOCUMENT_CONTENT_PADDED);
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.newInstance(mSelectedCollectionIndex, -1);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 
 	public void onEvent(Events.CollectionSelected e) {
-		if (e.CollectionName != null) {
-			mCollectionName = e.CollectionName;
-			loadDocumentListPane(e.ConnectionId, e.CollectionName);
+		if (e.Index >= 0) {
+			mSelectedCollectionIndex = e.Index;
+			loadDocumentListPane(e.ConnectionId, e.Index);
 		}
 	}
 
 	public void onEvent(Events.DocumentClicked e) {
-		loadDocumentDetailsPane(e.Content);
+		loadDocumentDetailsPane(e.Index);
 	}
 
 	public void onEvent(Events.Connected e) {
 		loadCollectionListPane(e.ConnectionId);
-	}
-
-	public void onEvent(Events.ConnectionDeleted e) {
-        getSupportFragmentManager().beginTransaction()
-	        .remove(getSupportFragmentManager().findFragmentById(R.id.frame_2))
-	        .commit();        
 	}
 
 	public void onEvent(Events.ConnectionAdded e) {
@@ -241,7 +233,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 	}
 
 	public void onEvent(Events.EditDocument e) {
-		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.newInstance(mCollectionName, false, e.Content);
+		DocumentEditDialogFragment fragment = DocumentEditDialogFragment.newInstance(mSelectedCollectionIndex, e.Index);
 		fragment.show(getSupportFragmentManager(), null);
 	}
 

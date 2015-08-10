@@ -13,12 +13,12 @@ import com.innodroid.mongobrowser.util.UiUtils;
 import butterknife.Bind;
 
 public class QueryEditNameDialogFragment extends BaseDialogFragment {
-	@Bind(R.id.edit_query_name) EditText mContentEdit;
+	@Bind(R.id.edit_query_name) EditText mQueryName;
 
     public static QueryEditNameDialogFragment newInstance(String content) {
     	QueryEditNameDialogFragment fragment = new QueryEditNameDialogFragment();
     	Bundle args = new Bundle();
-    	args.putString(Constants.ARG_DOCUMENT_CONTENT, content);
+    	args.putString(Constants.ARG_CONTENT, content);
     	fragment.setArguments(args);
     	return fragment;
     }
@@ -27,13 +27,13 @@ public class QueryEditNameDialogFragment extends BaseDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	View view = super.onCreateDialog(R.layout.fragment_query_name_edit);
 
-    	String content = getArguments().getString(Constants.ARG_DOCUMENT_CONTENT);
-    	mContentEdit.setText(content);
+    	String content = getArguments().getString(Constants.ARG_CONTENT);
+    	mQueryName.setText(content);
     	
     	return UiUtils.buildAlertDialog(view, R.drawable.ic_mode_edit_black, "Query Name", true, 0, new UiUtils.AlertDialogCallbacks() {
 			@Override
 			public boolean onOK() {
-				Events.postQueryNamed(mContentEdit.getText().toString());
+				Events.postQueryNamed(mQueryName.getText().toString());
 				return true;
 			}
 

@@ -19,20 +19,20 @@ public class Events {
         EventBus.getDefault().post(new ConnectionDeleted());
     }
 
-    public static void postCollectionSelected(long connectionId, String collectionName) {
-        EventBus.getDefault().post(new CollectionSelected(connectionId, collectionName));
+    public static void postCollectionSelected(long connectionId, int index) {
+        EventBus.getDefault().post(new CollectionSelected(connectionId, index));
     }
 
     public static void postAddDocument() {
         EventBus.getDefault().post(new AddDocument());
     }
 
-    public static void postDocumentSelected(String content) {
-        EventBus.getDefault().post(new DocumentSelected(content));
+    public static void postDocumentSelected(int index) {
+        EventBus.getDefault().post(new DocumentSelected(index));
     }
 
-    public static void postDocumentClicked(String content) {
-        EventBus.getDefault().post(new DocumentClicked(content));
+    public static void postDocumentClicked(int index) {
+        EventBus.getDefault().post(new DocumentClicked(index));
     }
 
     public static void postCreateCollection(String name) {
@@ -47,8 +47,8 @@ public class Events {
         EventBus.getDefault().post(new CollectionRenamed(name));
     }
 
-    public static void postCollectionDropped(String name) {
-        EventBus.getDefault().post(new CollectionDropped(name));
+    public static void postCollectionDropped() {
+        EventBus.getDefault().post(new CollectionDropped());
     }
 
     public static void postConnectionAdded(long connectionId) {
@@ -59,12 +59,12 @@ public class Events {
         EventBus.getDefault().post(new ConnectionUpdated(connectionId));
     }
 
-    public static void postEditDocument(String content) {
-        EventBus.getDefault().post(new EditDocument(content));
+    public static void postEditDocument(int index) {
+        EventBus.getDefault().post(new EditDocument(index));
     }
 
-    public static void postDocumentEdited(String content) {
-        EventBus.getDefault().post(new DocumentEdited(content));
+    public static void postDocumentEdited(int index) {
+        EventBus.getDefault().post(new DocumentEdited(index));
     }
 
     public static void postDocumentCreated(String content) {
@@ -121,35 +121,35 @@ public class Events {
 
     public static class CollectionSelected {
         public long ConnectionId;
-        public String CollectionName;
+        public int Index;
 
-        public CollectionSelected(long connectionId, String collectionName) {
+        public CollectionSelected(long connectionId, int index) {
             ConnectionId = connectionId;
-            CollectionName = collectionName;
+            Index = index;
         }
     }
 
     public static class DocumentSelected {
-        public String Content;
+        public int Index;
 
-        public DocumentSelected(String content) {
-            Content = content;
+        public DocumentSelected(int index) {
+            Index = index;
         }
     }
 
     public static class DocumentClicked {
-        public String Content;
+        public int Index;
 
-        public DocumentClicked(String content) {
-            Content = content;
+        public DocumentClicked(int index) {
+            Index = index;
         }
     }
 
     public static class EditDocument {
-        public String Content;
+        public int Index;
 
-        public EditDocument(String content) {
-            Content = content;
+        public EditDocument(int index) {
+            Index = index;
         }
     }
 
@@ -186,10 +186,10 @@ public class Events {
     }
 
     public static class DocumentEdited {
-        public String Content;
+        public int Index;
 
-        public DocumentEdited(String content) {
-            Content = content;
+        public DocumentEdited(int index) {
+            Index = index;
         }
     }
 
@@ -218,11 +218,6 @@ public class Events {
     }
 
     public static class CollectionDropped {
-        public String Name;
-
-        public CollectionDropped(String name) {
-            Name = name;
-        }
     }
 
     public static class ConnectionAdded {

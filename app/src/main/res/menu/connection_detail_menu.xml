@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_connection_detail_edit"
-          android:icon="@drawable/ic_mode_edit"
-          android:title="Edit Connection"
-          android:orderInCategory="30"
-          app:showAsAction="withText|ifRoom"/>
     <item android:id="@+id/menu_connection_detail_delete"
           android:icon="@drawable/ic_delete"
           android:title="Delete Connection"

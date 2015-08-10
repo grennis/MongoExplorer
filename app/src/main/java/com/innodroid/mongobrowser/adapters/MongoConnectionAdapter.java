@@ -1,4 +1,4 @@
-package com.innodroid.mongobrowser.data;
+package com.innodroid.mongobrowser.adapters;
 
 import android.app.Activity;
 import android.content.ContentUris;
@@ -16,6 +16,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.innodroid.mongobrowser.R;
+import com.innodroid.mongobrowser.data.MongoBrowserProvider;
 
 public class MongoConnectionAdapter extends android.support.v4.widget.CursorAdapter {
 	private Context mContext;
