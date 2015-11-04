@@ -36,5 +36,11 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'org.mongodb:mongo-java-driver:3.1.+'
+
+    // built from https://github.com/grennis/mongo-java-driver
+    //    https://jira.mongodb.org/browse/JAVA-2026
+    //    https://github.com/grennis/MongoExplorer/issues/2
+    //    http://stackoverflow.com/questions/32529484/mongodb-3-x-driver-android-compatibility
+    //compile 'org.mongodb:mongo-java-driver:3.1.+'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }

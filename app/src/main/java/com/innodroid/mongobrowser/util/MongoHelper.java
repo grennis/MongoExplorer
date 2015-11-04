@@ -20,6 +20,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.util.JSON;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -40,7 +41,7 @@ public class MongoHelper {
 
 		if (user != null && user.length() > 0) {
 			List<MongoCredential> creds = new ArrayList<>();
-			creds.add(MongoCredential.createPlainCredential(user, dbname, pass.toCharArray()));
+			creds.add(MongoCredential.createScramSha1Credential(user, dbname, pass.toCharArray()));
 			Connection = new MongoClient(sa, creds);
 		} else {
 			Connection = new MongoClient(sa);
@@ -54,11 +55,8 @@ public class MongoHelper {
     	User = user;
     	Password = pass;
     	
-    	if (user != null && user.length() > 0) {
-    		//Database.aut(user, pass.toCharArray());
-    	} 
-    	
     	Connection.setWriteConcern(WriteConcern.SAFE);
+		Database.listCollectionNames().first();
 	}
 	
     private static void disconnect() {
@@ -127,7 +125,7 @@ public class MongoHelper {
 		items.forEach(new Block<Document>() {
 			@Override
 			public void apply(final Document document) {
-				results.add(new MongoDocument(document.toString()));
+				results.add(new MongoDocument(document.toJson()));
 			}
 		});
 
@@ -148,7 +146,7 @@ public class MongoHelper {
 			Database.getCollection(collectionName).insertOne(doc);
 		}
 
-		return doc.toString();
+		return doc.toJson();
 	}
 
 	public static void deleteDocument(String collectionName, String content) {
