@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.innodroid.mongobrowser.Events;
-import com.innodroid.mongobrowser.data.MongoCollection;
+import com.innodroid.mongobrowser.data.MongoCollectionRef;
 import com.innodroid.mongobrowser.data.MongoData;
 import com.innodroid.mongobrowser.util.MongoHelper;
 import com.innodroid.mongobrowser.Constants;
@@ -217,7 +217,7 @@ public class CollectionListFragment extends BaseListFragment {
 		}		
     }
 	
-    private class LoadNamesTask extends SafeAsyncTask<Void, Void, List<MongoCollection>> {
+    private class LoadNamesTask extends SafeAsyncTask<Void, Void, List<MongoCollectionRef>> {
 		boolean mShowSystemCollections;
 
     	public LoadNamesTask() {
@@ -227,12 +227,12 @@ public class CollectionListFragment extends BaseListFragment {
 		}
 
     	@Override
-		protected List<MongoCollection> safeDoInBackground(Void... arg0) {
+		protected List<MongoCollectionRef> safeDoInBackground(Void... arg0) {
 			return MongoHelper.getCollectionNames(mShowSystemCollections);
 		}
 
 		@Override
-		protected void safeOnPostExecute(List<MongoCollection> result) {
+		protected void safeOnPostExecute(List<MongoCollectionRef> result) {
 			if (mSwipeRefresh != null) {
 				mSwipeRefresh.setRefreshing(false);
 			}
@@ -251,9 +251,9 @@ public class CollectionListFragment extends BaseListFragment {
     }
 
     private class LoadCountsTask extends SafeAsyncTask<Void, Integer, Void> {
-		private List<MongoCollection> mCollections;
+		private List<MongoCollectionRef> mCollections;
 
-		public LoadCountsTask(List<MongoCollection> list) {
+		public LoadCountsTask(List<MongoCollectionRef> list) {
 			super(getActivity());
 
 			mCollections = list;

@@ -4,27 +4,24 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.innodroid.mongobrowser.R;
-import com.innodroid.mongobrowser.data.MongoCollection;
-import com.mongodb.Mongo;
-import com.mongodb.MongoClientOptions;
+import com.innodroid.mongobrowser.data.MongoCollectionRef;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MongoCollectionAdapter extends BaseAdapter {
 	private Context mContext;
-	private List<MongoCollection> mItems = new ArrayList<>();
+	private List<MongoCollectionRef> mItems = new ArrayList<>();
 
 	public MongoCollectionAdapter(Context context) {
 		mContext = context;
 	}
 
-	public void setItems(List<MongoCollection> items) {
+	public void setItems(List<MongoCollectionRef> items) {
 		mItems = items;
 		notifyDataSetChanged();
 	}
@@ -39,7 +36,7 @@ public class MongoCollectionAdapter extends BaseAdapter {
 		return mItems.get(position);
 	}
 
-	public MongoCollection getCollection(int position) {
+	public MongoCollectionRef getCollection(int position) {
 		return mItems.get(position);
 	}
 
@@ -61,7 +58,7 @@ public class MongoCollectionAdapter extends BaseAdapter {
 		}
 		
 		ViewHolder holder = (ViewHolder)view.getTag();
-		MongoCollection item = mItems.get(position);
+		MongoCollectionRef item = mItems.get(position);
 		holder.NameView.setText(item.Name);
 
 		if (item.Count >= 0)
@@ -77,13 +74,13 @@ public class MongoCollectionAdapter extends BaseAdapter {
 	}
 
 	public void setItemName(int position, String name) {
-		MongoCollection item = mItems.get(position);
+		MongoCollectionRef item = mItems.get(position);
 		item.Name = name;
 		notifyDataSetChanged();
 	}
 	
 	public void add(int position, String name) {
-		MongoCollection item = new MongoCollection();
+		MongoCollectionRef item = new MongoCollectionRef();
 		item.Name = name;
 		item.Count = 0;
 		mItems.add(position, item);

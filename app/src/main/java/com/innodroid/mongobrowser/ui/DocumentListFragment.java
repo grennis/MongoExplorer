@@ -17,7 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.innodroid.mongobrowser.Events;
-import com.innodroid.mongobrowser.data.MongoCollection;
+import com.innodroid.mongobrowser.data.MongoCollectionRef;
 import com.innodroid.mongobrowser.data.MongoData;
 import com.innodroid.mongobrowser.data.MongoDocument;
 import com.innodroid.mongobrowser.util.MongoHelper;
@@ -359,7 +359,7 @@ public class DocumentListFragment extends BaseListFragment {
 		@Override
 		protected String safeDoInBackground(String... args) throws UnknownHostException {
 			String newName = args[0];
-			MongoCollection collection = MongoData.Collections.get(mCollectionIndex);
+			MongoCollectionRef collection = MongoData.Collections.get(mCollectionIndex);
 			MongoHelper.renameCollection(collection.Name, newName);
 			collection.Name = newName;
 			return newName;

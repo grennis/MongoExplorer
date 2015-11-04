@@ -1,13 +1,13 @@
 package com.innodroid.mongobrowser.data;
 
-public class MongoCollection {
+public class MongoCollectionRef {
 	public String Name;
 	public long Count;
 
-	public MongoCollection() {
+	public MongoCollectionRef() {
 	}
 
-	public MongoCollection(String name) {
+	public MongoCollectionRef(String name) {
 		this.Name = name;
 		this.Count = -1;
 	}

@@ -3,24 +3,30 @@ package com.innodroid.mongobrowser.util;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import android.util.Log;
 
-import com.innodroid.mongobrowser.data.MongoCollection;
+import com.innodroid.mongobrowser.data.MongoCollectionRef;
 import com.innodroid.mongobrowser.data.MongoDocument;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import com.mongodb.Block;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.MongoNamespace;
+import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 public class MongoHelper {
-	private static Mongo Connection;
-	private static DB Database;
-	private static DB LoginDatabase;
+	private static MongoClient Connection;
+	private static MongoDatabase Database;
 	private static String DatabaseName;
 	private static String Server;
 	private static int Port;
@@ -29,10 +35,18 @@ public class MongoHelper {
 	
 	public static void connect(String server, int port, String dbname, String user, String pass) throws UnknownHostException {
 		disconnect();
-		
-		Connection = new Mongo(server, port);
-    	Database = Connection.getDB(dbname);
-    	LoginDatabase = Database;
+
+		ServerAddress sa = new ServerAddress(server, port);
+
+		if (user != null && user.length() > 0) {
+			List<MongoCredential> creds = new ArrayList<>();
+			creds.add(MongoCredential.createPlainCredential(user, dbname, pass.toCharArray()));
+			Connection = new MongoClient(sa, creds);
+		} else {
+			Connection = new MongoClient(sa);
+		}
+
+    	Database = Connection.getDatabase(dbname);
     	Server = server;
     	Port = port;
     	DatabaseName = dbname;
@@ -41,7 +55,7 @@ public class MongoHelper {
     	Password = pass;
     	
     	if (user != null && user.length() > 0) {
-    		Database.authenticate(user, pass.toCharArray());
+    		//Database.aut(user, pass.toCharArray());
     	} 
     	
     	Connection.setWriteConcern(WriteConcern.SAFE);
@@ -64,18 +78,19 @@ public class MongoHelper {
     	connect(Server, Port, DatabaseName, User, Password);
     }
 
-    public static void changeDatabase(String name) {
-    	Log.i("MONGO", "CHange to database " + name);
-    	Database = LoginDatabase.getSisterDB(name);
+    public static void changeDatabase(String name) throws UnknownHostException {
+    	Log.i("MONGO", "Change to database " + name);
+		disconnect();
+		connect(Server, Port, name, User, Password);
     }
     
-	public static List<MongoCollection> getCollectionNames(boolean includeSystemPrefs) {
-    	Set<String> names = Database.getCollectionNames();
-    	ArrayList<MongoCollection> list = new ArrayList<>();
+	public static List<MongoCollectionRef> getCollectionNames(boolean includeSystemPrefs) {
+		MongoIterable<String> names = Database.listCollectionNames();
+    	ArrayList<MongoCollectionRef> list = new ArrayList<>();
     	
     	for (String str : names)
     		if (includeSystemPrefs || !str.startsWith("system."))
-    			list.add(new MongoCollection(str));
+    			list.add(new MongoCollectionRef(str));
 
 		return list;
     }
@@ -90,37 +105,32 @@ public class MongoHelper {
     }
 	
 	public static long getCollectionCount(String name) {
-		return Database.getCollection(name).getCount();
+		return Database.getCollection(name).count();
 	}
 	
 	public static void createCollection(String name) throws Exception {
-		if (Database.collectionExists(name))
-			throw new Exception ("Collection already exists");
-		DBObject obj = new BasicDBObject();
-		obj.put("_id", "1");
-		Database.getCollection(name).save(obj);
-		Database.getCollection(name).remove(obj);
+		Database.createCollection(name);
 	}
 	
 	public static void renameCollection(String oldName, String newName) throws UnknownHostException {
 		reconnect();
-		Database.getCollection(oldName).rename(newName);
+		MongoNamespace ns = new MongoNamespace(Database.getName() + "." + newName);
+		Database.getCollection(oldName).renameCollection(ns);
 	}
 
 	public static List<MongoDocument> getPageOfDocuments(String collection, String queryText, int start, int take) {
-		DBCollection coll = Database.getCollection(collection);
-		DBCursor main = (queryText == null) ? coll.find() : coll.find(parse(queryText));
-		DBCursor cursor = main.skip(start).limit(take);
-		
-		ArrayList<MongoDocument> results = new ArrayList<>();
-		
-		while (cursor.hasNext()) {
-			cursor.next();
-			results.add(new MongoDocument(cursor.curr().toString()));
-		}
-		
-		cursor.close();
-		main.close();
+		MongoCollection coll = Database.getCollection(collection);
+		FindIterable main = (queryText == null) ? coll.find() : coll.find(Document.parse(queryText));
+		FindIterable items = main.skip(start).limit(take);
+		final ArrayList<MongoDocument> results = new ArrayList<>();
+
+		items.forEach(new Block<Document>() {
+			@Override
+			public void apply(final Document document) {
+				results.add(new MongoDocument(document.toString()));
+			}
+		});
+
 		return results;
 	}
 
@@ -129,17 +139,24 @@ public class MongoHelper {
 	}
 
 	public static String saveDocument(String collectionName, String content) {
-		DBObject obj = parse(content);
-		Database.getCollection(collectionName).save(obj);
-		return obj.toString();
+		Document doc = Document.parse(content);
+
+		if (doc.containsKey("_id")) {
+			Document filter = new Document("_id", doc.get("_id"));
+			Database.getCollection(collectionName).findOneAndReplace(filter, doc);
+		} else {
+			Database.getCollection(collectionName).insertOne(doc);
+		}
+
+		return doc.toString();
 	}
 
 	public static void deleteDocument(String collectionName, String content) {
-		Database.getCollection(collectionName).remove(parse(content));
-	}
-	
-	private static DBObject parse(String text) {
-		Object obj = com.mongodb.util.JSON.parse(text);
-		return (DBObject)obj;
+		Document doc = Document.parse(content);
+
+		if (doc.containsKey("_id")) {
+			Document filter = new Document("_id", doc.get("_id"));
+			Database.getCollection(collectionName).findOneAndDelete(filter);
+		}
 	}
 }
